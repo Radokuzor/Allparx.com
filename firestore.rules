@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// All reads and writes go through the Admin SDK on the server, which bypasses
+// these rules. Nothing in this app talks to Firestore from the browser, so the
+// client surface is closed entirely.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
