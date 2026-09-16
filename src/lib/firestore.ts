@@ -1,49 +1,21 @@
 import 'server-only'
 import { db } from './firebase-admin'
+import { snapshotBySlug, snapshotPlaces } from './places-snapshot'
+import type { Place } from './types'
 
-export type Place = {
-  slug: string
-  name: string
-  city: string
-  state: string | null
-  placeType: string
-  googlePlaceId: string
-  address: string
-  lat: number | null
-  lng: number | null
-  rating: number | null
-  reviewCount: number
-  types: string[]
-  website: string | null
-  phone: string | null
-  hours: string[]
-  description: string | null
-  goodForChildren: boolean | null
-  allowsDogs: boolean | null
-  hasRestroom: boolean | null
-  parking: Record<string, boolean> | null
-  photoReference: string | null
-}
+export type { Place }
 
 const COLLECTION = 'places'
 
 /**
- * Firestore returns gRPC NOT_FOUND (5) when the project has no database yet.
- * Until the first ingestion has run, treat that as "no data" so `next build`
- * and preview deploys still succeed instead of failing on every page. Any
- * other error — permissions, a missing index, network — still propagates.
+ * Every function here answers from the build-time snapshot when one exists
+ * (see scripts/snapshot-places.ts) and queries Firestore otherwise.
+ *
+ * The snapshot path matters: a static build renders ~1 page per place, and
+ * querying per page costs tens of thousands of document reads — enough to
+ * exhaust the daily quota in one build. One scan up front costs one read per
+ * document total.
  */
-async function tolerateEmptyBackend<T>(label: string, run: () => Promise<T>, fallback: T): Promise<T> {
-  try {
-    return await run()
-  } catch (error: unknown) {
-    if (grpcCode(error) === 5) {
-      console.warn(`[firestore] ${label}: no database or collection yet — returning empty result`)
-      return fallback
-    }
-    throw error
-  }
-}
 
 function grpcCode(error: unknown): number | undefined {
   return typeof error === 'object' && error !== null
@@ -52,24 +24,46 @@ function grpcCode(error: unknown): number | undefined {
 }
 
 /**
- * Runs an ordered query, falling back to an unordered fetch plus an in-memory
- * sort when the composite index is missing (gRPC FAILED_PRECONDITION, 9).
- *
- * The indexes in `firestore.indexes.json` are the intended path — they let
- * Firestore apply the ordering and limit server-side. This fallback only keeps
- * pages rendering until those indexes are built, and reads more documents than
- * it returns, so it should not be relied on in production.
+ * Firestore returns NOT_FOUND (5) when the project has no database yet, and
+ * RESOURCE_EXHAUSTED (8) when the daily quota is gone. Neither should abort a
+ * build halfway through; both render as "no data" with a loud warning. Any
+ * other error still propagates.
  */
-async function orderedOrSorted<T>(
+async function resilient<T>(label: string, run: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await run()
+  } catch (error: unknown) {
+    const code = grpcCode(error)
+    if (code === 5) {
+      console.warn(`[firestore] ${label}: no database or collection yet — returning empty result`)
+      return fallback
+    }
+    if (code === 8) {
+      console.warn(
+        `[firestore] ${label}: QUOTA EXCEEDED — returning empty result. ` +
+          'Run `npm run snapshot` so the build reads Firestore once instead of per page.',
+      )
+      return fallback
+    }
+    throw error
+  }
+}
+
+/**
+ * Runs an ordered query, falling back to an unordered fetch plus an in-memory
+ * sort when the composite index is missing (FAILED_PRECONDITION, 9). The
+ * indexes in firestore.indexes.json are the intended path; this only keeps
+ * pages rendering until they are built, and reads more than it returns.
+ */
+async function orderedOrSorted(
   label: string,
   indexed: () => Promise<FirebaseFirestore.QuerySnapshot>,
   unordered: () => Promise<FirebaseFirestore.QuerySnapshot>,
-  sortKey: (value: T) => number,
   limit: number,
-): Promise<T[]> {
+): Promise<Place[]> {
   try {
     const snapshot = await indexed()
-    return snapshot.docs.map((doc) => doc.data() as T)
+    return snapshot.docs.map((doc) => doc.data() as Place)
   } catch (error: unknown) {
     if (grpcCode(error) !== 9) throw error
     console.warn(
@@ -77,34 +71,48 @@ async function orderedOrSorted<T>(
         'Deploy firestore.indexes.json to remove this fallback.',
     )
     const snapshot = await unordered()
-    return snapshot.docs
-      .map((doc) => doc.data() as T)
-      .sort((a, b) => sortKey(b) - sortKey(a))
-      .slice(0, limit)
+    return sortByRating(snapshot.docs.map((doc) => doc.data() as Place)).slice(0, limit)
   }
 }
 
-/** Unrated places sort last rather than being treated as zero-star. */
-const byRating = (place: Place) => place.rating ?? -1
+/** Highest rated first; unrated places sort last rather than as zero-star. */
+function sortByRating(places: Place[]): Place[] {
+  return [...places].sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1))
+}
+
+// --- Queries ---------------------------------------------------------------
 
 export async function getPlace(slug: string): Promise<Place | null> {
-  return tolerateEmptyBackend(`getPlace(${slug})`, async () => {
-    const doc = await db.collection(COLLECTION).doc(slug).get()
-    if (!doc.exists) return null
-    return doc.data() as Place
-  }, null)
+  const index = snapshotBySlug()
+  if (index) return index.get(slug) ?? null
+
+  return resilient(
+    `getPlace(${slug})`,
+    async () => {
+      const doc = await db.collection(COLLECTION).doc(slug).get()
+      return doc.exists ? (doc.data() as Place) : null
+    },
+    null,
+  )
 }
 
 export async function getPlacesByCity(city: string, limit = 24): Promise<Place[]> {
-  return tolerateEmptyBackend(
+  const all = snapshotPlaces()
+  if (all) return sortByRating(all.filter((p) => p.city === city)).slice(0, limit)
+
+  return resilient(
     `getPlacesByCity(${city})`,
     () =>
-      orderedOrSorted<Place>(
+      orderedOrSorted(
         `getPlacesByCity(${city})`,
         () =>
-          db.collection(COLLECTION).where('city', '==', city).orderBy('rating', 'desc').limit(limit).get(),
+          db
+            .collection(COLLECTION)
+            .where('city', '==', city)
+            .orderBy('rating', 'desc')
+            .limit(limit)
+            .get(),
         () => db.collection(COLLECTION).where('city', '==', city).get(),
-        byRating,
         limit,
       ),
     [],
@@ -112,10 +120,13 @@ export async function getPlacesByCity(city: string, limit = 24): Promise<Place[]
 }
 
 export async function getPlacesByType(placeType: string, limit = 24): Promise<Place[]> {
-  return tolerateEmptyBackend(
+  const all = snapshotPlaces()
+  if (all) return sortByRating(all.filter((p) => p.placeType === placeType)).slice(0, limit)
+
+  return resilient(
     `getPlacesByType(${placeType})`,
     () =>
-      orderedOrSorted<Place>(
+      orderedOrSorted(
         `getPlacesByType(${placeType})`,
         () =>
           db
@@ -125,7 +136,6 @@ export async function getPlacesByType(placeType: string, limit = 24): Promise<Pl
             .limit(limit)
             .get(),
         () => db.collection(COLLECTION).where('placeType', '==', placeType).get(),
-        byRating,
         limit,
       ),
     [],
@@ -134,51 +144,93 @@ export async function getPlacesByType(placeType: string, limit = 24): Promise<Pl
 
 /** Same-city places of the same type, minus the one being viewed. */
 export async function getNearbyPlaces(place: Place, limit = 6): Promise<Place[]> {
-  return tolerateEmptyBackend(`getNearbyPlaces(${place.slug})`, async () => {
-    const snapshot = await db
-      .collection(COLLECTION)
-      .where('city', '==', place.city)
-      .where('placeType', '==', place.placeType)
-      .limit(limit + 1)
-      .get()
-    return snapshot.docs
-      .map((doc) => doc.data() as Place)
-      .filter((p) => p.slug !== place.slug)
-      .slice(0, limit)
-  }, [])
+  const all = snapshotPlaces()
+  if (all) {
+    return sortByRating(
+      all.filter(
+        (p) => p.city === place.city && p.placeType === place.placeType && p.slug !== place.slug,
+      ),
+    ).slice(0, limit)
+  }
+
+  return resilient(
+    `getNearbyPlaces(${place.slug})`,
+    async () => {
+      const snapshot = await db
+        .collection(COLLECTION)
+        .where('city', '==', place.city)
+        .where('placeType', '==', place.placeType)
+        .limit(limit + 1)
+        .get()
+      return snapshot.docs
+        .map((doc) => doc.data() as Place)
+        .filter((p) => p.slug !== place.slug)
+        .slice(0, limit)
+    },
+    [],
+  )
 }
 
 export async function getAllPlaceSlugs(): Promise<string[]> {
-  return tolerateEmptyBackend('getAllPlaceSlugs', async () => {
-    const snapshot = await db.collection(COLLECTION).select('slug').get()
-    return snapshot.docs.map((doc) => doc.data().slug as string)
-  }, [])
+  const all = snapshotPlaces()
+  if (all) return all.map((p) => p.slug)
+
+  return resilient(
+    'getAllPlaceSlugs',
+    async () => {
+      const snapshot = await db.collection(COLLECTION).select('slug').get()
+      return snapshot.docs.map((doc) => doc.data().slug as string)
+    },
+    [],
+  )
 }
 
-/**
- * Minimal projection used by the sitemap so we never pull full documents for
- * what is only a list of URLs.
- */
+/** Minimal projection for the sitemap — never pulls full documents. */
 export async function getAllPlaceRefs(): Promise<
   { slug: string; city: string; placeType: string }[]
 > {
-  return tolerateEmptyBackend('getAllPlaceRefs', async () => {
-    const snapshot = await db.collection(COLLECTION).select('slug', 'city', 'placeType').get()
-    return snapshot.docs.map((doc) => {
-      const d = doc.data()
-      return { slug: d.slug as string, city: d.city as string, placeType: d.placeType as string }
-    })
-  }, [])
+  const all = snapshotPlaces()
+  if (all) return all.map(({ slug, city, placeType }) => ({ slug, city, placeType }))
+
+  return resilient(
+    'getAllPlaceRefs',
+    async () => {
+      const snapshot = await db.collection(COLLECTION).select('slug', 'city', 'placeType').get()
+      return snapshot.docs.map((doc) => {
+        const d = doc.data()
+        return { slug: d.slug as string, city: d.city as string, placeType: d.placeType as string }
+      })
+    },
+    [],
+  )
 }
 
-/** Distinct cities present in the collection, alphabetised. */
+/**
+ * Distinct cities, alphabetised.
+ *
+ * Without a snapshot this scans the whole collection, so the result is
+ * memoised per process — it is called from the homepage, both city routes,
+ * the sitemap and llms.txt.
+ */
+let citiesPromise: Promise<string[]> | null = null
+
 export async function getAllCities(): Promise<string[]> {
-  return tolerateEmptyBackend('getAllCities', async () => {
-    const snapshot = await db.collection(COLLECTION).select('city').get()
-    const cities = new Set<string>()
-    for (const doc of snapshot.docs) cities.add(doc.data().city as string)
-    return [...cities].sort()
-  }, [])
+  const all = snapshotPlaces()
+  if (all) return [...new Set(all.map((p) => p.city))].sort()
+
+  citiesPromise ??= resilient(
+    'getAllCities',
+    async () => {
+      const snapshot = await db.collection(COLLECTION).select('city').get()
+      return [...new Set(snapshot.docs.map((doc) => doc.data().city as string))].sort()
+    },
+    [],
+  ).catch((error) => {
+    citiesPromise = null // don't cache a hard failure
+    throw error
+  })
+
+  return citiesPromise
 }
 
 /** URL-safe form of a city name, e.g. "Salt Lake City" -> "salt-lake-city". */

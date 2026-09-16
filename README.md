@@ -106,6 +106,41 @@ If you add a type, confirm it exists in
 [Places API Table A](https://developers.google.com/maps/documentation/places/web-service/place-types)
 first — an invalid type fails every call for that type.
 
+## Build-time snapshot
+
+A static build renders one page per place plus category, city, sitemap and
+`llms.txt` routes. Answering each of those with its own Firestore query costs
+tens of thousands of document reads — enough to exhaust the free tier's
+50,000/day in a single build, after which the build has no data and would
+otherwise ship an empty site.
+
+So `prebuild` exports the collection once to `.allparx-cache/places.json`, and
+the data layer serves every query from that file:
+
+```bash
+npm run snapshot    # runs automatically before npm run build
+```
+
+| | Reads per build |
+| --- | --- |
+| Per-page queries | ~40,000 |
+| One snapshot | 1,321 (one per place) |
+
+The snapshot is gitignored and regenerated on every build, including on Vercel.
+Without one — dev server, ISR revalidation — queries go straight to Firestore.
+
+If the snapshot cannot be produced the build **fails** rather than deploying an
+empty site. The exception is `NOT_FOUND`, which means the project genuinely has
+no data yet, and builds an empty site as intended. `SKIP_SNAPSHOT=1` forces the
+old per-query behaviour.
+
+### Read budget
+
+At 1,321 places a build costs 1,321 reads — about 37 builds/day within the free
+tier. A full 50-city ingestion (~13,000 places) costs ~13,000 reads per build,
+which is only 3 builds/day. Move the project to the Blaze plan before ingesting
+all 50 cities.
+
 ## Development
 
 ```bash

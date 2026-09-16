@@ -45,3 +45,6 @@ next-env.d.ts
 .env*.local
 .env
 !.env.example
+
+# build-time Firestore snapshot
+.allparx-cache/
