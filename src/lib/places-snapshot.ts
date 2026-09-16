@@ -23,7 +23,10 @@ export function snapshotPlaces(): Place[] | null {
   if (loaded) return places
   loaded = true
 
-  const file = path.resolve(process.cwd(), SNAPSHOT_PATH)
+  // The snapshot is only read during the build; ISR falls back to Firestore.
+  // Without this opt-out Turbopack traces the whole project into the server
+  // bundle, because process.cwd() reads as a dynamic path.
+  const file = path.resolve(/*turbopackIgnore: true*/ process.cwd(), SNAPSHOT_PATH)
   try {
     if (!fs.existsSync(file)) return (places = null)
     const parsed = JSON.parse(fs.readFileSync(file, 'utf8')) as {

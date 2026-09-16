@@ -7,6 +7,9 @@ export const alt = `${SITE_NAME} — Find Your Next Outdoor Adventure`
 
 // Satori (the renderer behind ImageResponse) needs an explicit `display` on any
 // element with more than one child, so every node here sets it.
+//
+// Keep this text emoji-free: Satori fetches emoji artwork from a remote CDN at
+// build time, which makes the build fail on any network that can't reach it.
 export default function OpengraphImage() {
   return new ImageResponse(
     (
@@ -23,7 +26,9 @@ export default function OpengraphImage() {
           fontFamily: 'sans-serif',
         }}
       >
-        <div style={{ display: 'flex', fontSize: 40, opacity: 0.85 }}>{`🌲 ${SITE_NAME}`}</div>
+        <div style={{ display: 'flex', fontSize: 40, opacity: 0.85, letterSpacing: 2 }}>
+          {SITE_NAME}
+        </div>
         <div
           style={{
             display: 'flex',
