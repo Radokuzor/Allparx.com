@@ -37,13 +37,55 @@ async function tolerateEmptyBackend<T>(label: string, run: () => Promise<T>, fal
   try {
     return await run()
   } catch (error: unknown) {
-    if (typeof error === 'object' && error !== null && (error as { code?: number }).code === 5) {
+    if (grpcCode(error) === 5) {
       console.warn(`[firestore] ${label}: no database or collection yet — returning empty result`)
       return fallback
     }
     throw error
   }
 }
+
+function grpcCode(error: unknown): number | undefined {
+  return typeof error === 'object' && error !== null
+    ? (error as { code?: number }).code
+    : undefined
+}
+
+/**
+ * Runs an ordered query, falling back to an unordered fetch plus an in-memory
+ * sort when the composite index is missing (gRPC FAILED_PRECONDITION, 9).
+ *
+ * The indexes in `firestore.indexes.json` are the intended path — they let
+ * Firestore apply the ordering and limit server-side. This fallback only keeps
+ * pages rendering until those indexes are built, and reads more documents than
+ * it returns, so it should not be relied on in production.
+ */
+async function orderedOrSorted<T>(
+  label: string,
+  indexed: () => Promise<FirebaseFirestore.QuerySnapshot>,
+  unordered: () => Promise<FirebaseFirestore.QuerySnapshot>,
+  sortKey: (value: T) => number,
+  limit: number,
+): Promise<T[]> {
+  try {
+    const snapshot = await indexed()
+    return snapshot.docs.map((doc) => doc.data() as T)
+  } catch (error: unknown) {
+    if (grpcCode(error) !== 9) throw error
+    console.warn(
+      `[firestore] ${label}: composite index missing — sorting in memory. ` +
+        'Deploy firestore.indexes.json to remove this fallback.',
+    )
+    const snapshot = await unordered()
+    return snapshot.docs
+      .map((doc) => doc.data() as T)
+      .sort((a, b) => sortKey(b) - sortKey(a))
+      .slice(0, limit)
+  }
+}
+
+/** Unrated places sort last rather than being treated as zero-star. */
+const byRating = (place: Place) => place.rating ?? -1
 
 export async function getPlace(slug: string): Promise<Place | null> {
   return tolerateEmptyBackend(`getPlace(${slug})`, async () => {
@@ -54,27 +96,40 @@ export async function getPlace(slug: string): Promise<Place | null> {
 }
 
 export async function getPlacesByCity(city: string, limit = 24): Promise<Place[]> {
-  return tolerateEmptyBackend(`getPlacesByCity(${city})`, async () => {
-    const snapshot = await db
-      .collection(COLLECTION)
-      .where('city', '==', city)
-      .orderBy('rating', 'desc')
-      .limit(limit)
-      .get()
-    return snapshot.docs.map((doc) => doc.data() as Place)
-  }, [])
+  return tolerateEmptyBackend(
+    `getPlacesByCity(${city})`,
+    () =>
+      orderedOrSorted<Place>(
+        `getPlacesByCity(${city})`,
+        () =>
+          db.collection(COLLECTION).where('city', '==', city).orderBy('rating', 'desc').limit(limit).get(),
+        () => db.collection(COLLECTION).where('city', '==', city).get(),
+        byRating,
+        limit,
+      ),
+    [],
+  )
 }
 
 export async function getPlacesByType(placeType: string, limit = 24): Promise<Place[]> {
-  return tolerateEmptyBackend(`getPlacesByType(${placeType})`, async () => {
-    const snapshot = await db
-      .collection(COLLECTION)
-      .where('placeType', '==', placeType)
-      .orderBy('rating', 'desc')
-      .limit(limit)
-      .get()
-    return snapshot.docs.map((doc) => doc.data() as Place)
-  }, [])
+  return tolerateEmptyBackend(
+    `getPlacesByType(${placeType})`,
+    () =>
+      orderedOrSorted<Place>(
+        `getPlacesByType(${placeType})`,
+        () =>
+          db
+            .collection(COLLECTION)
+            .where('placeType', '==', placeType)
+            .orderBy('rating', 'desc')
+            .limit(limit)
+            .get(),
+        () => db.collection(COLLECTION).where('placeType', '==', placeType).get(),
+        byRating,
+        limit,
+      ),
+    [],
+  )
 }
 
 /** Same-city places of the same type, minus the one being viewed. */

@@ -28,7 +28,7 @@ create a sitemap and anything else to help with seo and ai discoverability
 
 Create a .env.local file in the project root with these values
 (I will fill in the actual values):
-
+reference the firebaseservice account for these
 ```
 GOOGLE_PLACES_API_KEY=YOUR_KEY_HERE
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=YOUR_PROJECT_ID
@@ -886,7 +886,7 @@ vercel
 # Add all 5 variables from .env.local
 ```
 
-Or connect your GitHub repo to Vercel for auto-deploy on every push.
+this project is connected to vercel via github alreayd for auto deploy.
 
 ---
 

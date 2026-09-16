@@ -59,9 +59,18 @@ Then deploy the rules and composite indexes:
 npx firebase-tools deploy --only firestore
 ```
 
-`firestore.indexes.json` defines the four composite indexes the queries need.
-Without them, the category, city and nearby queries fail with
-`FAILED_PRECONDITION`.
+`firestore.indexes.json` defines the composite indexes the queries need. Two of
+them are required by the ordered queries:
+
+| Query | Index |
+| --- | --- |
+| `getPlacesByType` | `placeType` ASC, `rating` DESC |
+| `getPlacesByCity` | `city` ASC, `rating` DESC |
+
+Until they exist, `getPlacesByType` and `getPlacesByCity` fall back to fetching
+the whole filtered set and sorting in memory. Pages still render correctly, but
+each query reads far more documents than it returns — the build logs a warning
+per call. Deploy the indexes to remove it.
 
 ## Ingestion
 
