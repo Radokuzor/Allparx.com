@@ -15,7 +15,7 @@ import * as admin from 'firebase-admin'
 import * as dotenv from 'dotenv'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
-import { SNAPSHOT_PATH } from '../src/lib/snapshot-path'
+import { SEARCH_INDEX_FILE, SNAPSHOT_PATH } from '../src/lib/snapshot-path'
 
 dotenv.config({ path: '.env.local' })
 
@@ -52,6 +52,21 @@ async function main() {
   const out = path.resolve(process.cwd(), SNAPSHOT_PATH)
   fs.mkdirSync(path.dirname(out), { recursive: true })
   fs.writeFileSync(out, JSON.stringify({ generatedAt: new Date().toISOString(), places }))
+
+  // Compact index for client-side search, served straight from the CDN so a
+  // search costs no Firestore reads. Keys are short because this ships to every
+  // visitor who opens /search.
+  const index = places.map((p) => ({
+    s: p.slug,
+    n: p.name,
+    c: p.city,
+    t: p.placeType,
+    a: p.state ?? '',
+    r: p.rating ?? null,
+  }))
+  const indexOut = path.resolve(process.cwd(), 'public', SEARCH_INDEX_FILE)
+  fs.mkdirSync(path.dirname(indexOut), { recursive: true })
+  fs.writeFileSync(indexOut, JSON.stringify(index))
 
   const bytes = fs.statSync(out).size
   console.log(

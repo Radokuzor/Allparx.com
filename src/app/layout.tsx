@@ -4,8 +4,9 @@ import Link from 'next/link'
 import './globals.css'
 import { FEATURED_TYPES, typeLabelPlural } from '@/lib/place-types'
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, absoluteUrl } from '@/lib/site'
+import { cn } from '@/lib/utils'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' })
 
 export const metadata: Metadata = {
   title: {
@@ -70,7 +71,7 @@ const siteSchema = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={cn('font-sans', inter.variable)}>
       <body className="font-sans antialiased">
         <script
           type="application/ld+json"
@@ -84,7 +85,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/" className="text-xl font-bold tracking-tight text-green-700">
               🌲 {SITE_NAME}
             </Link>
-            <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-600">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-600">
               {FEATURED_TYPES.map((type) => (
                 <Link
                   key={type}
@@ -94,6 +95,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   {typeLabelPlural(type)}
                 </Link>
               ))}
+              <Link
+                href="/search"
+                className="font-medium text-green-700 transition-colors hover:text-green-800"
+              >
+                Search
+              </Link>
             </div>
           </nav>
         </header>
@@ -121,6 +128,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Explore</p>
               <ul className="mt-3 space-y-2 text-sm text-gray-600">
+                <li><Link href="/search" className="hover:text-green-700">Search</Link></li>
                 <li><Link href="/places" className="hover:text-green-700">All categories</Link></li>
                 <li><Link href="/cities" className="hover:text-green-700">All cities</Link></li>
                 <li><a href={absoluteUrl('/sitemap.xml')} className="hover:text-green-700">Sitemap</a></li>

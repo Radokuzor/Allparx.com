@@ -1,17 +1,29 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import type { Place } from '@/lib/firestore'
+import { categoryImage } from '@/lib/category-image'
 import { typeLabel } from '@/lib/place-types'
 
 export default function PlaceCard({ place }: { place: Place }) {
+  const image = categoryImage(place.placeType, place.slug)
+
   return (
     <Link
       href={`/places/${place.slug}`}
       className="group block overflow-hidden rounded-xl border border-gray-100 transition-all hover:border-green-200 hover:shadow-md"
     >
-      {/* Gradient stands in for a photo — Places photo URLs expire, so they are
-          fetched on demand rather than stored. */}
-      <div className="flex h-40 items-end bg-gradient-to-br from-green-700 to-emerald-400 p-4">
-        <span className="text-xs font-semibold uppercase tracking-wide text-white/80">
+      <div className="relative flex h-40 items-end bg-gradient-to-br from-green-700 to-emerald-400 p-4">
+        {image && (
+          <Image
+            src={image}
+            alt=""
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        )}
+        {image && <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />}
+        <span className="relative text-xs font-semibold uppercase tracking-wide text-white/90">
           {typeLabel(place.placeType)}
         </span>
       </div>

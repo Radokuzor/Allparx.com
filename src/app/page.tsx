@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import PlaceGrid from '@/components/PlaceGrid'
 import JsonLd from '@/components/JsonLd'
+import SearchBox from '@/components/SearchBox'
 import { getAllCities, getPlacesByType, citySlug } from '@/lib/firestore'
 import { FEATURED_TYPES, PLACE_TYPES, typeLabelPlural } from '@/lib/place-types'
 import { SITE_DESCRIPTION, SITE_NAME, absoluteUrl } from '@/lib/site'
@@ -42,6 +43,14 @@ export default async function HomePage() {
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500 sm:text-xl">
             Parks, trails, dog parks, beaches, and campgrounds across every city in America.
           </p>
+          <div className="mx-auto mt-8 max-w-xl">
+            <SearchBox />
+          </div>
+          {cities.length > 0 && (
+            <p className="mt-4 text-sm text-gray-400">
+              Browse {cities.length} cities and {PLACE_TYPES.length} outdoor categories
+            </p>
+          )}
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             {FEATURED_TYPES.map((type) => (
               <Link

@@ -48,3 +48,5 @@ next-env.d.ts
 
 # build-time Firestore snapshot
 .allparx-cache/
+# generated from the snapshot by scripts/snapshot-places.ts
+/public/search-index.json

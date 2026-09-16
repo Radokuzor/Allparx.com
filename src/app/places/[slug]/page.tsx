@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import JsonLd from '@/components/JsonLd'
 import PlaceCard from '@/components/PlaceCard'
+import { categoryImage } from '@/lib/category-image'
 import { getAllPlaceSlugs, getNearbyPlaces, getPlace, citySlug } from '@/lib/firestore'
 import { SCHEMA_TYPE, typeLabel, typeLabelPlural } from '@/lib/place-types'
 import { SITE_NAME, absoluteUrl } from '@/lib/site'
@@ -56,6 +58,7 @@ export default async function PlacePage({ params }: Props) {
   const nearby = await getNearbyPlaces(place)
   const where = placeLocation(place)
   const url = absoluteUrl(`/places/${place.slug}`)
+  const hero = categoryImage(place.placeType, place.slug)
 
   const amenities = [
     { label: 'Dogs Allowed', value: place.allowsDogs, icon: '🐕' },
@@ -141,9 +144,25 @@ export default async function PlacePage({ params }: Props) {
           <span className="text-gray-600">{place.name}</span>
         </nav>
 
-        <div className="mb-8 flex h-64 items-end rounded-2xl bg-gradient-to-br from-green-800 to-emerald-500 p-8">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-widest text-white/70">
+        <div className="relative mb-8 flex h-64 items-end overflow-hidden rounded-2xl bg-gradient-to-br from-green-800 to-emerald-500 p-8">
+          {hero && (
+            <>
+              <Image
+                src={hero}
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 896px) 100vw, 896px"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
+              <span className="absolute bottom-2 right-3 text-[10px] text-white/50">
+                Illustrative {typeLabel(place.placeType).toLowerCase()} imagery
+              </span>
+            </>
+          )}
+          <div className="relative">
+            <span className="text-xs font-semibold uppercase tracking-widest text-white/80">
               {typeLabel(place.placeType)} · {where}
             </span>
             <h1 className="mt-1 text-3xl font-bold text-white sm:text-4xl">{place.name}</h1>
@@ -254,10 +273,6 @@ export default async function PlacePage({ params }: Props) {
                   Get Directions
                 </a>
               )}
-            </div>
-
-            <div className="rounded-xl border border-dashed border-gray-200 p-6 text-center text-sm text-gray-300">
-              [ Ad Unit — Google AdSense ]
             </div>
           </aside>
         </div>
