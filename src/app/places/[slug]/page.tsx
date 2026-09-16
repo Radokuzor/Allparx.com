@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import JsonLd from '@/components/JsonLd'
 import PlaceCard from '@/components/PlaceCard'
 import { categoryImage } from '@/lib/category-image'
+import { googleListingUrl, mapEmbedUrl } from '@/lib/google-maps'
 import { getAllPlaceSlugs, getNearbyPlaces, getPlace, citySlug } from '@/lib/firestore'
 import { SCHEMA_TYPE, typeLabel, typeLabelPlural } from '@/lib/place-types'
 import { SITE_NAME, absoluteUrl } from '@/lib/site'
@@ -59,6 +60,8 @@ export default async function PlacePage({ params }: Props) {
   const where = placeLocation(place)
   const url = absoluteUrl(`/places/${place.slug}`)
   const hero = categoryImage(place.placeType, place.slug)
+  const mapEmbedSrc = mapEmbedUrl(place)
+  const listingUrl = googleListingUrl(place)
 
   const amenities = [
     { label: 'Dogs Allowed', value: place.allowsDogs, icon: '🐕' },
@@ -214,6 +217,20 @@ export default async function PlacePage({ params }: Props) {
                 </div>
               </section>
             )}
+
+            {mapEmbedSrc && (
+              <section>
+                <h2 className="mb-3 text-xl font-semibold text-gray-800">Map</h2>
+                <iframe
+                  title={`Map of ${place.name}`}
+                  src={mapEmbedSrc}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                  className="h-80 w-full rounded-xl border border-gray-100"
+                />
+              </section>
+            )}
           </div>
 
           <aside className="space-y-6">
@@ -227,6 +244,16 @@ export default async function PlacePage({ params }: Props) {
                   <p className="text-sm text-gray-400">
                     {place.reviewCount.toLocaleString()} Google reviews
                   </p>
+                  {listingUrl && (
+                    <a
+                      href={listingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-1 inline-block text-sm text-green-700 hover:underline"
+                    >
+                      See photos &amp; reviews on Google →
+                    </a>
+                  )}
                 </div>
               )}
 
