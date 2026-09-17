@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!isKnownType(type)) return { title: 'Not Found', robots: { index: false, follow: false } }
 
   const label = typeLabelPlural(type)
-  const description = `Browse ${label.toLowerCase()} across America. Find locations, hours, ratings, amenities and directions on ${SITE_NAME}.`
+  const description = `Browse ${label.toLowerCase()} near you. Find locations, hours, ratings, amenities and directions on ${SITE_NAME}.`
 
   return {
     title: `${label} Near You`,
@@ -79,7 +79,7 @@ export default async function CategoryPage({ params }: Props) {
       <div className="mx-auto max-w-6xl px-6 py-12">
         <h1 className="mb-2 text-4xl font-bold text-gray-900">{label}</h1>
         <p className="mb-10 text-gray-500">
-          {places.length} {label.toLowerCase()} listed across America
+          {places.length} {label.toLowerCase()} listed on {SITE_NAME}
         </p>
         <PlaceGrid places={places} wide />
       </div>

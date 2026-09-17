@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { MapPin } from 'lucide-react'
 import PlaceGrid from '@/components/PlaceGrid'
 import JsonLd from '@/components/JsonLd'
 import SearchBox from '@/components/SearchBox'
@@ -9,6 +10,7 @@ import { SITE_DESCRIPTION, SITE_NAME, absoluteUrl } from '@/lib/site'
 export const revalidate = 86400
 
 const SECTIONS = ['park', 'dog_park', 'hiking_area'] as const
+const SECTION_ICON: Record<string, string> = { park: '🌳', dog_park: '🐕', hiking_area: '⛰️' }
 
 export default async function HomePage() {
   const [sections, cities] = await Promise.all([
@@ -35,39 +37,51 @@ export default async function HomePage() {
         }}
       />
 
-      <div className="mx-auto max-w-6xl px-6 py-12">
-        <section className="py-16 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
+      <div className="relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(ellipse_60%_55%_at_50%_-10%,rgba(21,128,61,0.10),transparent)]"
+        />
+
+        <div className="mx-auto max-w-6xl px-6 pb-12 pt-16 text-center sm:pt-20">
+          {cities.length > 0 && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-white px-3.5 py-1.5 text-xs font-medium text-green-700 shadow-sm">
+              <MapPin className="h-3.5 w-3.5" />
+              {cities.length} cities · {PLACE_TYPES.length} outdoor categories
+            </span>
+          )}
+          <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
             Find Your Next Outdoor Adventure
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500 sm:text-xl">
-            Parks, trails, dog parks, beaches, and campgrounds across every city in America.
+            Parks, trails, dog parks, beaches, and campgrounds — with real hours, ratings and
+            directions.
           </p>
           <div className="mx-auto mt-8 max-w-xl">
             <SearchBox />
           </div>
-          {cities.length > 0 && (
-            <p className="mt-4 text-sm text-gray-400">
-              Browse {cities.length} cities and {PLACE_TYPES.length} outdoor categories
-            </p>
-          )}
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-2.5">
             {FEATURED_TYPES.map((type) => (
               <Link
                 key={type}
                 href={`/places/category/${type}`}
-                className="rounded-full border border-green-200 px-5 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-50"
+                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 shadow-sm transition-colors hover:border-green-200 hover:text-green-700"
               >
                 {typeLabelPlural(type)}
               </Link>
             ))}
           </div>
-        </section>
+        </div>
+      </div>
 
+      <div className="mx-auto max-w-6xl px-6 pb-12">
         {sections.map(({ type, places }) => (
           <section key={type} className="mb-16">
             <div className="mb-6 flex items-baseline justify-between">
-              <h2 className="text-2xl font-bold text-gray-800">{typeLabelPlural(type)}</h2>
+              <h2 className="flex items-center gap-2 text-2xl font-bold text-gray-800">
+                <span aria-hidden>{SECTION_ICON[type]}</span>
+                {typeLabelPlural(type)}
+              </h2>
               <Link
                 href={`/places/category/${type}`}
                 className="text-sm font-medium text-green-700 hover:underline"

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Star } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import SearchBox from './SearchBox'
@@ -92,7 +93,10 @@ export default function SearchResults() {
                     </span>
                   </span>
                   {entry.r !== null && (
-                    <span className="shrink-0 text-sm text-gray-500">★ {entry.r}</span>
+                    <span className="flex shrink-0 items-center gap-1 text-sm text-gray-500">
+                      <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
+                      {entry.r}
+                    </span>
                   )}
                 </Link>
               </li>
