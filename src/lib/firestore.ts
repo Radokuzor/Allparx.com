@@ -59,6 +59,7 @@ async function orderedOrSorted(
   label: string,
   indexed: () => Promise<FirebaseFirestore.QuerySnapshot>,
   unordered: () => Promise<FirebaseFirestore.QuerySnapshot>,
+  offset: number,
   limit: number,
 ): Promise<Place[]> {
   try {
@@ -71,7 +72,7 @@ async function orderedOrSorted(
         'Deploy firestore.indexes.json to remove this fallback.',
     )
     const snapshot = await unordered()
-    return sortByRating(snapshot.docs.map((doc) => doc.data() as Place)).slice(0, limit)
+    return sortByRating(snapshot.docs.map((doc) => doc.data() as Place)).slice(offset, offset + limit)
   }
 }
 
@@ -96,24 +97,27 @@ export async function getPlace(slug: string): Promise<Place | null> {
   )
 }
 
-export async function getPlacesByCity(city: string, limit = 24): Promise<Place[]> {
+/** `limit` omitted fetches every place in the city — the largest city is ~300, so this is one query either way. */
+export async function getPlacesByCity(city: string, limit?: number): Promise<Place[]> {
   const all = snapshotPlaces()
-  if (all) return sortByRating(all.filter((p) => p.city === city)).slice(0, limit)
+  if (all) {
+    const matches = sortByRating(all.filter((p) => p.city === city))
+    return limit === undefined ? matches : matches.slice(0, limit)
+  }
 
   return resilient(
     `getPlacesByCity(${city})`,
     () =>
       orderedOrSorted(
         `getPlacesByCity(${city})`,
-        () =>
-          db
-            .collection(COLLECTION)
-            .where('city', '==', city)
-            .orderBy('rating', 'desc')
-            .limit(limit)
-            .get(),
+        () => {
+          let query = db.collection(COLLECTION).where('city', '==', city).orderBy('rating', 'desc')
+          if (limit !== undefined) query = query.limit(limit)
+          return query.get()
+        },
         () => db.collection(COLLECTION).where('city', '==', city).get(),
-        limit,
+        0,
+        limit ?? Number.MAX_SAFE_INTEGER,
       ),
     [],
   )
@@ -136,7 +140,80 @@ export async function getPlacesByType(placeType: string, limit = 24): Promise<Pl
             .limit(limit)
             .get(),
         () => db.collection(COLLECTION).where('placeType', '==', placeType).get(),
+        0,
         limit,
+      ),
+    [],
+  )
+}
+
+/** Category page size. Kept with the query so the page components, sitemap and generateStaticParams agree on it. */
+export const CATEGORY_PAGE_SIZE = 48
+
+/** Page 1 is served from `getPlacesByType`'s route; this backs `/places/category/[type]/page/[page]`. */
+export async function getPlacesByTypePage(
+  placeType: string,
+  page: number,
+  pageSize = CATEGORY_PAGE_SIZE,
+): Promise<{ items: Place[]; total: number }> {
+  const offset = (page - 1) * pageSize
+  const all = snapshotPlaces()
+  if (all) {
+    const matches = sortByRating(all.filter((p) => p.placeType === placeType))
+    return { items: matches.slice(offset, offset + pageSize), total: matches.length }
+  }
+
+  return resilient(
+    `getPlacesByTypePage(${placeType}, ${page})`,
+    async () => {
+      const [items, countSnapshot] = await Promise.all([
+        orderedOrSorted(
+          `getPlacesByTypePage(${placeType}, ${page})`,
+          () =>
+            db
+              .collection(COLLECTION)
+              .where('placeType', '==', placeType)
+              .orderBy('rating', 'desc')
+              .offset(offset)
+              .limit(pageSize)
+              .get(),
+          () => db.collection(COLLECTION).where('placeType', '==', placeType).get(),
+          offset,
+          pageSize,
+        ),
+        db.collection(COLLECTION).where('placeType', '==', placeType).count().get(),
+      ])
+      return { items, total: countSnapshot.data().count }
+    },
+    { items: [], total: 0 },
+  )
+}
+
+/** Every place of one type in one city — used by `/cities/[city]/[type]`. Largest combo is ~20, so never paginated. */
+export async function getPlacesByCityAndType(city: string, placeType: string): Promise<Place[]> {
+  const all = snapshotPlaces()
+  if (all) return sortByRating(all.filter((p) => p.city === city && p.placeType === placeType))
+
+  return resilient(
+    `getPlacesByCityAndType(${city}, ${placeType})`,
+    () =>
+      orderedOrSorted(
+        `getPlacesByCityAndType(${city}, ${placeType})`,
+        () =>
+          db
+            .collection(COLLECTION)
+            .where('city', '==', city)
+            .where('placeType', '==', placeType)
+            .orderBy('rating', 'desc')
+            .get(),
+        () =>
+          db
+            .collection(COLLECTION)
+            .where('city', '==', city)
+            .where('placeType', '==', placeType)
+            .get(),
+        0,
+        Number.MAX_SAFE_INTEGER,
       ),
     [],
   )
@@ -231,6 +308,12 @@ export async function getAllCities(): Promise<string[]> {
   })
 
   return citiesPromise
+}
+
+/** Slugs are lossy (`salt-lake-city`), so resolve back through the known set. */
+export async function resolveCity(slug: string): Promise<string | null> {
+  const cities = await getAllCities()
+  return cities.find((c) => citySlug(c) === slug) ?? null
 }
 
 /** URL-safe form of a city name, e.g. "Salt Lake City" -> "salt-lake-city". */

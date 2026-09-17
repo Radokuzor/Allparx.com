@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import PlaceGrid from '@/components/PlaceGrid'
 import JsonLd from '@/components/JsonLd'
-import { citySlug, getAllCities, getPlacesByCity } from '@/lib/firestore'
+import { citySlug, getAllCities, getPlacesByCity, resolveCity } from '@/lib/firestore'
 import { typeLabelPlural } from '@/lib/place-types'
 import { SITE_NAME, absoluteUrl } from '@/lib/site'
 
@@ -15,12 +15,6 @@ export const dynamicParams = true
 export async function generateStaticParams() {
   const cities = await getAllCities()
   return cities.map((city) => ({ city: citySlug(city) }))
-}
-
-/** Slugs are lossy (`salt-lake-city`), so resolve back through the known set. */
-async function resolveCity(slug: string): Promise<string | null> {
-  const cities = await getAllCities()
-  return cities.find((c) => citySlug(c) === slug) ?? null
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -47,7 +41,7 @@ export default async function CityPage({ params }: Props) {
   const city = await resolveCity(slug)
   if (!city) notFound()
 
-  const places = await getPlacesByCity(city, 60)
+  const places = await getPlacesByCity(city)
 
   // Group by category so the page reads as a directory rather than one long grid.
   const byType = new Map<string, typeof places>()
@@ -103,10 +97,10 @@ export default async function CityPage({ params }: Props) {
             <div className="mb-6 flex items-baseline justify-between">
               <h2 className="text-2xl font-bold text-gray-800">{typeLabelPlural(type)}</h2>
               <Link
-                href={`/places/category/${type}`}
+                href={`/cities/${slug}/${type}`}
                 className="text-sm font-medium text-green-700 hover:underline"
               >
-                All {typeLabelPlural(type).toLowerCase()} →
+                {typeLabelPlural(type)} in {city} →
               </Link>
             </div>
             <PlaceGrid places={group} wide />
