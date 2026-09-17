@@ -1,28 +1,34 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Place } from '@/lib/firestore'
-import { categoryImage } from '@/lib/category-image'
+import { photoAtWidth, placePhoto } from '@/lib/photos'
 import { typeLabel } from '@/lib/place-types'
 
 export default function PlaceCard({ place }: { place: Place }) {
-  const image = categoryImage(place.placeType, place.slug)
+  const image = placePhoto(place)
 
   return (
     <Link
       href={`/places/${place.slug}`}
       className="group block overflow-hidden rounded-xl border border-gray-100 transition-all hover:border-green-200 hover:shadow-md"
     >
-      <div className="relative flex h-40 items-end bg-gradient-to-br from-green-700 to-emerald-400 p-4">
+      <div className="relative flex h-40 items-end overflow-hidden bg-gradient-to-br from-green-700 to-emerald-400 p-4">
         {image && (
-          <Image
-            src={image}
-            alt=""
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
+          <>
+            {/* Commons already serves sized renditions, so skip Vercel's optimizer. */}
+            <Image
+              src={photoAtWidth(image.photo.url, 500)}
+              alt={image.illustrative ? '' : place.name}
+              fill
+              unoptimized
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <span className="absolute right-2 top-2 max-w-[75%] truncate rounded bg-black/45 px-1.5 py-0.5 text-[10px] text-white/85">
+              {image.photo.author} · {image.photo.license}
+            </span>
+          </>
         )}
-        {image && <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />}
         <span className="relative text-xs font-semibold uppercase tracking-wide text-white/90">
           {typeLabel(place.placeType)}
         </span>

@@ -1,3 +1,5 @@
+import type { Photo } from './photos'
+
 export type Place = {
   slug: string
   name: string
@@ -20,4 +22,6 @@ export type Place = {
   hasRestroom: boolean | null
   parking: Record<string, boolean> | null
   photoReference: string | null
+  /** Set by `npm run photos:places`; absent until that has run for the place. */
+  photo?: Photo | null
 }

@@ -10,6 +10,8 @@
     "ingest": "tsx scripts/ingest-places.ts",
     "ingest:test": "tsx scripts/ingest-places.ts --cities=5",
     "snapshot": "tsx scripts/snapshot-places.ts",
+    "photos:places": "tsx scripts/fetch-photos.ts places",
+    "photos:categories": "tsx scripts/fetch-photos.ts categories",
     "prebuild": "tsx scripts/snapshot-places.ts"
   },
   "dependencies": {

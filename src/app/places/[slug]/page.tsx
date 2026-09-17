@@ -4,8 +4,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import JsonLd from '@/components/JsonLd'
 import PlaceCard from '@/components/PlaceCard'
-import { categoryImage } from '@/lib/category-image'
 import { googleListingUrl, mapEmbedUrl } from '@/lib/google-maps'
+import { photoAtWidth, placePhoto } from '@/lib/photos'
 import { getAllPlaceSlugs, getNearbyPlaces, getPlace, citySlug } from '@/lib/firestore'
 import { SCHEMA_TYPE, typeLabel, typeLabelPlural } from '@/lib/place-types'
 import { SITE_NAME, absoluteUrl } from '@/lib/site'
@@ -59,7 +59,7 @@ export default async function PlacePage({ params }: Props) {
   const nearby = await getNearbyPlaces(place)
   const where = placeLocation(place)
   const url = absoluteUrl(`/places/${place.slug}`)
-  const hero = categoryImage(place.placeType, place.slug)
+  const hero = placePhoto(place)
   const mapEmbedSrc = mapEmbedUrl(place)
   const listingUrl = googleListingUrl(place)
 
@@ -151,17 +151,30 @@ export default async function PlacePage({ params }: Props) {
           {hero && (
             <>
               <Image
-                src={hero}
-                alt=""
+                src={photoAtWidth(hero.photo.url, 1280)}
+                alt={hero.illustrative ? '' : place.name}
                 fill
                 priority
-                sizes="(max-width: 896px) 100vw, 896px"
+                unoptimized
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
-              <span className="absolute bottom-2 right-3 text-[10px] text-white/50">
-                Illustrative {typeLabel(place.placeType).toLowerCase()} imagery
-              </span>
+              <p className="absolute right-3 top-2 max-w-[85%] truncate text-right text-[11px] text-white/80 [text-shadow:0_1px_2px_rgb(0_0_0/0.6)]">
+                {hero.illustrative ? `Illustrative ${typeLabel(place.placeType).toLowerCase()} photo` : 'Photo'}
+                {': '}
+                <a href={hero.photo.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">
+                  {hero.photo.author}
+                </a>
+                {' · '}
+                {hero.photo.licenseUrl ? (
+                  <a href={hero.photo.licenseUrl} target="_blank" rel="noopener noreferrer license" className="underline">
+                    {hero.photo.license}
+                  </a>
+                ) : (
+                  hero.photo.license
+                )}
+                {' · Wikimedia Commons'}
+              </p>
             </>
           )}
           <div className="relative">

@@ -1,0 +1,968 @@
+{
+  "park": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Portland%2C_Oregon_%28May_28%2C_2018%29_-_043.jpg/1280px-Portland%2C_Oregon_%28May_28%2C_2018%29_-_043.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "Portland, Oregon (May 28, 2018) - 043",
+      "author": "Another Believer",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Portland,_Oregon_(May_28,_2018)_-_043.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Clark_Park_boat_launch%2C_Chicago%2C_2022.jpg/1280px-Clark_Park_boat_launch%2C_Chicago%2C_2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Clark Park boat launch, Chicago, 2022",
+      "author": "David Wilson from Oak Park, Illinois, USA",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Clark_Park_boat_launch,_Chicago,_2022.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Buckman_Field_Portland.jpg/1280px-Buckman_Field_Portland.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 850,
+      "title": "Buckman Field Portland",
+      "author": "Finetooth",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Buckman_Field_Portland.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Churchill_Field_Park_-_Chicago%2C_IL_-_April_2023.jpg/1280px-Churchill_Field_Park_-_Chicago%2C_IL_-_April_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Churchill Field Park - Chicago, IL - April 2023",
+      "author": "AlphaBeta135",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Churchill_Field_Park_-_Chicago,_IL_-_April_2023.jpg"
+    }
+  ],
+  "dog_park": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Gazebo_at_Goldie_Gibbons_Dog_Park%2C_Bedington_WV.jpg/1280px-Gazebo_at_Goldie_Gibbons_Dog_Park%2C_Bedington_WV.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Gazebo at Goldie Gibbons Dog Park, Bedington WV",
+      "author": "John Phelan",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gazebo_at_Goldie_Gibbons_Dog_Park,_Bedington_WV.jpg"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a3/EPSawWalkT2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "width": 1280,
+      "height": 960,
+      "title": "EPSawWalkT2",
+      "author": "Censusdata ( talk )",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:EPSawWalkT2.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Nate%27s_Point_Dog_Park.jpg/1280px-Nate%27s_Point_Dog_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "Nate's Point Dog Park",
+      "author": "RightCowLeftCoast",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nate%27s_Point_Dog_Park.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Cornell_Creek_Park_dog_park_-_Hillsboro%2C_Oregon.JPG/1280px-Cornell_Creek_Park_dog_park_-_Hillsboro%2C_Oregon.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 857,
+      "title": "Cornell Creek Park dog park - Hillsboro, Oregon",
+      "author": "M.O. Stevens",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cornell_Creek_Park_dog_park_-_Hillsboro,_Oregon.JPG"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/Off_leash_dog_park%2C_Perry.jpg/1280px-Off_leash_dog_park%2C_Perry.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Off leash dog park, Perry",
+      "author": "Michael Rivera",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Off_leash_dog_park,_Perry.jpg"
+    }
+  ],
+  "campground": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Red_Cliff_Bible_Camp.jpeg/1280px-Red_Cliff_Bible_Camp.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 964,
+      "title": "Red Cliff Bible Camp",
+      "author": "User:Bendodge",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_Cliff_Bible_Camp.jpeg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/15/Kahneeta_Resort.jpg/1280px-Kahneeta_Resort.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 802,
+      "title": "Kahneeta Resort",
+      "author": "Simmonspdx",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kahneeta_Resort.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Blind_Island_Campsite_2_%2821417810625%29.jpg/1280px-Blind_Island_Campsite_2_%2821417810625%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Blind Island Campsite 2 (21417810625)",
+      "author": "Bureau of Land Management Oregon and Washington",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blind_Island_Campsite_2_(21417810625).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Harrisville_state_park_camping_01.jpg/1280px-Harrisville_state_park_camping_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Harrisville state park camping 01",
+      "author": "MoodyGroove at en.wikipedia",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Harrisville_state_park_camping_01.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Patos_camping_%2821229958858%29.jpg/1280px-Patos_camping_%2821229958858%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Patos camping (21229958858)",
+      "author": "Bureau of Land Management Oregon and Washington",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Patos_camping_(21229958858).jpg"
+    }
+  ],
+  "hiking_area": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Loyalsock_State_Forest.jpg/1280px-Loyalsock_State_Forest.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 987,
+      "title": "Loyalsock State Forest",
+      "author": "Nicholas from Pennsylvania, USA",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Loyalsock_State_Forest.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Bridge_to_Whitehouse%2C_Wells_-_4.jpg/1280px-Bridge_to_Whitehouse%2C_Wells_-_4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Bridge to Whitehouse, Wells - 4",
+      "author": "Jess Mann",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bridge_to_Whitehouse,_Wells_-_4.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Ontario_Peak.jpg/1280px-Ontario_Peak.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Ontario Peak",
+      "author": "Mitch Barrie from Costa Mesa, CA, USA",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ontario_Peak.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Pinnacle_Mountain_in_LR.jpg/1280px-Pinnacle_Mountain_in_LR.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Pinnacle Mountain in LR",
+      "author": "Mah575992",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pinnacle_Mountain_in_LR.jpg"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/24/Fall-hiking-trail_ForestWander.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "width": 1280,
+      "height": 960,
+      "title": "Fall-hiking-trail ForestWander",
+      "author": "ForestWander",
+      "license": "CC BY-SA 3.0 us",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/us/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fall-hiking-trail_ForestWander.JPG"
+    }
+  ],
+  "beach": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Canaveral_National_Seashore.jpg/1280px-Canaveral_National_Seashore.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 805,
+      "title": "Canaveral National Seashore",
+      "author": "TripOfALifestyle.com",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Canaveral_National_Seashore.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/StuartHutchinsonIsland-stormoats02Q.jpg/1280px-StuartHutchinsonIsland-stormoats02Q.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "StuartHutchinsonIsland-stormoats02Q",
+      "author": "Daniel Di Palma",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:StuartHutchinsonIsland-stormoats02Q.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Beach_Chair_in_Boca_Chita._-_panoramio.jpg/1280px-Beach_Chair_in_Boca_Chita._-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Beach Chair in Boca Chita. - panoramio",
+      "author": "Rodolfo L. Hernandez",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Beach_Chair_in_Boca_Chita._-_panoramio.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/2018_Fort_De_Soto_-_South_Beach.jpg/1280px-2018_Fort_De_Soto_-_South_Beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 788,
+      "title": "2018 Fort De Soto - South Beach",
+      "author": "Beyond My Ken",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2018_Fort_De_Soto_-_South_Beach.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c0/Ladder_38_%40_Dog_Beach_in_Jupiter%2C_Florida.jpg/1280px-Ladder_38_%40_Dog_Beach_in_Jupiter%2C_Florida.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "Ladder 38 @ Dog Beach in Jupiter, Florida",
+      "author": "Abacoaseo",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ladder_38_@_Dog_Beach_in_Jupiter,_Florida.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Anclote_river_park01.jpg/1280px-Anclote_river_park01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Anclote river park01",
+      "author": "No machine-readable author provided. Philipp Michel Reichold assumed (based on c",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Anclote_river_park01.jpg"
+    }
+  ],
+  "rv_park": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Wolf_Creek_NFH_RV_site_1_December_2021.png/1280px-Wolf_Creek_NFH_RV_site_1_December_2021.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 854,
+      "title": "Wolf Creek NFH RV site 1 December 2021",
+      "author": "Uncredited; U.S. Fish and Wildlife Service source page states \"Media Usage Right",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wolf_Creek_NFH_RV_site_1_December_2021.png"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d0/RV_Camper_at_North_Toledo_Bend_State_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "width": 1280,
+      "height": 846,
+      "title": "RV Camper at North Toledo Bend State Park",
+      "author": "Alex Demyan courtesy of Louisiana State Parks",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:RV_Camper_at_North_Toledo_Bend_State_Park.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/RV_park_Near_Pismo_Beach_2006_%2810376518506%29.jpg/1280px-RV_park_Near_Pismo_Beach_2006_%2810376518506%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "RV park Near Pismo Beach 2006 (10376518506)",
+      "author": "Robert Ashworth from Bellingham, WA., USA",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:RV_park_Near_Pismo_Beach_2006_(10376518506).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Hudson_Commodore_at_the_Enchanted_Trails_Trading_Post%2C_Albuquerque_NM.jpg/1280px-Hudson_Commodore_at_the_Enchanted_Trails_Trading_Post%2C_Albuquerque_NM.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Hudson Commodore at the Enchanted Trails Trading Post, Albuquerque NM",
+      "author": "John Phelan",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hudson_Commodore_at_the_Enchanted_Trails_Trading_Post,_Albuquerque_NM.jpg"
+    }
+  ],
+  "national_park": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Crepuscular_rays_over_the_steam_from_hot_spring.jpg/1280px-Crepuscular_rays_over_the_steam_from_hot_spring.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Crepuscular rays over the steam from hot spring",
+      "author": "Brocken Inaglory",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Crepuscular_rays_over_the_steam_from_hot_spring.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fc/SiteofYanceysPleasantValleyHotel1965.jpg/1280px-SiteofYanceysPleasantValleyHotel1965.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 851,
+      "title": "SiteofYanceysPleasantValleyHotel1965",
+      "author": "Replogle",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:SiteofYanceysPleasantValleyHotel1965.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/View_from_Artist_Point%2C_Yellowstone_NP.jpg/1280px-View_from_Artist_Point%2C_Yellowstone_NP.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 851,
+      "title": "View from Artist Point, Yellowstone NP",
+      "author": "Supercarwaar",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:View_from_Artist_Point,_Yellowstone_NP.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Yellowstone_-_panoramio.jpg/1280px-Yellowstone_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Yellowstone - panoramio",
+      "author": "NaturesFan1226",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Yellowstone_-_panoramio.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fc/Smoky_sunrise_over_Black_Canyon_of_the_Yellowstone.jpg/1280px-Smoky_sunrise_over_Black_Canyon_of_the_Yellowstone.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Smoky sunrise over Black Canyon of the Yellowstone",
+      "author": "Yellowstone National Park",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Smoky_sunrise_over_Black_Canyon_of_the_Yellowstone.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/65/Hot_Spring_along_the_Grand_Prismatic_Overlook_Trail.jpg/1280px-Hot_Spring_along_the_Grand_Prismatic_Overlook_Trail.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 854,
+      "title": "Hot Spring along the Grand Prismatic Overlook Trail",
+      "author": "Yellowstone National Park",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hot_Spring_along_the_Grand_Prismatic_Overlook_Trail.jpg"
+    }
+  ],
+  "state_park": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Starved_Rock_Limestone_and_Erosion.jpg/1280px-Starved_Rock_Limestone_and_Erosion.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 970,
+      "title": "Starved Rock Limestone and Erosion",
+      "author": "B3thedw",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Starved_Rock_Limestone_and_Erosion.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Gfp-illinois-starved-rock-state-park-shoreline-landscape.jpg/1280px-Gfp-illinois-starved-rock-state-park-shoreline-landscape.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 854,
+      "title": "Gfp-illinois-starved-rock-state-park-shoreline-landscape",
+      "author": "Yinan Chen",
+      "license": "Public Domain",
+      "licenseUrl": "https://web.archive.org/web/20230926203737/https://creativecommons.org/licenses/publicdomain/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gfp-illinois-starved-rock-state-park-shoreline-landscape.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/Trail_Vista_by_the_Rock%2C_Starved_Rock_State_Park.jpg/1280px-Trail_Vista_by_the_Rock%2C_Starved_Rock_State_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Trail Vista by the Rock, Starved Rock State Park",
+      "author": "B3thedw",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Trail_Vista_by_the_Rock,_Starved_Rock_State_Park.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Autumn_Beauty_at_the_Aurora_Canyon%2C_Starved_Rock_State_Park.jpg/1280px-Autumn_Beauty_at_the_Aurora_Canyon%2C_Starved_Rock_State_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Autumn Beauty at the Aurora Canyon, Starved Rock State Park",
+      "author": "B3thedw",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Autumn_Beauty_at_the_Aurora_Canyon,_Starved_Rock_State_Park.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Gfp-illinois-starved-rock-state-park-canyon-view.jpg/1280px-Gfp-illinois-starved-rock-state-park-canyon-view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 693,
+      "title": "Gfp-illinois-starved-rock-state-park-canyon-view",
+      "author": "Yinan Chen",
+      "license": "Public Domain",
+      "licenseUrl": "https://web.archive.org/web/20230926203737/https://creativecommons.org/licenses/publicdomain/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gfp-illinois-starved-rock-state-park-canyon-view.jpg"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/10/StarvedRockStatePark_LonePoint.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "width": 1280,
+      "height": 850,
+      "title": "StarvedRockStatePark LonePoint",
+      "author": "User:Magicpiano",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:StarvedRockStatePark_LonePoint.jpg"
+    }
+  ],
+  "wildlife_refuge": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Slate_Run-Wetlands_in_Fall_3.jpg/1280px-Slate_Run-Wetlands_in_Fall_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 850,
+      "title": "Slate Run-Wetlands in Fall 3",
+      "author": "Sixflashphoto",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Slate_Run-Wetlands_in_Fall_3.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Slate_Run-Wetlands_in_Fall_4.jpg/1280px-Slate_Run-Wetlands_in_Fall_4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 850,
+      "title": "Slate Run-Wetlands in Fall 4",
+      "author": "Sixflashphoto",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Slate_Run-Wetlands_in_Fall_4.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/Slate_Run-Wetlands_in_Fall_2.jpg/1280px-Slate_Run-Wetlands_in_Fall_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 817,
+      "title": "Slate Run-Wetlands in Fall 2",
+      "author": "Sixflashphoto",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Slate_Run-Wetlands_in_Fall_2.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Scioto_Grove_-_Wetlands_at_Entrance_1.jpg/1280px-Scioto_Grove_-_Wetlands_at_Entrance_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 825,
+      "title": "Scioto Grove - Wetlands at Entrance 1",
+      "author": "Sixflashphoto",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Scioto_Grove_-_Wetlands_at_Entrance_1.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Scioto_Grove_-_Wetlands_at_Entrance_2.jpg/1280px-Scioto_Grove_-_Wetlands_at_Entrance_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 854,
+      "title": "Scioto Grove - Wetlands at Entrance 2",
+      "author": "Sixflashphoto",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Scioto_Grove_-_Wetlands_at_Entrance_2.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/Unspoiled_marsh_land.jpg/1280px-Unspoiled_marsh_land.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Unspoiled marsh land",
+      "author": "Hillebrand Steve, U.S. Fish and Wildlife Service",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Unspoiled_marsh_land.jpg"
+    }
+  ],
+  "sports_complex": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Crittenden_School_Park.jpg/1280px-Crittenden_School_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Crittenden School Park",
+      "author": "Baltakatei",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Crittenden_School_Park.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/GrimesIASportsComplex.jpg/1280px-GrimesIASportsComplex.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "GrimesIASportsComplex",
+      "author": "PopePompus",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:GrimesIASportsComplex.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Auburn_Softball_Complex.jpg/1280px-Auburn_Softball_Complex.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Auburn Softball Complex",
+      "author": "Lissoy ( talk ) at en.wikipedia",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Auburn_Softball_Complex.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Evergreen_Sportsplex_Aerial_View.jpg/1280px-Evergreen_Sportsplex_Aerial_View.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Evergreen Sportsplex Aerial View",
+      "author": "Evergreen Sportsplex",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Evergreen_Sportsplex_Aerial_View.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Sportsplex_at_Matthews_Stadium_8.jpg/1280px-Sportsplex_at_Matthews_Stadium_8.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Sportsplex at Matthews Stadium 8",
+      "author": "Bobby Brandon",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sportsplex_at_Matthews_Stadium_8.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/NorwalkIowaSportsComplex.jpg/1280px-NorwalkIowaSportsComplex.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "NorwalkIowaSportsComplex",
+      "author": "PopePompus",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:NorwalkIowaSportsComplex.jpg"
+    }
+  ],
+  "community_center": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/15/Mineola_Memorial_Pk_td_%282019-06-08%29_067_-_Tennis_Courts.jpg/1280px-Mineola_Memorial_Pk_td_%282019-06-08%29_067_-_Tennis_Courts.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Mineola Memorial Pk td (2019-06-08) 067 - Tennis Courts",
+      "author": "Tdorante10",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mineola_Memorial_Pk_td_(2019-06-08)_067_-_Tennis_Courts.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/Mineola_Memorial_Pk_td_%282019-06-08%29_073_-_Tennis_Courts.jpg/1280px-Mineola_Memorial_Pk_td_%282019-06-08%29_073_-_Tennis_Courts.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Mineola Memorial Pk td (2019-06-08) 073 - Tennis Courts",
+      "author": "Tdorante10",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mineola_Memorial_Pk_td_(2019-06-08)_073_-_Tennis_Courts.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Basketball_courts_in_Central_Park%2C_Atlanta.jpg/1280px-Basketball_courts_in_Central_Park%2C_Atlanta.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Basketball courts in Central Park, Atlanta",
+      "author": "Mx. Granger",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Basketball_courts_in_Central_Park,_Atlanta.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Simmons_Park_in_Norristown%2C_Pennsylvania.jpg/1280px-Simmons_Park_in_Norristown%2C_Pennsylvania.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 851,
+      "title": "Simmons Park in Norristown, Pennsylvania",
+      "author": "Montgomery County Planning Commission",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Simmons_Park_in_Norristown,_Pennsylvania.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fd/Blackshear_City_Park_tennis_court%2C_playground.jpg/1280px-Blackshear_City_Park_tennis_court%2C_playground.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Blackshear City Park tennis court, playground",
+      "author": "Michael Rivera",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blackshear_City_Park_tennis_court,_playground.jpg"
+    }
+  ],
+  "picnic_ground": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Picnic_site_S%C3%B6rn%C3%A4s.jpg/1280px-Picnic_site_S%C3%B6rn%C3%A4s.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 964,
+      "title": "Picnic site Sörnäs",
+      "author": "Beri hh",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Picnic_site_S%C3%B6rn%C3%A4s.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Overview_of_pond_and_camp_site_in_Jino%C5%A1ov_park_in_Jino%C5%A1ov%2C_T%C5%99eb%C3%AD%C4%8D_District.jpg/1280px-Overview_of_pond_and_camp_site_in_Jino%C5%A1ov_park_in_Jino%C5%A1ov%2C_T%C5%99eb%C3%AD%C4%8D_District.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Overview of pond and camp site in Jinošov park in Jinošov, Třebíč District",
+      "author": "Jiří Sedláček",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Overview_of_pond_and_camp_site_in_Jino%C5%A1ov_park_in_Jino%C5%A1ov,_T%C5%99eb%C3%AD%C4%8D_District.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/aa/%D0%9C%D1%96%D1%81%D1%86%D0%B5_%D0%B4%D0%BB%D1%8F_%D0%B2%D1%96%D0%B4%D0%BF%D0%BE%D1%87%D0%B8%D0%BD%D0%BA%D1%83_%D0%BD%D0%B0_%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B2%D1%96_%28%D1%80.%D0%A2%D1%83%D1%80%D1%83%D0%BD%D1%87%D1%83%D0%BA%29.jpg/1280px-%D0%9C%D1%96%D1%81%D1%86%D0%B5_%D0%B4%D0%BB%D1%8F_%D0%B2%D1%96%D0%B4%D0%BF%D0%BE%D1%87%D0%B8%D0%BD%D0%BA%D1%83_%D0%BD%D0%B0_%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B2%D1%96_%28%D1%80.%D0%A2%D1%83%D1%80%D1%83%D0%BD%D1%87%D1%83%D0%BA%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Місце для відпочинку на острові (р.Турунчук)",
+      "author": "Mihail Nabokin",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9C%D1%96%D1%81%D1%86%D0%B5_%D0%B4%D0%BB%D1%8F_%D0%B2%D1%96%D0%B4%D0%BF%D0%BE%D1%87%D0%B8%D0%BD%D0%BA%D1%83_%D0%BD%D0%B0_%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B2%D1%96_(%D1%80.%D0%A2%D1%83%D1%80%D1%83%D0%BD%D1%87%D1%83%D0%BA).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Valday-Abri_au_parc_national.jpg/1280px-Valday-Abri_au_parc_national.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Valday-Abri au parc national",
+      "author": "Ji-Elle",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Valday-Abri_au_parc_national.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Picnic_shelter_Bran%C3%A4s.jpg/1280px-Picnic_shelter_Bran%C3%A4s.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 964,
+      "title": "Picnic shelter Branäs",
+      "author": "Beri hh",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Picnic_shelter_Bran%C3%A4s.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0d/%D0%9D%D0%B8%D0%B6%D0%BD%D1%8C%D0%BE%D0%B4%D0%BD%D1%96%D1%81%D1%82%D1%80%D0%BE%D0%B2%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%9D%D0%9F%D0%9F42.JPG/1280px-%D0%9D%D0%B8%D0%B6%D0%BD%D1%8C%D0%BE%D0%B4%D0%BD%D1%96%D1%81%D1%82%D1%80%D0%BE%D0%B2%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%9D%D0%9F%D0%9F42.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Нижньодністровський НПП42",
+      "author": "Elena Dyatlova~ukwiki",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9D%D0%B8%D0%B6%D0%BD%D1%8C%D0%BE%D0%B4%D0%BD%D1%96%D1%81%D1%82%D1%80%D0%BE%D0%B2%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%9D%D0%9F%D0%9F42.JPG"
+    }
+  ],
+  "fishing_pond": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Lakeshore_State_Park_March_2024_12_%28lagoon_and_fishing_pier%29.jpg/1280px-Lakeshore_State_Park_March_2024_12_%28lagoon_and_fishing_pier%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Lakeshore State Park March 2024 12 (lagoon and fishing pier)",
+      "author": "Michael Barera",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lakeshore_State_Park_March_2024_12_(lagoon_and_fishing_pier).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Pond_on_Poland_Road_%28Forest_Road_700G%29_-_Vedauwoo_-_Wyoming.jpg/1280px-Pond_on_Poland_Road_%28Forest_Road_700G%29_-_Vedauwoo_-_Wyoming.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Pond on Poland Road (Forest Road 700G) - Vedauwoo - Wyoming",
+      "author": "Tony Webster",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pond_on_Poland_Road_(Forest_Road_700G)_-_Vedauwoo_-_Wyoming.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Pier_South_Shore_Lake_Bastrop_Texas_2026.jpg/1280px-Pier_South_Shore_Lake_Bastrop_Texas_2026.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "Pier South Shore Lake Bastrop Texas 2026",
+      "author": "Larry D. Moore",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pier_South_Shore_Lake_Bastrop_Texas_2026.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/Wetlands_%281975841750%29.jpg/1280px-Wetlands_%281975841750%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 746,
+      "title": "Wetlands (1975841750)",
+      "author": "Payton Chung from DCA, USA",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wetlands_(1975841750).jpg"
+    }
+  ],
+  "garden": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Sunken_Gardens_%28from_near_the_SE_entrance%29%2C_Lincoln%2C_Nebraska%2C_USA.jpg/1280px-Sunken_Gardens_%28from_near_the_SE_entrance%29%2C_Lincoln%2C_Nebraska%2C_USA.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Sunken Gardens (from near the SE entrance), Lincoln, Nebraska, USA",
+      "author": "Hanyou23",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sunken_Gardens_(from_near_the_SE_entrance),_Lincoln,_Nebraska,_USA.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/Myriad_Botanical_Gardens.jpg/1280px-Myriad_Botanical_Gardens.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 986,
+      "title": "Myriad Botanical Gardens",
+      "author": "Caleb Long",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Myriad_Botanical_Gardens.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Sunken_Gardens_pavilion%2C_Lincoln%2C_Nebraska%2C_USA.jpg/1280px-Sunken_Gardens_pavilion%2C_Lincoln%2C_Nebraska%2C_USA.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Sunken Gardens pavilion, Lincoln, Nebraska, USA",
+      "author": "Hanyou23",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sunken_Gardens_pavilion,_Lincoln,_Nebraska,_USA.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/Sunken_Gardens_%28inside_1%29%2C_Lincoln%2C_Nebraska%2C_USA.jpg/1280px-Sunken_Gardens_%28inside_1%29%2C_Lincoln%2C_Nebraska%2C_USA.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Sunken Gardens (inside 1), Lincoln, Nebraska, USA",
+      "author": "Hanyou23",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sunken_Gardens_(inside_1),_Lincoln,_Nebraska,_USA.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/Sunken_Gardens_%28from_near_the_SE_entrance_2%29%2C_Lincoln%2C_Nebraska%2C_USA.jpg/1280px-Sunken_Gardens_%28from_near_the_SE_entrance_2%29%2C_Lincoln%2C_Nebraska%2C_USA.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Sunken Gardens (from near the SE entrance 2), Lincoln, Nebraska, USA",
+      "author": "Hanyou23",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sunken_Gardens_(from_near_the_SE_entrance_2),_Lincoln,_Nebraska,_USA.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Sunken_Gardens_%28inside_2%29%2C_Lincoln%2C_Nebraska%2C_USA.jpg/1280px-Sunken_Gardens_%28inside_2%29%2C_Lincoln%2C_Nebraska%2C_USA.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Sunken Gardens (inside 2), Lincoln, Nebraska, USA",
+      "author": "Hanyou23",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sunken_Gardens_(inside_2),_Lincoln,_Nebraska,_USA.jpg"
+    }
+  ],
+  "marina": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Boston284.jpg/1280px-Boston284.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 649,
+      "title": "Boston284",
+      "author": "Diego Delso",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Boston284.jpg"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Echo_Bay_Marina_%288343196314%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "width": 1280,
+      "height": 851,
+      "title": "Echo Bay Marina (8343196314)",
+      "author": "Lake Mead NRA Public Affairs",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Echo_Bay_Marina_(8343196314).jpg"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Finished_Middle_Bass_Island_Marina%2C_Ohio_DNR_%285530356492%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "width": 1280,
+      "height": 960,
+      "title": "Finished Middle Bass Island Marina, Ohio DNR (5530356492)",
+      "author": "USFWSmidwest",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Finished_Middle_Bass_Island_Marina,_Ohio_DNR_(5530356492).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Burlington%2C_Vermont_Waterfront_%2830308921845%29.jpg/1280px-Burlington%2C_Vermont_Waterfront_%2830308921845%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 883,
+      "title": "Burlington, Vermont Waterfront (30308921845)",
+      "author": "Tony Webster from Minneapolis, Minnesota",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Burlington,_Vermont_Waterfront_(30308921845).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Navajo_Lake_Marina_New_Mexico_2023.jpg/1280px-Navajo_Lake_Marina_New_Mexico_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "Navajo Lake Marina New Mexico 2023",
+      "author": "Larry D. Moore",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Navajo_Lake_Marina_New_Mexico_2023.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/RS012.jpg/1280px-RS012.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "RS012",
+      "author": "RussellStone",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:RS012.jpg"
+    }
+  ],
+  "playground": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/Buried_Goodyear_Tire_%284705282510%29.jpg/1280px-Buried_Goodyear_Tire_%284705282510%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 857,
+      "title": "Buried Goodyear Tire (4705282510)",
+      "author": "katesheets from United States",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Buried_Goodyear_Tire_(4705282510).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Rings_%282550107012%29.jpg/1280px-Rings_%282550107012%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Rings (2550107012)",
+      "author": "Marcus Quigmire from Florida, USA",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rings_(2550107012).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/141114-A-SM817-193_%2815813985612%29.jpg/1280px-141114-A-SM817-193_%2815813985612%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 650,
+      "title": "141114-A-SM817-193 (15813985612)",
+      "author": "U.S. Army Corps of Engineers Savannah District",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:141114-A-SM817-193_(15813985612).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/Hiwasse_Park_playground.jpg/1280px-Hiwasse_Park_playground.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 752,
+      "title": "Hiwasse Park playground",
+      "author": "GravetteAR",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hiwasse_Park_playground.jpg"
+    }
+  ],
+  "swimming_pool": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/67/Comfort_Inn_swimming_pool%2C_downtown_Charleston.jpg/1280px-Comfort_Inn_swimming_pool%2C_downtown_Charleston.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Comfort Inn swimming pool, downtown Charleston",
+      "author": "Michael Rivera",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Comfort_Inn_swimming_pool,_downtown_Charleston.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Swimming_pool_at_McNears_Beach_Park.jpg/1280px-Swimming_pool_at_McNears_Beach_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Swimming pool at McNears Beach Park",
+      "author": "Mx. Granger",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Swimming_pool_at_McNears_Beach_Park.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Pool_and_main_house_of_Virginia_Robinson_Estate.JPG/1280px-Pool_and_main_house_of_Virginia_Robinson_Estate.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Pool and main house of Virginia Robinson Estate",
+      "author": "Zigzig20s",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pool_and_main_house_of_Virginia_Robinson_Estate.JPG"
+    }
+  ],
+  "skateboard_park": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/Maloof_Skatepark_1.jpg/1280px-Maloof_Skatepark_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 722,
+      "title": "Maloof Skatepark 1",
+      "author": "Hiersgarr",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Maloof_Skatepark_1.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Railroad_Square_and_skate_park.jpg/1280px-Railroad_Square_and_skate_park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Railroad Square and skate park",
+      "author": "The Bushranger",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Railroad_Square_and_skate_park.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/20070329_Burnham_Park_Skatepark.JPG/1280px-20070329_Burnham_Park_Skatepark.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "20070329 Burnham Park Skatepark",
+      "author": "User:TonyTheTiger",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:20070329_Burnham_Park_Skatepark.JPG"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/Athens_Skate_Part_Athens_OH_USA.JPG/1280px-Athens_Skate_Part_Athens_OH_USA.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Athens Skate Part Athens OH USA",
+      "author": "Ed! (talk) (Hall of Fame) (Transferred by Cloudbound /Originally uploaded by Ed!",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Athens_Skate_Part_Athens_OH_USA.JPG"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Skatepark.jpg/1280px-Skatepark.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 873,
+      "title": "Skatepark",
+      "author": "Landscape Structures Inc.",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Skatepark.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/North_Lowndes_Park5.jpg/1280px-North_Lowndes_Park5.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "North Lowndes Park5",
+      "author": "Michael Rivera",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:North_Lowndes_Park5.jpg"
+    }
+  ]
+}
