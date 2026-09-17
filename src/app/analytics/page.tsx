@@ -1,0 +1,314 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { isAnalyticsAuthed } from '@/lib/analytics-auth'
+import { loadReport, MAX_VISITS, RANGES, type Bucket, type RangeKey, type Row } from '@/lib/analytics-report'
+import { cn } from '@/lib/utils'
+import { login, logout } from './actions'
+
+export const metadata: Metadata = {
+  title: 'Analytics',
+  robots: { index: false, follow: false },
+}
+
+type SearchParams = Promise<{ range?: string; bots?: string; error?: string }>
+
+const number = new Intl.NumberFormat('en-US')
+const percent = new Intl.NumberFormat('en-US', { style: 'percent', maximumFractionDigits: 1 })
+
+function duration(seconds: number): string {
+  const s = Math.round(seconds)
+  if (s < 60) return `${s}s`
+  const m = Math.floor(s / 60)
+  return m < 60 ? `${m}m ${s % 60}s` : `${Math.floor(m / 60)}h ${m % 60}m`
+}
+
+function timestamp(date: Date): string {
+  return date.toISOString().replace('T', ' ').slice(0, 19)
+}
+
+export default async function AnalyticsPage({ searchParams }: { searchParams: SearchParams }) {
+  const params = await searchParams
+
+  if (!(await isAnalyticsAuthed())) {
+    return (
+      <div className="mx-auto max-w-sm px-6 py-24">
+        <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+        <p className="mt-2 text-sm text-gray-500">Enter the password to view site analytics.</p>
+        <form action={login} className="mt-6 space-y-3">
+          <input
+            type="password"
+            name="password"
+            autoFocus
+            required
+            placeholder="Password"
+            className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-green-700 focus:ring-2 focus:ring-green-700/20"
+          />
+          {params.error && <p className="text-sm text-red-600">Wrong password.</p>}
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800"
+          >
+            View analytics
+          </button>
+        </form>
+      </div>
+    )
+  }
+
+  const range: RangeKey = params.range && params.range in RANGES ? (params.range as RangeKey) : '7'
+  const includeBots = params.bots === '1'
+  const report = await loadReport(range, includeBots)
+  const { totals } = report
+  const href = (next: { range?: string; bots?: boolean }) =>
+    `/analytics?range=${next.range ?? range}${(next.bots ?? includeBots) ? '&bots=1' : ''}`
+
+  return (
+    <div className="mx-auto max-w-7xl px-6 py-10">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Analytics</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            {RANGES[range]} · all times UTC
+            {report.allTimeCount !== null && <> · {number.format(report.allTimeCount)} page views all-time</>}
+          </p>
+        </div>
+        <form action={logout}>
+          <button className="text-sm text-gray-500 hover:text-gray-900">Log out</button>
+        </form>
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-center gap-2">
+        {(Object.keys(RANGES) as RangeKey[]).map((key) => (
+          <Link
+            key={key}
+            href={href({ range: key })}
+            className={cn(
+              'rounded-full border px-3.5 py-1.5 text-sm font-medium',
+              key === range
+                ? 'border-green-700 bg-green-700 text-white'
+                : 'border-gray-200 text-gray-600 hover:border-gray-300',
+            )}
+          >
+            {RANGES[key]}
+          </Link>
+        ))}
+        <Link
+          href={href({ bots: !includeBots })}
+          className="ml-auto rounded-full border border-gray-200 px-3.5 py-1.5 text-sm text-gray-600 hover:border-gray-300"
+        >
+          {includeBots ? 'Hide bots' : 'Include bots'} ({number.format(totals.bots)})
+        </Link>
+      </div>
+
+      {report.capped && (
+        <p className="mt-4 rounded-lg bg-amber-50 px-4 py-2.5 text-sm text-amber-800">
+          Showing the most recent {number.format(MAX_VISITS)} page views only — pick a shorter range for complete numbers.
+        </p>
+      )}
+
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <Stat label="Page views" value={number.format(totals.views)} />
+        <Stat label="Unique visitors" value={number.format(totals.visitors)} />
+        <Stat label="New visitors" value={number.format(totals.newVisitors)} />
+        <Stat label="Sessions" value={number.format(totals.sessions)} />
+        <Stat label="Views in last hour" value={number.format(totals.lastHour)} />
+        <Stat label="Pages / session" value={totals.pagesPerSession.toFixed(2)} />
+        <Stat label="Bounce rate" value={percent.format(totals.bounceRate)} />
+        <Stat label="Avg. session (multi-page)" value={duration(totals.avgSessionSeconds)} />
+        <Stat
+          label="Returning visitors"
+          value={number.format(Math.max(0, totals.visitors - totals.newVisitors))}
+        />
+        <Stat label="Bot hits" value={number.format(totals.bots)} />
+      </div>
+
+      <Panel title={range === '1' ? 'Page views by hour' : 'Page views by day'} className="mt-6">
+        <BarChart buckets={report.series} />
+      </Panel>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <Panel title="Hour of day (UTC)">
+          <BarChart buckets={report.hours} compact />
+        </Panel>
+        <Panel title="Day of week (UTC)">
+          <BarChart buckets={report.weekdays} compact />
+        </Panel>
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <RankPanel title="Top pages" rows={report.pages} link />
+        <RankPanel title="Traffic sources (per session)" rows={report.referrers} />
+        <RankPanel title="Entry pages" rows={report.entryPages} link />
+        <RankPanel title="Exit pages" rows={report.exitPages} link />
+        <RankPanel title="Site searches" rows={report.searches} />
+        <RankPanel title="Campaigns (UTM)" rows={report.campaigns} />
+        <RankPanel title="Countries" rows={report.countries} />
+        <RankPanel title="States / regions" rows={report.regions} />
+        <RankPanel title="Cities" rows={report.cities} />
+        <RankPanel title="Devices" rows={report.devices} />
+        <RankPanel title="Browsers" rows={report.browsers} />
+        <RankPanel title="Operating systems" rows={report.os} />
+        <RankPanel title="Languages" rows={report.languages} />
+        <RankPanel title="Vercel edge regions" rows={report.edgeRegions} />
+      </div>
+
+      <Panel title="Most active visitors" className="mt-6">
+        <Table
+          head={['Visitor', 'Views', 'Sessions', 'Last seen', 'Location', 'IP', 'Device']}
+          rows={report.topVisitors.map((v) => [
+            <span key="id" className="font-mono text-xs">{v.id.slice(0, 8)}</span>,
+            number.format(v.views),
+            number.format(v.sessions),
+            timestamp(v.lastSeen),
+            v.location,
+            v.ip ?? '—',
+            v.device,
+          ])}
+        />
+      </Panel>
+
+      {report.botAgents.length > 0 && (
+        <Panel title="Bot user agents" className="mt-6">
+          <Table
+            head={['User agent', 'Hits']}
+            rows={report.botAgents.map((row) => [
+              <span key="ua" className="break-all">{row.label}</span>,
+              number.format(row.count),
+            ])}
+          />
+        </Panel>
+      )}
+
+      <Panel title={`Recent page views (${report.recent.length})`} className="mt-6">
+        <Table
+          head={['Time', 'Page', 'Referrer', 'Location', 'Device', 'Visitor', 'IP', 'Language', 'User agent']}
+          rows={report.recent.map((v) => [
+            timestamp(v.ts),
+            <a key="p" href={`${v.path}${v.query ?? ''}`} className="text-green-700 hover:underline">
+              {v.path}
+              {v.query ?? ''}
+            </a>,
+            v.referrer ? <span key="r" className="break-all">{v.referrer}</span> : '—',
+            [v.flag, v.city, v.countryRegion, v.country].filter(Boolean).join(' ') || '—',
+            `${v.device} · ${v.browser} · ${v.os}${v.bot ? ' · bot' : ''}`,
+            <span key="v" className="font-mono text-xs">
+              {v.visitorId?.slice(0, 8) ?? '—'}
+              {v.newVisitor ? ' (new)' : ''}
+            </span>,
+            v.ip ?? '—',
+            v.language ?? '—',
+            <span key="ua" className="block max-w-xs truncate" title={v.userAgent ?? ''}>
+              {v.userAgent ?? '—'}
+            </span>,
+          ])}
+        />
+      </Panel>
+    </div>
+  )
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-gray-100 bg-white px-4 py-3.5 shadow-xs">
+      <p className="text-xs font-medium text-gray-500">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tabular-nums text-gray-900">{value}</p>
+    </div>
+  )
+}
+
+function Panel({ title, className, children }: { title: string; className?: string; children: React.ReactNode }) {
+  return (
+    <section className={cn('rounded-xl border border-gray-100 bg-white p-5 shadow-xs', className)}>
+      <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
+      <div className="mt-4">{children}</div>
+    </section>
+  )
+}
+
+function BarChart({ buckets, compact }: { buckets: Bucket[]; compact?: boolean }) {
+  const max = Math.max(1, ...buckets.map((b) => b.count))
+  const labelEvery = Math.ceil(buckets.length / (compact ? 12 : 10))
+  return (
+    <div>
+      <div className={cn('relative flex items-end gap-0.5 border-b border-gray-200', compact ? 'h-32' : 'h-56')}>
+        <span className="absolute -top-1 left-0 text-[11px] tabular-nums text-gray-400">{number.format(max)}</span>
+        {buckets.map((b) => (
+          <div key={b.label} className="group relative flex h-full flex-1 items-end">
+            <div
+              className="w-full rounded-t bg-green-700 transition-colors group-hover:bg-green-900"
+              style={{ height: `${(b.count / max) * 100}%`, minHeight: b.count ? 2 : 0 }}
+            />
+            <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1.5 text-xs text-white shadow-lg group-hover:block">
+              <p className="font-medium">{b.label}</p>
+              <p className="tabular-nums">
+                {number.format(b.count)} views · {number.format(b.visitors)} visitors
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-1.5 flex gap-0.5">
+        {buckets.map((b, i) => (
+          <span key={b.label} className="flex-1 truncate text-center text-[10px] text-gray-400">
+            {i % labelEvery === 0 ? (b.label.length === 10 ? b.label.slice(5) : b.label) : ''}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function RankPanel({ title, rows, link }: { title: string; rows: Row[]; link?: boolean }) {
+  return (
+    <Panel title={title}>
+      {rows.length === 0 ? (
+        <p className="text-sm text-gray-400">No data yet.</p>
+      ) : (
+        <ul className="space-y-1">
+          {rows.map((row) => (
+            <li key={row.label} className="relative flex items-center justify-between gap-3 rounded px-2 py-1 text-sm">
+              <div className="absolute inset-y-0 left-0 rounded bg-green-50" style={{ width: `${row.share * 100}%` }} />
+              <span className="relative truncate text-gray-700" title={row.label}>
+                {link && row.label.startsWith('/') ? (
+                  <a href={row.label} className="hover:text-green-700 hover:underline">{row.label}</a>
+                ) : (
+                  row.label
+                )}
+              </span>
+              <span className="relative shrink-0 tabular-nums text-gray-900">
+                {number.format(row.count)}
+                <span className="ml-2 inline-block w-12 text-right text-gray-400">{percent.format(row.share)}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Panel>
+  )
+}
+
+function Table({ head, rows }: { head: string[]; rows: React.ReactNode[][] }) {
+  if (rows.length === 0) return <p className="text-sm text-gray-400">No data yet.</p>
+  return (
+    <div className="-mx-5 overflow-x-auto">
+      <table className="w-full text-left text-sm">
+        <thead>
+          <tr className="border-b border-gray-100 text-xs text-gray-500">
+            {head.map((h) => (
+              <th key={h} className="whitespace-nowrap px-5 py-2 font-medium">{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((cells, i) => (
+            <tr key={i} className="border-b border-gray-50 align-top last:border-0">
+              {cells.map((cell, j) => (
+                <td key={j} className="px-5 py-2 text-gray-700">{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
