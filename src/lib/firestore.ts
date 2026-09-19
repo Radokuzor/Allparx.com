@@ -1,4 +1,5 @@
 import 'server-only'
+import { FieldPath } from 'firebase-admin/firestore'
 import { db } from './firebase-admin'
 import { snapshotBySlug, snapshotPlaces } from './places-snapshot'
 import type { Place } from './types'
@@ -308,6 +309,48 @@ export async function getAllCities(): Promise<string[]> {
   })
 
   return citiesPromise
+}
+
+/**
+ * Every place whose name matches a legacy slug's base name.
+ *
+ * Powers the disambiguation page: `/places/lincoln-park-33` was one of 33
+ * places called "Lincoln Park" and the slug cannot say which, so the page
+ * lists all of them instead of guessing.
+ *
+ * Slug is the document id and city-swept slugs are `<name>-<city>`, so a
+ * prefix range over the id finds every candidate in one indexed query rather
+ * than scanning the collection. `` is the highest code point Firestore
+ * will sort, which makes it the standard prefix-range terminator.
+ */
+export async function findPlacesByBaseName(base: string, limit = 30): Promise<Place[]> {
+  if (!base) return []
+
+  const matches = (place: Place) =>
+    place.slug === base ||
+    place.slug.startsWith(`${base}-`) ||
+    citySlug(place.name) === base
+
+  const all = snapshotPlaces()
+  if (all) return all.filter(matches).slice(0, limit)
+
+  return resilient(
+    `findPlacesByBaseName(${base})`,
+    async () => {
+      const snapshot = await db
+        .collection(COLLECTION)
+        .orderBy(FieldPath.documentId())
+        .startAt(base)
+        .endAt(`${base}`)
+        .limit(limit * 2)
+        .get()
+      return snapshot.docs
+        .map((doc) => doc.data() as Place)
+        .filter(matches)
+        .slice(0, limit)
+    },
+    [],
+  )
 }
 
 /** Slugs are lossy (`salt-lake-city`), so resolve back through the known set. */

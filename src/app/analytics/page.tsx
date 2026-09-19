@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { cookies } from 'next/headers'
 import { isAnalyticsAuthed } from '@/lib/analytics-auth'
+import { IGNORE_COOKIE } from '@/lib/analytics'
 import { loadReport, MAX_VISITS, RANGES, type Bucket, type RangeKey, type Row } from '@/lib/analytics-report'
 import { cn } from '@/lib/utils'
-import { login, logout } from './actions'
+import { login, logout, setSelfExclusion } from './actions'
 
 export const metadata: Metadata = {
   title: 'Analytics',
@@ -57,6 +59,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
 
   const range: RangeKey = params.range && params.range in RANGES ? (params.range as RangeKey) : '7'
   const includeBots = params.bots === '1'
+  const selfExcluded = (await cookies()).get(IGNORE_COOKIE)?.value === '1'
   const report = await loadReport(range, includeBots)
   const { totals } = report
   const href = (next: { range?: string; bots?: boolean }) =>
@@ -72,9 +75,25 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
             {report.allTimeCount !== null && <> · {number.format(report.allTimeCount)} page views all-time</>}
           </p>
         </div>
-        <form action={logout}>
-          <button className="text-sm text-gray-500 hover:text-gray-900">Log out</button>
-        </form>
+        <div className="flex items-center gap-4">
+          <form action={setSelfExclusion}>
+            <input type="hidden" name="enable" value={selfExcluded ? '0' : '1'} />
+            <button
+              className={cn(
+                'rounded-full border px-3.5 py-1.5 text-sm font-medium',
+                selfExcluded
+                  ? 'border-green-700 bg-green-50 text-green-800'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-300',
+              )}
+              title="This browser's own page views are otherwise counted like any other visitor's."
+            >
+              {selfExcluded ? '✓ Not tracking you' : 'Exclude my visits'}
+            </button>
+          </form>
+          <form action={logout}>
+            <button className="text-sm text-gray-500 hover:text-gray-900">Log out</button>
+          </form>
+        </div>
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-2">

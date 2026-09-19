@@ -7,6 +7,14 @@ const COUNTER_REF = db.collection('analytics').doc('visitCounter')
 export const VISITS_COLLECTION = db.collection('analytics_visits')
 const NOTIFY_EVERY = 10
 
+/**
+ * Set from the /analytics dashboard (see actions.ts) to stop tracking the
+ * person viewing the dashboard. Without this, browsing your own site inflates
+ * every metric — sessions, bounce rate, "new visitors" — with traffic that
+ * isn't a real visitor.
+ */
+export const IGNORE_COOKIE = 'ap_ignore'
+
 export type DeviceType = 'Mobile' | 'Tablet' | 'Desktop'
 
 /** One stored page view. Written by trackVisit, read by the /analytics dashboard. */
@@ -75,11 +83,33 @@ function osName(ua: string): string {
   return 'Other'
 }
 
+/**
+ * Catches crawlers whose UA carries none of the generic tokens above —
+ * verified against a day of real traffic (see the analytics chat thread):
+ * GoogleOther and Google-InspectionTool are Google's own auxiliary crawlers,
+ * DarkVisitor is an AI-training crawler, and Meta's fetcher identifies itself
+ * as "meta-externalagent", not "...bot".
+ */
 const BOT_PATTERN =
-  /bot|crawl|spider|slurp|scrape|preview|fetch|curl|wget|python|axios|node-fetch|go-http|java\/|headless|lighthouse|pingdom|uptime|monitor|facebookexternalhit|embedly|whatsapp|vercel/i
+  /bot|crawl|spider|slurp|scrape|preview|fetch|curl|wget|python|axios|node-fetch|go-http|java\/|headless|lighthouse|pingdom|uptime|monitor|facebookexternalhit|embedly|whatsapp|vercel|googleother|google-inspectiontool|darkvisitor|externalagent/i
 
-function isBot(ua: string): boolean {
-  return !ua || BOT_PATTERN.test(ua)
+/**
+ * Google's published Googlebot/GoogleOther range (see
+ * https://developers.google.com/search/apis/ipranges/googlebot.json). Some
+ * of Google's crawlers carry a UA with no bot-like token at all, so this
+ * catches those on IP alone — real traffic never legitimately originates
+ * from this block.
+ */
+function isGooglebotIp(ip: string | null): boolean {
+  if (!ip) return false
+  const match = /^66\.249\.(\d+)\./.exec(ip)
+  if (!match) return false
+  const secondOctet = Number(match[1])
+  return secondOctet >= 64 && secondOctet <= 95
+}
+
+function isBot(ua: string, ip: string | null): boolean {
+  return !ua || BOT_PATTERN.test(ua) || isGooglebotIp(ip)
 }
 
 function hostOf(url: string | null): string | null {
@@ -125,6 +155,7 @@ function buildVisitRecord(request: NextRequest, context: VisitContext): VisitRec
   const geo = geolocation(request)
   const params = request.nextUrl.searchParams
   const decode = (value: string | undefined) => (value ? decodeURIComponent(value) : null)
+  const ip = ipAddress(request) ?? null
 
   return {
     ts: new Date(),
@@ -145,7 +176,7 @@ function buildVisitRecord(request: NextRequest, context: VisitContext): VisitRec
     device: deviceType(userAgent),
     browser: browserName(userAgent),
     os: osName(userAgent),
-    bot: isBot(userAgent),
+    bot: isBot(userAgent, ip),
     language: request.headers.get('accept-language')?.split(',')[0]?.trim() || null,
     country: geo.country ?? null,
     countryRegion: geo.countryRegion ?? null,
@@ -155,7 +186,7 @@ function buildVisitRecord(request: NextRequest, context: VisitContext): VisitRec
     latitude: geo.latitude ?? null,
     longitude: geo.longitude ?? null,
     edgeRegion: geo.region ?? null,
-    ip: ipAddress(request) ?? null,
+    ip,
     userAgent: userAgent || null,
   }
 }

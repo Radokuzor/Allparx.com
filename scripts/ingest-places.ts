@@ -109,8 +109,13 @@ const types: string[] = typeFilter ?? [...PLACE_TYPES]
 // --- Helpers ---------------------------------------------------------------
 
 /**
- * Slug format is load-bearing: existing allparx.com backlinks point at
- * /places/<name>-<city>, so this must stay byte-for-byte compatible.
+ * Slug format for places discovered by a city sweep: /places/<name>-<city>.
+ *
+ * NOTE: this is *not* the format the old allparx.com used, despite what an
+ * earlier version of this comment claimed. The indexed legacy URLs are
+ * /places/<name>/ with no city segment — see scripts/restore-legacy.ts, which
+ * rebuilds those under their original slugs. Changing the format here would
+ * orphan every page this script has already written, so it stays as is.
  */
 function slugify(name: string, city: string): string {
   return `${name}-${city}`

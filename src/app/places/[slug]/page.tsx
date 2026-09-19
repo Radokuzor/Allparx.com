@@ -1,13 +1,54 @@
+import { cache } from 'react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { Baby, Bath, ExternalLink, Navigation, ParkingCircle, PawPrint, Phone, Star } from 'lucide-react'
+import {
+  AlertTriangle,
+  Baby,
+  Backpack,
+  Bath,
+  ChevronDown,
+  Clock,
+  Compass,
+  Dog,
+  ExternalLink,
+  HelpCircle,
+  Link2,
+  Map as MapIcon,
+  Navigation,
+  ParkingCircle,
+  PawPrint,
+  Phone,
+  Star,
+  Sun,
+  ThumbsDown,
+  ThumbsUp,
+  Trophy,
+  Users,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import JsonLd from '@/components/JsonLd'
 import PlaceCard from '@/components/PlaceCard'
 import { googleListingUrl, mapEmbedUrl } from '@/lib/google-maps'
 import { photoAtWidth, placePhoto } from '@/lib/photos'
-import { getAllPlaceSlugs, getNearbyPlaces, getPlace, citySlug } from '@/lib/firestore'
+import {
+  citySlug,
+  findPlacesByBaseName,
+  getAllPlaceSlugs,
+  getPlace,
+  getPlacesByCityAndType,
+} from '@/lib/firestore'
+import PlaceDisambiguation from '@/components/PlaceDisambiguation'
+import { baseSlug, titleFromSlug } from '@/lib/legacy-slug'
+import {
+  considerations,
+  faqs,
+  highlights,
+  intro,
+  visitPlan,
+  type Insight,
+} from '@/lib/place-content'
 import { SCHEMA_TYPE, typeLabel, typeLabelPlural } from '@/lib/place-types'
 import { SITE_NAME, absoluteUrl } from '@/lib/site'
 
@@ -27,10 +68,66 @@ function placeLocation(place: { city: string; state: string | null }): string {
   return place.state ? `${place.city}, ${place.state}` : place.city
 }
 
+/** Insight icon keys → components, so `place-content.ts` stays free of JSX imports. */
+const INSIGHT_ICON: Record<string, LucideIcon> = {
+  star: Star,
+  compass: Compass,
+  trophy: Trophy,
+  users: Users,
+  clock: Clock,
+  dog: Dog,
+  baby: Baby,
+  bath: Bath,
+  parking: ParkingCircle,
+  map: MapIcon,
+  link: Link2,
+  alert: AlertTriangle,
+  help: HelpCircle,
+  phone: Phone,
+}
+
+function InsightList({ items, tone }: { items: Insight[]; tone: 'pro' | 'con' }) {
+  const accent = tone === 'pro' ? 'text-green-600' : 'text-amber-600'
+  return (
+    <ul className="space-y-4">
+      {items.map((item) => {
+        const Icon = INSIGHT_ICON[item.icon] ?? Compass
+        return (
+          <li key={item.title} className="flex gap-3">
+            <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${accent}`} aria-hidden />
+            <div>
+              <p className="text-sm font-semibold text-gray-800">{item.title}</p>
+              <p className="mt-0.5 text-sm leading-relaxed text-gray-600">{item.body}</p>
+            </div>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+/**
+ * Both generateMetadata and the page itself need the candidate list for a
+ * legacy slug. React's cache dedupes them into one Firestore query per render.
+ */
+const candidatesFor = cache((slug: string) => findPlacesByBaseName(baseSlug(slug)))
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const place = await getPlace(slug)
-  if (!place) return { title: 'Place Not Found', robots: { index: false, follow: false } }
+
+  if (!place) {
+    const candidates = await candidatesFor(slug)
+    if (candidates.length === 0) {
+      return { title: 'Place Not Found', robots: { index: false, follow: false } }
+    }
+    const title = titleFromSlug(slug)
+    return {
+      title: `${title} — ${candidates.length} places`,
+      description: `${candidates.length} places in the ${SITE_NAME} directory are called ${title}. Compare them by location, rating and amenities to find the one you want.`,
+      alternates: { canonical: `/places/${slug}` },
+    }
+  }
 
   const where = placeLocation(place)
   const title = `${place.name} — ${where}`
@@ -55,9 +152,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PlacePage({ params }: Props) {
   const { slug } = await params
   const place = await getPlace(slug)
-  if (!place) notFound()
 
-  const nearby = await getNearbyPlaces(place)
+  // A legacy URL with no document behind it may still name places we hold —
+  // list them rather than 404, so inbound search traffic lands somewhere real.
+  if (!place) {
+    const candidates = await candidatesFor(slug)
+    if (candidates.length > 0) {
+      return <PlaceDisambiguation title={titleFromSlug(slug)} places={candidates} />
+    }
+    notFound()
+  }
+
+  // One query serves both the editorial context (how this place ranks among
+  // its neighbours) and the "more in this city" grid at the foot of the page.
+  const peers = (await getPlacesByCityAndType(place.city, place.placeType)).filter(
+    (p) => p.slug !== place.slug,
+  )
+  const nearby = peers.slice(0, 6)
+  const context = { peers }
+  const paragraphs = intro(place, context)
+  const pros = highlights(place, context)
+  const cons = considerations(place, context)
+  const plan = visitPlan(place)
+  const questions = faqs(place, context)
+
   const where = placeLocation(place)
   const url = absoluteUrl(`/places/${place.slug}`)
   const hero = placePhoto(place)
@@ -129,6 +247,17 @@ export default async function PlacePage({ params }: Props) {
                 { '@type': 'ListItem', position: 3, name: place.name, item: url },
               ],
             },
+            // Mirrors the visible FAQ exactly — the answers come from the same
+            // helper, so the markup can never drift from the rendered page.
+            {
+              '@type': 'FAQPage',
+              '@id': `${url}/#faq`,
+              mainEntity: questions.map((faq) => ({
+                '@type': 'Question',
+                name: faq.question,
+                acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+              })),
+            },
           ],
         }}
       />
@@ -174,16 +303,90 @@ export default async function PlacePage({ params }: Props) {
           <div className="space-y-8 lg:col-span-2">
             <section>
               <h2 className="mb-3 text-xl font-semibold text-gray-800">About</h2>
-              <p className="leading-relaxed text-gray-600">
-                {place.description ??
-                  `${place.name} is a ${typeLabel(place.placeType).toLowerCase()} in ${where}${
-                    place.address ? `, located at ${place.address}` : ''
-                  }.${
-                    place.rating !== null
-                      ? ` It holds a ${place.rating} star rating from ${place.reviewCount.toLocaleString()} Google reviews.`
-                      : ''
+              <div className="space-y-4">
+                {paragraphs.map((paragraph) => (
+                  <p key={paragraph} className="leading-relaxed text-gray-600">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </section>
+
+            {(pros.length > 0 || cons.length > 0) && (
+              <section>
+                <h2 className="mb-1 text-xl font-semibold text-gray-800">The quick take</h2>
+                <p className="mb-4 text-sm text-gray-400">
+                  Drawn from this listing&apos;s ratings, amenities, hours and how it stacks up
+                  against other {typeLabelPlural(place.placeType).toLowerCase()} in {place.city}.
+                </p>
+                <div
+                  className={`grid grid-cols-1 gap-4 ${
+                    pros.length > 0 && cons.length > 0 ? 'sm:grid-cols-2' : ''
                   }`}
+                >
+                  {pros.length > 0 && (
+                    <div className="rounded-2xl border border-green-100 bg-green-50/40 p-5">
+                      <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-green-800">
+                        <ThumbsUp className="h-4 w-4" aria-hidden />
+                        What works
+                      </h3>
+                      <InsightList items={pros} tone="pro" />
+                    </div>
+                  )}
+                  {cons.length > 0 && (
+                    <div className="rounded-2xl border border-amber-100 bg-amber-50/40 p-5">
+                      <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-amber-800">
+                        <ThumbsDown className="h-4 w-4" aria-hidden />
+                        Worth knowing first
+                      </h3>
+                      <InsightList items={cons} tone="con" />
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
+
+            <section>
+              <h2 className="mb-1 text-xl font-semibold text-gray-800">Planning a visit</h2>
+              <p className="mb-4 text-sm text-gray-400">
+                General guidance for {typeLabelPlural(place.placeType).toLowerCase()}, adjusted for
+                what this listing records.
               </p>
+              <div className="space-y-5 rounded-2xl border border-gray-100 p-6 shadow-sm">
+                <div className="flex gap-3">
+                  <Compass className="mt-0.5 h-4 w-4 shrink-0 text-green-600" aria-hidden />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">What to expect</p>
+                    <p className="mt-0.5 text-sm leading-relaxed text-gray-600">{plan.expect}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                      A good fit for {plan.suits}.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Sun className="mt-0.5 h-4 w-4 shrink-0 text-green-600" aria-hidden />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">When to go</p>
+                    <p className="mt-0.5 text-sm leading-relaxed text-gray-600">{plan.timing}</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Backpack className="mt-0.5 h-4 w-4 shrink-0 text-green-600" aria-hidden />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">What to bring</p>
+                    <ul className="mt-1.5 flex flex-wrap gap-2">
+                      {plan.bring.map((item) => (
+                        <li
+                          key={item}
+                          className="rounded-full bg-gray-50 px-3 py-1 text-xs text-gray-600"
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </section>
 
             {place.hours.length > 0 && (
@@ -229,6 +432,27 @@ export default async function PlacePage({ params }: Props) {
                 />
               </section>
             )}
+
+            {/* <details> keeps this interactive without shipping a client component. */}
+            <section>
+              <h2 className="mb-3 text-xl font-semibold text-gray-800">
+                Common questions about {place.name}
+              </h2>
+              <div className="divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-100 shadow-sm">
+                {questions.map((faq) => (
+                  <details key={faq.question} className="group">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 text-sm font-medium text-gray-800 hover:bg-gray-50">
+                      {faq.question}
+                      <ChevronDown
+                        className="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180"
+                        aria-hidden
+                      />
+                    </summary>
+                    <p className="px-4 pb-4 text-sm leading-relaxed text-gray-600">{faq.answer}</p>
+                  </details>
+                ))}
+              </div>
+            </section>
           </div>
 
           <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">

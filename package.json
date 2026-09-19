@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "ingest": "tsx scripts/ingest-places.ts",
+    "restore": "tsx scripts/restore-legacy.ts",
     "ingest:test": "tsx scripts/ingest-places.ts --cities=5",
     "snapshot": "tsx scripts/snapshot-places.ts",
     "photos:places": "tsx scripts/fetch-photos.ts places",

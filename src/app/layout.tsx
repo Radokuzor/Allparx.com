@@ -37,6 +37,18 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
   },
+  /**
+   * Search Console and Bing Webmaster Tools verification. Set the token from
+   * each console in the environment — without them there is no way to see
+   * which queries the site ranks for, because search engines strip the query
+   * from the referrer.
+   */
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : {},
+  },
   category: 'travel',
 }
 

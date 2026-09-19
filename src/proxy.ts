@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextFetchEvent, NextRequest } from 'next/server'
-import { trackVisit } from './lib/analytics'
+import { IGNORE_COOKIE, trackVisit } from './lib/analytics'
 
 const VISITOR_COOKIE = 'ap_vid'
 const SESSION_COOKIE = 'ap_sid'
@@ -25,9 +25,13 @@ export function proxy(request: NextRequest, event: NextFetchEvent) {
   response.cookies.set(VISITOR_COOKIE, context.visitorId, { ...cookieOptions, maxAge: VISITOR_MAX_AGE })
   response.cookies.set(SESSION_COOKIE, context.sessionId, { ...cookieOptions, maxAge: SESSION_MAX_AGE })
 
-  event.waitUntil(
-    trackVisit(request, context).catch((error) => console.warn('[analytics] trackVisit failed', error)),
-  )
+  // Set from the /analytics dashboard so the person viewing it doesn't
+  // pollute their own numbers — see IGNORE_COOKIE.
+  if (request.cookies.get(IGNORE_COOKIE)?.value !== '1') {
+    event.waitUntil(
+      trackVisit(request, context).catch((error) => console.warn('[analytics] trackVisit failed', error)),
+    )
+  }
   return response
 }
 
