@@ -345,12 +345,29 @@ export async function findPlacesByBaseName(base: string, limit = 30): Promise<Pl
         .limit(limit * 2)
         .get()
       return snapshot.docs
-        .map((doc) => doc.data() as Place)
+        .map((doc) => plainPlace(doc.data()))
         .filter(matches)
         .slice(0, limit)
     },
     [],
   )
+}
+
+/**
+ * Drops Firestore Timestamps (createdAt, updatedAt, photoCheckedAt) so the
+ * result can be handed to a Client Component.
+ *
+ * The build snapshot is plain JSON, but any page rendered on demand reads
+ * live Firestore, where those fields are class instances that React refuses
+ * to serialise — which turned every disambiguation page into a 500 in
+ * production while passing in every snapshot-backed local test.
+ */
+function plainPlace(data: FirebaseFirestore.DocumentData): Place {
+  return Object.fromEntries(
+    Object.entries(data).filter(
+      ([, value]) => !(value && typeof value === 'object' && 'toDate' in value),
+    ),
+  ) as Place
 }
 
 /** Slugs are lossy (`salt-lake-city`), so resolve back through the known set. */

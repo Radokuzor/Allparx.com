@@ -25,6 +25,7 @@ import * as admin from 'firebase-admin'
 import axios from 'axios'
 import * as dotenv from 'dotenv'
 import { PLACE_TYPES } from '../src/lib/place-types'
+import { US_STATE_NAMES, isInUnitedStates } from '../src/lib/us-states'
 
 dotenv.config({ path: '.env.local' })
 
@@ -212,17 +213,21 @@ function resolvePlaceType(place: GooglePlace): { placeType: string; onBrand: boo
 
 function toDocument(place: GooglePlace, slug: string) {
   const { placeType, onBrand } = resolvePlaceType(place)
+  const state = component(place, 'administrative_area_level_1', true)
+  // Rivers, reservoirs and mountains have no locality. Fall back to the state
+  // name rather than "Unknown", which would surface in breadcrumbs, headings,
+  // schema addressLocality and a /cities/unknown page.
   const city =
     component(place, 'locality') ??
     component(place, 'sublocality') ??
     component(place, 'administrative_area_level_2') ??
-    'Unknown'
+    (state ? (US_STATE_NAMES[state] ?? state) : 'United States')
 
   return {
     slug,
     name: place.displayName?.text ?? 'Unknown Place',
     city,
-    state: component(place, 'administrative_area_level_1', true),
+    state,
     placeType,
     googlePlaceId: place.id ?? null,
     address: place.formattedAddress ?? '',
@@ -326,8 +331,11 @@ async function main() {
       continue
     }
 
-    // Take the best-matching result, not simply the first.
+    // Take the best-matching result, not simply the first. Results outside
+    // the US are dropped first: `regionCode` only biases the search, and a
+    // name-perfect match in the UK is still the wrong place.
     const scored = results
+      .filter((place) => isInUnitedStates(place.location?.latitude ?? null, place.location?.longitude ?? null))
       .map((place) => ({ place, score: confidence(entry.slug, place.displayName?.text ?? '') }))
       .sort((a, b) => (a.score === 'exact' ? -1 : b.score === 'exact' ? 1 : 0))
 

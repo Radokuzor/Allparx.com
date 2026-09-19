@@ -16,9 +16,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const countsByType = new Map<string, number>()
   const cityTypeCombos = new Set<string>()
+  const knownTypes = new Set<string>(PLACE_TYPES)
   for (const place of places) {
     countsByType.set(place.placeType, (countsByType.get(place.placeType) ?? 0) + 1)
-    cityTypeCombos.add(`${citySlug(place.city)}::${place.placeType}`)
+    // Restored legacy places can carry Google types outside our categories
+    // (lake, historical_landmark…). /cities/<city>/<type> 404s for those, so
+    // listing them would put dead URLs in the sitemap. The place pages
+    // themselves are still listed below.
+    if (knownTypes.has(place.placeType)) {
+      cityTypeCombos.add(`${citySlug(place.city)}::${place.placeType}`)
+    }
   }
 
   return [
