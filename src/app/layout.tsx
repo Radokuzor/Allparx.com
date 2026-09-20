@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { Search, TreePine } from 'lucide-react'
+import { LocateFixed, Search, TreePine } from 'lucide-react'
 import Link from 'next/link'
 import './globals.css'
 import MobileNav from '@/components/MobileNav'
@@ -113,6 +113,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   {typeLabelPlural(type)}
                 </Link>
               ))}
+              {/* Icon-only until there is room: with the label, the nav wraps to a
+                  second row between the md and xl breakpoints. */}
+              <Link
+                href="/near-me"
+                aria-label="Near me"
+                title="Near me"
+                className="flex items-center gap-1.5 transition-colors hover:text-green-700"
+              >
+                <LocateFixed className="h-4 w-4" />
+                <span className="hidden xl:inline">Near me</span>
+              </Link>
               <Link
                 href="/search"
                 className="flex items-center gap-1.5 rounded-full bg-green-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-800"

@@ -50,6 +50,7 @@ next-env.d.ts
 .allparx-cache/
 # generated from the snapshot by scripts/snapshot-places.ts
 /public/search-index.json
+/public/near-index.json
 
 # raw 4K source footage for the homepage hero (28 MB) — the optimised copy lives in public/videos
 /*.mp4

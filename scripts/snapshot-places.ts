@@ -15,7 +15,9 @@ import * as admin from 'firebase-admin'
 import * as dotenv from 'dotenv'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
-import { SEARCH_INDEX_FILE, SNAPSHOT_PATH } from '../src/lib/snapshot-path'
+import { NEAR_INDEX_FILE, SEARCH_INDEX_FILE, SNAPSHOT_PATH } from '../src/lib/snapshot-path'
+import { packFlags, type NearEntry } from '../src/lib/near-index-format'
+import { isKnownType } from '../src/lib/place-types'
 
 dotenv.config({ path: '.env.local' })
 
@@ -67,6 +69,32 @@ async function main() {
   const indexOut = path.resolve(process.cwd(), 'public', SEARCH_INDEX_FILE)
   fs.mkdirSync(path.dirname(indexOut), { recursive: true })
   fs.writeFileSync(indexOut, JSON.stringify(index))
+
+  // Index for /near-me: adds coordinates, review counts and amenity flags, and
+  // drops anything outside the 18 categories. Legacy restores carry through odd
+  // Google types ("premise", "association_or_organization") that belong in
+  // search but would read as junk in a "best places near you" list.
+  const near: NearEntry[] = places
+    .filter((p) => isKnownType(p.placeType) && typeof p.lat === 'number' && typeof p.lng === 'number')
+    .map((p) => ({
+      s: p.slug,
+      n: p.name,
+      c: p.city,
+      a: p.state ?? '',
+      t: p.placeType,
+      r: p.rating ?? null,
+      v: p.reviewCount ?? 0,
+      // Four decimals is ~11 m; the extra digits only cost bytes.
+      y: Math.round(p.lat * 1e4) / 1e4,
+      x: Math.round(p.lng * 1e4) / 1e4,
+      f: packFlags({
+        parking: p.parking ?? null,
+        allowsDogs: p.allowsDogs ?? null,
+        goodForChildren: p.goodForChildren ?? null,
+        hasRestroom: p.hasRestroom ?? null,
+      }),
+    }))
+  fs.writeFileSync(path.resolve(process.cwd(), 'public', NEAR_INDEX_FILE), JSON.stringify(near))
 
   const bytes = fs.statSync(out).size
   console.log(

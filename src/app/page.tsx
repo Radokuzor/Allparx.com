@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MapPin } from 'lucide-react'
+import { LocateFixed } from 'lucide-react'
 import PlaceGrid from '@/components/PlaceGrid'
 import HeroVideo from '@/components/HeroVideo'
 import JsonLd from '@/components/JsonLd'
@@ -42,21 +42,24 @@ export default async function HomePage() {
         <HeroVideo />
 
         <div className="mx-auto flex min-h-[34rem] max-w-6xl flex-col items-center justify-center px-6 py-20 text-center lg:min-h-[40rem]">
-          {cities.length > 0 && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white shadow-lg backdrop-blur-xl">
-              <MapPin className="h-3.5 w-3.5 text-green-300" />
-              {cities.length} cities · {PLACE_TYPES.length} outdoor categories
-            </span>
-          )}
-          <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-bold tracking-tight text-white [text-shadow:0_2px_28px_rgba(0,0,0,0.5)] sm:text-5xl lg:text-6xl">
+          <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-white [text-shadow:0_2px_28px_rgba(0,0,0,0.5)] sm:text-5xl lg:text-6xl">
             Find Your Next Outdoor Adventure
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-white/85 [text-shadow:0_1px_16px_rgba(0,0,0,0.5)] sm:text-xl">
             Parks, trails, dog parks, beaches, and campgrounds — with real hours, ratings and
             directions.
           </p>
-          <div className="mx-auto mt-8 w-full max-w-xl rounded-full border border-white/25 bg-white/15 p-1.5 shadow-2xl backdrop-blur-xl">
-            <SearchBox />
+          <div className="mx-auto mt-8 flex w-full max-w-3xl flex-col items-stretch gap-3 sm:flex-row">
+            <div className="w-full flex-1 rounded-full border border-white/25 bg-white/15 p-1.5 shadow-2xl backdrop-blur-xl">
+              <SearchBox />
+            </div>
+            <Link
+              href="/near-me"
+              className="flex shrink-0 items-center justify-center gap-2 rounded-full border border-white/25 bg-white/15 px-6 py-3.5 text-sm font-semibold text-white shadow-2xl backdrop-blur-xl transition-colors hover:bg-white/25"
+            >
+              <LocateFixed className="h-4.5 w-4.5" />
+              Near me
+            </Link>
           </div>
           <div className="mt-8 flex flex-wrap justify-center gap-2.5">
             {FEATURED_TYPES.map((type) => (

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu, Search, X } from 'lucide-react'
+import { LocateFixed, Menu, Search, X } from 'lucide-react'
 import { useState } from 'react'
 import { FEATURED_TYPES, typeLabelPlural } from '@/lib/place-types'
 
@@ -37,6 +37,14 @@ export default function MobileNav() {
                 {typeLabelPlural(type)}
               </Link>
             ))}
+            <Link
+              href="/near-me"
+              onClick={() => setOpen(false)}
+              className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-green-50 hover:text-green-700"
+            >
+              <LocateFixed className="h-4 w-4" />
+              Near me
+            </Link>
             <Link
               href="/search"
               onClick={() => setOpen(false)}
