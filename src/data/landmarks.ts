@@ -27,6 +27,16 @@ export type Landmark = {
   name: string
   /** Search text: the name plus whatever locality it takes to disambiguate. */
   query: string
+  /**
+   * Publish at this slug instead of the one derived from `name`.
+   *
+   * Google's official name is sometimes not what anyone searches or what makes
+   * a good URL — "Na Ala Hele: Manoa Falls Trail" carries the Hawai‘i trail
+   * system's own prefix. Overriding only the URL keeps the name guard intact:
+   * the resolver still checks Google returned `name`, so this cannot be used to
+   * publish the wrong place under a convenient slug.
+   */
+  slug?: string
 }
 
 export const LANDMARKS: Landmark[] = [
@@ -35,11 +45,11 @@ export const LANDMARKS: Landmark[] = [
   // and the surviving keywords ("banyan tree hawaii", "historic banyan tree")
   // still are.
   { name: 'Kawela Bay', query: 'Kawela Bay Kahuku HI' },
-  { name: 'Lahaina Banyan Court Park', query: 'Lahaina Banyan Court Park Lahaina Maui HI' },
-  { name: 'Manoa Falls', query: 'Manoa Falls Trail Honolulu HI' },
-  { name: 'Waimea Bay', query: 'Waimea Bay Beach Park Haleiwa HI' },
+  { name: 'Lahaina Banyan Court', query: 'Lahaina Banyan Court Park Lahaina Maui HI' },
+  { name: 'Na Ala Hele: Manoa Falls Trail', query: 'Manoa Falls Trail Honolulu HI', slug: 'manoa-falls' },
+  { name: 'Waimea Bay Beach Park', query: 'Waimea Bay Beach Park Haleiwa HI', slug: 'waimea-bay' },
   { name: 'Lanikai Beach', query: 'Lanikai Beach Kailua HI' },
-  { name: 'Hanauma Bay Nature Preserve', query: 'Hanauma Bay Nature Preserve Honolulu HI' },
+  { name: 'Hanauma Bay', query: 'Hanauma Bay Nature Preserve Honolulu HI' },
   { name: 'Diamond Head State Monument', query: 'Diamond Head State Monument Honolulu HI' },
   { name: 'Akaka Falls State Park', query: 'Akaka Falls State Park Honomu HI' },
   { name: 'Waipi‘o Valley Lookout', query: 'Waipio Valley Lookout Waimea HI' },
@@ -91,7 +101,9 @@ export const LANDMARKS: Landmark[] = [
   { name: 'Niagara Falls State Park', query: 'Niagara Falls State Park Niagara Falls NY' },
   { name: 'Watkins Glen State Park', query: 'Watkins Glen State Park Watkins Glen NY' },
   { name: 'Cadillac Mountain', query: 'Cadillac Mountain Acadia National Park Bar Harbor ME' },
-  { name: 'Clingmans Dome', query: 'Clingmans Dome Great Smoky Mountains National Park TN' },
+  // Officially renamed Kuwohi in 2024. Published under the old slug, which is
+  // still overwhelmingly what people search; the page itself uses the new name.
+  { name: 'Kuwohi', query: 'Kuwohi Great Smoky Mountains National Park TN', slug: 'clingmans-dome' },
   { name: 'Blue Ridge Parkway', query: 'Blue Ridge Parkway Asheville NC' },
   { name: 'Cumberland Falls State Resort Park', query: 'Cumberland Falls State Resort Park Corbin KY' },
 ]

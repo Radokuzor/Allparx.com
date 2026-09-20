@@ -29,9 +29,10 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import JsonLd from '@/components/JsonLd'
+import PhotoCredit from '@/components/PhotoCredit'
 import PlaceCard from '@/components/PlaceCard'
 import { googleListingUrl, mapEmbedUrl } from '@/lib/google-maps'
-import { photoAtWidth, placePhoto } from '@/lib/photos'
+import { photoAtWidth, placePhoto, type Photo } from '@/lib/photos'
 import {
   citySlug,
   findPlacesByBaseName,
@@ -145,6 +146,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const where = placeLocation(place)
   const title = `${place.name} — ${where}`
+  // Only a photo of the place itself: a category stand-in in a share card
+  // reads as a picture of this place, which it is not.
+  const social = placePhoto(place)
+  const image = social && !social.illustrative ? photoAtWidth(social.photo.url, 1280) : null
   const description =
     getEditorial(place.slug)?.metaDescription ??
     place.description ??
@@ -159,8 +164,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: absoluteUrl(`/places/${place.slug}`),
       title: `${place.name} | ${SITE_NAME}`,
       description,
+      images: image ? [image] : undefined,
     },
-    twitter: { card: 'summary_large_image', title, description },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   }
 }
 
@@ -189,6 +200,9 @@ export default async function PlacePage({ params }: Props) {
   // questions lead the FAQ — they answer what the visitor actually searched.
   // Everything else on the page still comes from the listing data.
   const editorial = getEditorial(place.slug)
+  // placePhoto() already promotes photos[0] to the hero, so the gallery is the
+  // remainder — otherwise the same picture would open the page twice.
+  const gallery = editorial?.photos?.slice(1) ?? []
   const paragraphs = editorial?.lede ?? intro(place, context)
   const pros = highlights(place, context)
   const cons = considerations(place, context)
@@ -205,6 +219,10 @@ export default async function PlacePage({ params }: Props) {
   const where = placeLocation(place)
   const url = absoluteUrl(`/places/${place.slug}`)
   const hero = placePhoto(place)
+  const credits = photoCredits([
+    ...(hero && !hero.illustrative ? [hero.photo] : []),
+    ...gallery.map(({ photo }) => photo),
+  ])
   const mapEmbedSrc = mapEmbedUrl(place)
   const listingUrl = googleListingUrl(place)
 
@@ -226,6 +244,13 @@ export default async function PlacePage({ params }: Props) {
               '@id': `${url}/#place`,
               name: place.name,
               description: editorial?.metaDescription ?? place.description ?? undefined,
+              // A category stand-in would be a false claim about this place.
+              image:
+                hero && !hero.illustrative
+                  ? (editorial?.photos ?? [{ photo: hero.photo }]).map((p) =>
+                      photoAtWidth(p.photo.url, 1280),
+                    )
+                  : undefined,
               url,
               dateModified: editorial?.updated,
               sameAs: place.website ?? undefined,
@@ -351,6 +376,37 @@ export default async function PlacePage({ params }: Props) {
                 </div>
               </section>
             ))}
+
+            {gallery.length > 0 && (
+              <section>
+                <h2 className="mb-3 text-xl font-semibold text-gray-800">Photos</h2>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {gallery.map(({ photo, caption }) => (
+                    <figure key={photo.sourceUrl}>
+                      <a
+                        href={photo.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="relative block aspect-[3/2] overflow-hidden rounded-2xl border border-gray-100 bg-gray-50"
+                      >
+                        {/* Commons already serves sized renditions, so skip Vercel's optimizer. */}
+                        <Image
+                          src={photoAtWidth(photo.url, 960)}
+                          alt={caption}
+                          fill
+                          unoptimized
+                          sizes="(min-width: 640px) 50vw, 100vw"
+                          className="object-cover transition-transform duration-300 hover:scale-105"
+                        />
+                      </a>
+                      <figcaption className="mt-2 text-sm leading-snug text-gray-500">
+                        {caption}
+                      </figcaption>
+                    </figure>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {(pros.length > 0 || cons.length > 0) && (
               <section>
@@ -612,7 +668,53 @@ export default async function PlacePage({ params }: Props) {
             </div>
           </section>
         )}
+
+        {/* Attribution for every picture above, in one place. Each photo still
+            links to its own Commons file page from the image itself. */}
+        {credits.length > 0 && (
+          <footer className="mt-12 space-y-1 border-t border-gray-100 pt-6 text-xs leading-relaxed text-gray-400">
+            {credits.map(({ photo, files }) => (
+              <p key={`${photo.author}|${photo.license}`}>
+                <PhotoCredit photo={photo} href={files.length === 1 ? photo.sourceUrl : undefined} />
+                {files.length > 1 && (
+                  <>
+                    {' · '}
+                    {files.map((file, i) => (
+                      <span key={file.sourceUrl}>
+                        {i > 0 && ', '}
+                        <a
+                          href={file.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline decoration-gray-300 underline-offset-2 hover:text-green-700"
+                        >
+                          {i + 1}
+                        </a>
+                      </span>
+                    ))}
+                  </>
+                )}
+              </p>
+            ))}
+          </footer>
+        )}
       </div>
     </>
   )
+}
+
+/**
+ * One credit line per photographer and licence, however many of their photos
+ * appear. A Commons set is usually one afternoon's work, so six identical lines
+ * would say the same thing; `files` keeps a link to each original.
+ */
+function photoCredits(photos: Photo[]): { photo: Photo; files: Photo[] }[] {
+  const groups = new Map<string, { photo: Photo; files: Photo[] }>()
+  for (const photo of photos) {
+    const key = `${photo.author}|${photo.license}`
+    const group = groups.get(key) ?? { photo, files: [] }
+    if (!group.files.some((f) => f.sourceUrl === photo.sourceUrl)) group.files.push(photo)
+    groups.set(key, group)
+  }
+  return [...groups.values()]
 }

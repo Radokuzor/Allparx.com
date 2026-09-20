@@ -50,6 +50,99 @@ const banyanTree: PlaceEditorial = {
     },
   ],
 
+  // Robert Linsdell photographed the tree and the beach park on one afternoon in
+  // October 2014 and released the set under CC BY 2.0 — the only free-licensed
+  // pictures of this banyan on Commons, and the only ones that show the trunk
+  // wall at the scale visitors describe. Ordered hero first.
+  photos: [
+    {
+      caption:
+        'The banyan at Kawela Bay: a single tree whose aerial roots have thickened into a wall of trunks.',
+      photo: {
+        url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Banyan_Tree._Kawela_Bay_Beach_Park%2C_Kahuku_%28503550%29_%2819473913514%29.jpg/1280px-Banyan_Tree._Kawela_Bay_Beach_Park%2C_Kahuku_%28503550%29_%2819473913514%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+        width: 1280,
+        height: 853,
+        title: 'Banyan Tree. Kawela Bay Beach Park, Kahuku (503550) (19473913514)',
+        author: 'Robert Linsdell from St. Andrews, Canada',
+        license: 'CC BY 2.0',
+        licenseUrl: 'https://creativecommons.org/licenses/by/2.0',
+        sourceUrl:
+          'https://commons.wikimedia.org/wiki/File:Banyan_Tree._Kawela_Bay_Beach_Park,_Kahuku_(503550)_(19473913514).jpg',
+      },
+    },
+    {
+      caption: 'Two visitors at the interpretive sign give the scale of the root wall.',
+      photo: {
+        url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Banyan_Tree._Kawela_Bay_Beach_Park%2C_Kahuku_%28503551%29_%2820113857291%29.jpg/1280px-Banyan_Tree._Kawela_Bay_Beach_Park%2C_Kahuku_%28503551%29_%2820113857291%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+        width: 1280,
+        height: 853,
+        title: 'Banyan Tree. Kawela Bay Beach Park, Kahuku (503551) (20113857291)',
+        author: 'Robert Linsdell from St. Andrews, Canada',
+        license: 'CC BY 2.0',
+        licenseUrl: 'https://creativecommons.org/licenses/by/2.0',
+        sourceUrl:
+          'https://commons.wikimedia.org/wiki/File:Banyan_Tree._Kawela_Bay_Beach_Park,_Kahuku_(503551)_(20113857291).jpg',
+      },
+    },
+    {
+      caption: 'Aerial roots hanging from the horizontal limbs, on their way to becoming trunks.',
+      photo: {
+        url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0a/Banyan_Tree._Kawela_Bay_Beach_Park%2C_Kahuku_%28503559%29_%2820130121736%29.jpg/1280px-Banyan_Tree._Kawela_Bay_Beach_Park%2C_Kahuku_%28503559%29_%2820130121736%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+        width: 1280,
+        height: 853,
+        title: 'Banyan Tree. Kawela Bay Beach Park, Kahuku (503559) (20130121736)',
+        author: 'Robert Linsdell from St. Andrews, Canada',
+        license: 'CC BY 2.0',
+        licenseUrl: 'https://creativecommons.org/licenses/by/2.0',
+        sourceUrl:
+          'https://commons.wikimedia.org/wiki/File:Banyan_Tree._Kawela_Bay_Beach_Park,_Kahuku_(503559)_(20130121736).jpg',
+      },
+    },
+    {
+      caption: 'Midday sun through the canopy, which runs well over a hundred feet across.',
+      photo: {
+        url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Banyan_Tree._Kawela_Bay_Beach_Park%2C_Kahuku_%28503556%29_%2819941205378%29.jpg/1280px-Banyan_Tree._Kawela_Bay_Beach_Park%2C_Kahuku_%28503556%29_%2819941205378%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+        width: 1280,
+        height: 853,
+        title: 'Banyan Tree. Kawela Bay Beach Park, Kahuku (503556) (19941205378)',
+        author: 'Robert Linsdell from St. Andrews, Canada',
+        license: 'CC BY 2.0',
+        licenseUrl: 'https://creativecommons.org/licenses/by/2.0',
+        sourceUrl:
+          'https://commons.wikimedia.org/wiki/File:Banyan_Tree._Kawela_Bay_Beach_Park,_Kahuku_(503556)_(19941205378).jpg',
+      },
+    },
+    {
+      caption: 'The shaded clearing under the crown, on the path through to Kawela Bay.',
+      photo: {
+        url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Banyan_Tree._Kawela_Bay_Beach_Park%2C_Kahuku_%28503561%29_%2820130112196%29.jpg/1280px-Banyan_Tree._Kawela_Bay_Beach_Park%2C_Kahuku_%28503561%29_%2820130112196%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+        width: 1280,
+        height: 853,
+        title: 'Banyan Tree. Kawela Bay Beach Park, Kahuku (503561) (20130112196)',
+        author: 'Robert Linsdell from St. Andrews, Canada',
+        license: 'CC BY 2.0',
+        licenseUrl: 'https://creativecommons.org/licenses/by/2.0',
+        sourceUrl:
+          'https://commons.wikimedia.org/wiki/File:Banyan_Tree._Kawela_Bay_Beach_Park,_Kahuku_(503561)_(20130112196).jpg',
+      },
+    },
+    {
+      caption:
+        'The sign on site, naming the ahupua‘a of ‘Ōpana-Kawela and the films shot here.',
+      photo: {
+        url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Kawela_Bay_Beach_Park%2C_Kahuku_%28503548%29_%2820096558335%29.jpg/1280px-Kawela_Bay_Beach_Park%2C_Kahuku_%28503548%29_%2820096558335%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+        width: 1280,
+        height: 720,
+        title: 'Kawela Bay Beach Park, Kahuku (503548) (20096558335)',
+        author: 'Robert Linsdell from St. Andrews, Canada',
+        license: 'CC BY 2.0',
+        licenseUrl: 'https://creativecommons.org/licenses/by/2.0',
+        sourceUrl:
+          'https://commons.wikimedia.org/wiki/File:Kawela_Bay_Beach_Park,_Kahuku_(503548)_(20096558335).jpg',
+      },
+    },
+  ],
+
   faqs: [
     {
       question: 'Is the Kawela Bay banyan tree free to visit?',

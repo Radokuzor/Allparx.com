@@ -106,6 +106,12 @@ export async function searchByText(query: string, apiKey: string): Promise<Googl
 export function legacySlug(name: string): string {
   return name
     .toLowerCase()
+    // Fold diacritics to their base letter before stripping, or the letter is
+    // lost rather than simplified: "Nā Pali" would otherwise slug to "npali".
+    // WordPress transliterated the same way, so this also matches legacy URLs
+    // more often, never less.
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')

@@ -59,9 +59,15 @@ async function main() {
   const placeSnap = await db.collection('places').select('slug').get()
   const live = new Set(placeSnap.docs.map((doc) => doc.id))
 
-  const queue = LANDMARKS.map((landmark) => ({ ...landmark, slug: legacySlug(landmark.name) })).filter(
-    (landmark) => overwrite || !live.has(landmark.slug),
-  )
+  // Two slugs, deliberately: `matchSlug` is what Google's answer has to reduce
+  // to for the result to be accepted, `slug` is where the page is published.
+  // Keeping them separate lets a URL be nicer than an official name without
+  // loosening the check that we found the right place.
+  const queue = LANDMARKS.map((landmark) => ({
+    ...landmark,
+    matchSlug: legacySlug(landmark.name),
+    slug: landmark.slug ?? legacySlug(landmark.name),
+  })).filter((landmark) => overwrite || !live.has(landmark.slug))
   const batch = limit > 0 ? queue.slice(0, limit) : queue
 
   console.log(`   Landmarks in list      : ${LANDMARKS.length}`)
@@ -87,7 +93,7 @@ async function main() {
       continue
     }
 
-    const best = bestMatch(landmark.slug, results)
+    const best = bestMatch(landmark.matchSlug, results)
 
     if (!best) {
       rejected++

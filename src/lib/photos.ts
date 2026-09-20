@@ -1,4 +1,5 @@
 import categoryPhotos from '@/data/category-photos.json'
+import { getEditorial } from './place-editorial'
 
 /** A Wikimedia Commons image plus everything its licence requires us to show. */
 export type Photo = {
@@ -21,15 +22,21 @@ function hash(value: string): number {
 }
 
 /**
- * The place's own Commons photo when one was matched, otherwise a category photo
- * standing in for it. `illustrative` is true for the stand-in, which must not be
- * presented as the venue itself.
+ * A hand-picked editorial photo first, then the place's own Commons photo when
+ * one was matched, then a category photo standing in for it. `illustrative` is
+ * true for the stand-in, which must not be presented as the venue itself.
+ *
+ * The editorial pick leads so that the hero, the cards in every grid and the
+ * social preview all show the same picture — and so it survives the next
+ * `npm run photos:places`, which rewrites the `photo` field.
  */
 export function placePhoto(place: {
   slug: string
   placeType: string
   photo?: Photo | null
 }): { photo: Photo; illustrative: boolean } | null {
+  const chosen = getEditorial(place.slug)?.photos?.[0]
+  if (chosen) return { photo: chosen.photo, illustrative: false }
   if (place.photo) return { photo: place.photo, illustrative: false }
   const pool = byCategory[place.placeType] ?? []
   if (pool.length === 0) return null

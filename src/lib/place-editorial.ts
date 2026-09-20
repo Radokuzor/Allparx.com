@@ -1,4 +1,5 @@
 import type { Faq } from './place-content'
+import type { Photo } from './photos'
 import banyanTree from '@/content/places/banyan-tree'
 
 /**
@@ -17,6 +18,17 @@ import banyanTree from '@/content/places/banyan-tree'
  * `npm run ingest` or `npm run restore`, both of which rewrite whole documents.
  */
 
+/**
+ * A hand-picked Commons photo. `npm run photos:places` can only match a file
+ * whose title names the place, and it keeps just one — for a landmark worth
+ * writing about by hand, the pictures are worth choosing by eye too.
+ */
+export type EditorialPhoto = {
+  photo: Photo
+  /** Visible caption, and the image's alt text. */
+  caption: string
+}
+
 export type EditorialSection = {
   heading: string
   /** One paragraph per entry. Plain text — no markup is parsed. */
@@ -33,6 +45,12 @@ export type PlaceEditorial = {
   /** Replaces the generated intro paragraphs under "About". */
   lede: string[]
   sections: EditorialSection[]
+  /**
+   * The first is the page hero, ahead of anything `placePhoto` would find; the
+   * rest render as a gallery. Each one's licence is shown next to it, so only
+   * use licences that permit reuse with attribution.
+   */
+  photos?: EditorialPhoto[]
   /** Shown before the generated questions, and mirrored into FAQPage JSON-LD. */
   faqs?: Faq[]
   /** Rendered as a provenance line under the content. */
