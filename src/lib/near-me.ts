@@ -6,6 +6,7 @@
 import { distanceMiles } from './legacy-slug'
 import { NEAR_FLAGS, type NearEntry } from './near-index-format'
 import { NEAR_INDEX_FILE } from './snapshot-path'
+import type { Supply } from './track-event'
 
 export type Origin = { lat: number; lng: number; label: string }
 export type Ranked = { entry: NearEntry; miles: number }
@@ -121,6 +122,27 @@ export function sortRanked(items: Ranked[], sort: SortKey, mean: number): Ranked
   const score = (item: Ranked) =>
     item.entry.r === null ? -1 : weightedRating(item.entry.r, item.entry.v, mean)
   return copy.sort((a, b) => score(b) - score(a) || a.miles - b.miles || byName(a, b))
+}
+
+/**
+ * What we have around an origin, ignoring the visitor's filters: the "supply"
+ * side of the demand-vs-supply report. Filters are left out on purpose — the
+ * question is how well the directory covers the area, not what one visitor
+ * happened to narrow the list to.
+ */
+export function summarizeSupply(all: Ranked[]): Supply {
+  const supply: Supply = { nearest: null, within10: 0, within25: 0, within50: 0, byType: {} }
+  for (const { entry, miles } of all) {
+    if (supply.nearest === null || miles < supply.nearest) supply.nearest = miles
+    if (miles <= 10) supply.within10++
+    if (miles <= 25) {
+      supply.within25++
+      supply.byType[entry.t] = (supply.byType[entry.t] ?? 0) + 1
+    }
+    if (miles <= 50) supply.within50++
+  }
+  if (supply.nearest !== null) supply.nearest = Math.round(supply.nearest * 10) / 10
+  return supply
 }
 
 export const round3 = (value: number) => Math.round(value * 1000) / 1000

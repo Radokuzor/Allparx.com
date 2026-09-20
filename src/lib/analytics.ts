@@ -15,6 +15,10 @@ const NOTIFY_EVERY = 10
  */
 export const IGNORE_COOKIE = 'ap_ignore'
 
+/** Set by the proxy on every page view; also how /api/track knows a real browser sent an event. */
+export const VISITOR_COOKIE = 'ap_vid'
+export const SESSION_COOKIE = 'ap_sid'
+
 export type DeviceType = 'Mobile' | 'Tablet' | 'Desktop'
 
 /** One stored page view. Written by trackVisit, read by the /analytics dashboard. */
@@ -57,7 +61,7 @@ export interface VisitContext {
   newSession: boolean
 }
 
-function deviceType(userAgent: string): DeviceType {
+export function deviceType(userAgent: string): DeviceType {
   if (/iPad|Android(?!.*Mobile)|Tablet/i.test(userAgent)) return 'Tablet'
   if (/Mobi|iPhone|Android/i.test(userAgent)) return 'Mobile'
   return 'Desktop'
@@ -108,7 +112,7 @@ function isGooglebotIp(ip: string | null): boolean {
   return secondOctet >= 64 && secondOctet <= 95
 }
 
-function isBot(ua: string, ip: string | null): boolean {
+export function isBot(ua: string, ip: string | null): boolean {
   return !ua || BOT_PATTERN.test(ua) || isGooglebotIp(ip)
 }
 

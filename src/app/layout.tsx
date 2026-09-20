@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { LocateFixed, Search, TreePine } from 'lucide-react'
 import Link from 'next/link'
 import './globals.css'
+import FloatingNearMe from '@/components/FloatingNearMe'
 import MobileNav from '@/components/MobileNav'
 import { FEATURED_TYPES, typeLabelPlural } from '@/lib/place-types'
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, absoluteUrl } from '@/lib/site'
@@ -175,6 +176,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             © {new Date().getFullYear()} {SITE_NAME}. Place data from Google Places.
           </p>
         </footer>
+
+        <FloatingNearMe />
       </body>
     </html>
   )

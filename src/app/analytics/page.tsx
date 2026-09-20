@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { isAnalyticsAuthed } from '@/lib/analytics-auth'
 import { IGNORE_COOKIE } from '@/lib/analytics'
+import { MAX_EVENTS, type Coverage, type NearMeReport } from '@/lib/analytics-near-me'
 import { loadReport, MAX_VISITS, RANGES, type Bucket, type RangeKey, type Row } from '@/lib/analytics-report'
 import { cn } from '@/lib/utils'
 import { login, logout, setSelfExclusion } from './actions'
@@ -154,6 +155,8 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
         </Panel>
       </div>
 
+      <NearMeSection nearMe={report.nearMe} />
+
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <RankPanel title="Top pages" rows={report.pages} link />
         <RankPanel title="Traffic sources (per session)" rows={report.referrers} />
@@ -226,12 +229,113 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
   )
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div className="rounded-xl border border-gray-100 bg-white px-4 py-3.5 shadow-xs">
       <p className="text-xs font-medium text-gray-500">{label}</p>
       <p className="mt-1 text-2xl font-semibold tabular-nums text-gray-900">{value}</p>
+      {hint && <p className="mt-0.5 text-xs text-gray-400">{hint}</p>}
     </div>
+  )
+}
+
+const COVERAGE_STYLE: Record<Coverage, string> = {
+  None: 'bg-red-50 text-red-700',
+  Thin: 'bg-amber-50 text-amber-800',
+  Covered: 'bg-green-50 text-green-800',
+}
+
+/**
+ * The "Find near me" button and what people do with it. Demand is what they
+ * search for; supply is how many places we hold within 25 miles of that spot.
+ * An area near the top of the table marked "None" or "Thin" is where to
+ * ingest next.
+ */
+function NearMeSection({ nearMe }: { nearMe: NearMeReport }) {
+  const { clicks, searches } = nearMe
+  return (
+    <section className="mt-10">
+      <h2 className="text-xl font-bold tracking-tight text-gray-900">Near me: demand vs supply</h2>
+      <p className="mt-1 text-sm text-gray-500">
+        Searches are demand. Supply is the number of places we have within 25 miles of the spot
+        searched. Exact locations are never stored — GPS is kept to about 7 miles.
+      </p>
+
+      {nearMe.capped && (
+        <p className="mt-3 rounded-lg bg-amber-50 px-4 py-2.5 text-sm text-amber-800">
+          Showing the most recent {number.format(MAX_EVENTS)} events only — pick a shorter range for
+          complete numbers.
+        </p>
+      )}
+
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <Stat
+          label="Button clicks"
+          value={number.format(clicks.total)}
+          hint={`${number.format(clicks.floating)} floating · ${number.format(clicks.hero)} hero`}
+        />
+        <Stat label="Sessions that clicked" value={percent.format(clicks.sessionRate)} />
+        <Stat label="/near-me page views" value={number.format(nearMe.pageViews)} />
+        <Stat
+          label="Searches"
+          value={number.format(searches.total)}
+          hint={`${number.format(searches.gps)} GPS · ${number.format(searches.lookup)} typed`}
+        />
+        <Stat
+          label="Found places nearby"
+          value={number.format(searches.found - searches.unserved)}
+          hint="at least one within 25 mi"
+        />
+        <Stat
+          label="Unserved searches"
+          value={number.format(searches.unserved)}
+          hint="nothing within 25 mi"
+        />
+        <Stat label="Place not recognised" value={number.format(searches.notFound)} />
+        <Stat label="GPS failed / denied" value={number.format(searches.gpsFailed)} />
+      </div>
+
+      <Panel title="Where people search" className="mt-4">
+        <Table
+          head={['Area', 'Searches', 'Visitors', 'Avg places ≤ 25 mi', 'Avg nearest', 'Coverage']}
+          rows={nearMe.areas.map((row) => [
+            row.area,
+            number.format(row.searches),
+            number.format(row.visitors),
+            row.avgWithin25.toFixed(1),
+            row.avgNearest === null ? '—' : `${row.avgNearest.toFixed(1)} mi`,
+            <span
+              key="c"
+              className={cn('rounded-full px-2.5 py-0.5 text-xs font-medium', COVERAGE_STYLE[row.coverage])}
+            >
+              {row.coverage}
+            </span>,
+          ])}
+        />
+      </Panel>
+
+      <div className="mt-4 grid gap-6 lg:grid-cols-2">
+        <RankPanel title="Floating button clicks by page" rows={nearMe.clickPages} link />
+        <RankPanel title="Places we couldn’t recognise" rows={nearMe.missed} />
+      </div>
+
+      <Panel title={`Recent near-me searches (${nearMe.recent.length})`} className="mt-4">
+        <Table
+          head={['Time', 'How', 'Searched for', '≤ 10 mi', '≤ 25 mi', '≤ 50 mi', 'Nearest', 'Device', 'Country']}
+          rows={nearMe.recent.map((row) => [
+            timestamp(row.ts),
+            row.method === 'gps' ? 'GPS' : 'Typed',
+            row.what || '—',
+            row.within10 ?? '—',
+            row.within25 ?? '—',
+            row.within50 ?? '—',
+            row.nearest === null ? '—' : `${row.nearest} mi`,
+            row.device,
+            row.country ?? '—',
+          ])}
+        />
+      </Panel>
+    </section>
   )
 }
 

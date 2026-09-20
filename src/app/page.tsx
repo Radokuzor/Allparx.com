@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { LocateFixed } from 'lucide-react'
 import PlaceGrid from '@/components/PlaceGrid'
 import HeroVideo from '@/components/HeroVideo'
 import JsonLd from '@/components/JsonLd'
+import NearMeCta from '@/components/NearMeCta'
 import SearchBox from '@/components/SearchBox'
 import { getAllCities, getPlacesByType, citySlug } from '@/lib/firestore'
 import { FEATURED_TYPES, PLACE_TYPES, typeLabelPlural } from '@/lib/place-types'
@@ -53,13 +53,7 @@ export default async function HomePage() {
             <div className="w-full flex-1 rounded-full border border-white/25 bg-white/15 p-1.5 shadow-2xl backdrop-blur-xl">
               <SearchBox />
             </div>
-            <Link
-              href="/near-me"
-              className="flex shrink-0 items-center justify-center gap-2 rounded-full border border-white/25 bg-white/15 px-6 py-3.5 text-sm font-semibold text-white shadow-2xl backdrop-blur-xl transition-colors hover:bg-white/25"
-            >
-              <LocateFixed className="h-4.5 w-4.5" />
-              Near me
-            </Link>
+            <NearMeCta source="hero" />
           </div>
           <div className="mt-8 flex flex-wrap justify-center gap-2.5">
             {FEATURED_TYPES.map((type) => (

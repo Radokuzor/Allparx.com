@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Baby, Bath, Car, LocateFixed, MapPin, PawPrint, Star } from 'lucide-react'
-import { useEffect, useMemo, useState, useSyncExternalStore, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type FormEvent } from 'react'
 import { NEAR_FLAGS, type NearEntry, type NearFlag } from '@/lib/near-index-format'
 import {
   RADIUS_OPTIONS,
@@ -13,11 +13,13 @@ import {
   meanRating,
   round3,
   sortRanked,
+  summarizeSupply,
   withDistance,
   type Origin,
   type SortKey,
 } from '@/lib/near-me'
 import { typeLabel, typeLabelPlural } from '@/lib/place-types'
+import { coarsen, track } from '@/lib/track-event'
 
 const PAGE = 20
 
@@ -92,6 +94,9 @@ function parseOrigin(raw: string | null): Origin | null {
 
 type Match = { label: string; lat: number; lng: number }
 
+/** A search the visitor just made, waiting for the place index to score it. */
+type PendingSearch = { method: 'gps' | 'lookup'; query?: string; label?: string }
+
 export default function NearMe() {
   const stored = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
   const origin = useMemo(() => parseOrigin(stored), [stored])
@@ -109,6 +114,7 @@ export default function NearMe() {
   const [radius, setRadius] = useState(25)
   const [sort, setSort] = useState<SortKey>('top')
   const [shown, setShown] = useState({ count: PAGE, signature: '' })
+  const pendingSearch = useRef<PendingSearch | null>(null)
 
   useEffect(() => {
     let live = true
@@ -140,12 +146,33 @@ export default function NearMe() {
     return { items: sortRanked(anywhere, 'nearest', mean), widened: anywhere.length > 0 }
   }, [all, filters, radius, sort, mean])
 
+  // Report what a fresh search found, once the index has scored it. Only
+  // searches the visitor just made count — a remembered location that loads
+  // on a return visit isn't a new search.
+  useEffect(() => {
+    const search = pendingSearch.current
+    if (!search || !all || !origin) return
+    pendingSearch.current = null
+    track({
+      type: 'near_me_search',
+      method: search.method,
+      outcome: 'ok',
+      query: search.query,
+      label: search.label,
+      // Coarsened here so a precise GPS fix never leaves the browser.
+      lat: coarsen(origin.lat),
+      lng: coarsen(origin.lng),
+      supply: summarizeSupply(all),
+    })
+  }, [all, origin])
+
   // Back to the first page whenever anything that changes the list changes.
   const signature = `${origin?.label}|${[...types].sort().join()}|${amenities}|${radius}|${sort}`
   const visibleCount = shown.signature === signature ? shown.count : PAGE
 
   function useMyLocation() {
     if (!('geolocation' in navigator)) {
+      track({ type: 'near_me_search', method: 'gps', outcome: 'gps_failed', reason: 'unsupported' })
       setProblem('This browser can’t share its location. Enter a ZIP code or city instead.')
       return
     }
@@ -155,6 +182,7 @@ export default function NearMe() {
       (position) => {
         setBusy(null)
         setAlternates([])
+        pendingSearch.current = { method: 'gps' }
         saveOrigin({
           lat: round3(position.coords.latitude),
           lng: round3(position.coords.longitude),
@@ -163,6 +191,17 @@ export default function NearMe() {
       },
       (error) => {
         setBusy(null)
+        track({
+          type: 'near_me_search',
+          method: 'gps',
+          outcome: 'gps_failed',
+          reason:
+            error.code === error.PERMISSION_DENIED
+              ? 'denied'
+              : error.code === error.TIMEOUT
+                ? 'timeout'
+                : 'unavailable',
+        })
         setProblem(
           error.code === error.PERMISSION_DENIED
             ? 'Location access is blocked for this site. Enter a ZIP code or city instead.'
@@ -186,11 +225,13 @@ export default function NearMe() {
       const response = await fetch(`/api/locate?q=${encodeURIComponent(query)}`)
       const { matches } = (await response.json()) as { matches: Match[] }
       if (matches.length === 0) {
+        track({ type: 'near_me_search', method: 'lookup', outcome: 'not_found', query })
         setProblem(`We couldn’t find “${query}”. Try a 5-digit ZIP code or a city like “Austin, TX”.`)
         return
       }
       const [best, ...rest] = matches
       setAlternates(rest)
+      pendingSearch.current = { method: 'lookup', query, label: best.label }
       saveOrigin(best)
     } catch {
       setProblem('Something went wrong looking that up. Please try again.')
@@ -254,8 +295,8 @@ export default function NearMe() {
         )}
 
         <p className="mt-6 text-xs leading-relaxed text-gray-400">
-          Your location is only used to sort places. It stays in your browser and is never saved to
-          our database.
+          Your exact location never leaves your browser. We only note the general area you searched
+          (like “Austin, TX”) and how many places we found there, so we know where to add more.
         </p>
       </div>
     )

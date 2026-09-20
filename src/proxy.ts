@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextFetchEvent, NextRequest } from 'next/server'
-import { IGNORE_COOKIE, trackVisit } from './lib/analytics'
+import { IGNORE_COOKIE, SESSION_COOKIE, VISITOR_COOKIE, trackVisit } from './lib/analytics'
 
-const VISITOR_COOKIE = 'ap_vid'
-const SESSION_COOKIE = 'ap_sid'
 const VISITOR_MAX_AGE = 60 * 60 * 24 * 365 * 2
 // A session ends after 30 minutes without a page view.
 const SESSION_MAX_AGE = 60 * 30

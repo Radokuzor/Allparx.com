@@ -1,6 +1,7 @@
 import 'server-only'
 import type { Timestamp } from 'firebase-admin/firestore'
 import { VISITS_COLLECTION, type VisitRecord } from './analytics'
+import { loadNearMeReport, type NearMeReport } from './analytics-near-me'
 import { db } from './firebase-admin'
 
 export const RANGES = { '1': 'Last 24 hours', '7': 'Last 7 days', '30': 'Last 30 days', '90': 'Last 90 days' } as const
@@ -45,6 +46,7 @@ export interface Report {
   languages: Row[]
   edgeRegions: Row[]
   botAgents: Row[]
+  nearMe: NearMeReport
   topVisitors: { id: string; views: number; sessions: number; lastSeen: Date; location: string; ip: string | null; device: string }[]
   recent: Visit[]
 }
@@ -162,6 +164,11 @@ export async function loadReport(range: RangeKey, includeBots: boolean): Promise
     .filter((v) => v.utmSource || v.utmCampaign)
     .map((v) => [v.utmSource, v.utmMedium, v.utmCampaign].filter(Boolean).join(' / '))
 
+  const nearMe = await loadNearMeReport(since, {
+    sessions: sessions.size,
+    nearMePageViews: visits.filter((v) => v.path === '/near-me').length,
+  })
+
   return {
     capped: snapshot.size >= MAX_VISITS,
     allTimeCount: counter.data()?.count ?? null,
@@ -194,6 +201,7 @@ export async function loadReport(range: RangeKey, includeBots: boolean): Promise
     languages: rank(visits.map((v) => v.language), total),
     edgeRegions: rank(visits.map((v) => v.edgeRegion), total),
     botAgents: rank(bots.map((v) => v.userAgent), bots.length),
+    nearMe,
     topVisitors,
     recent: visits.slice(0, 200),
   }

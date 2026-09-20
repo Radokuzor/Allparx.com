@@ -8,6 +8,7 @@
  */
 import zipRows from '@/data/us-zips.json'
 import placeRows from '@/data/us-places.json'
+import { distanceMiles } from './legacy-slug'
 import { US_STATE_NAMES } from './us-states'
 
 export type LocationMatch = { label: string; lat: number; lng: number }
@@ -92,6 +93,39 @@ function readings(query: string): { name: string; state: string | null }[] {
     if (state) out.push({ name: words.slice(0, -take).join(' '), state })
   }
   return out
+}
+
+/**
+ * The Census place a coordinate most plausibly sits in, as "City, ST" — how
+ * analytics turns a coarse GPS fix or a ZIP into an area a person can read.
+ * Null when nothing is within `maxMiles`, i.e. the point is outside US coverage.
+ *
+ * Plain nearest-centroid gets big cities wrong: downtown Denver is closer to
+ * the centroid of the suburb Glendale than to Denver's own. So distance is
+ * judged against each place's own size (the radius of a circle with its land
+ * area), which lets a city's footprint outweigh a small neighbour's centroid.
+ */
+export function nearestPlaceLabel(lat: number, lng: number, maxMiles = 25): string | null {
+  let best: string | null = null
+  let bestScore = Infinity
+  for (const [name, state, placeLat, placeLng, area] of placeRows as unknown as [
+    string,
+    string,
+    number,
+    number,
+    number,
+  ][]) {
+    // Cheap reject before the trig: a degree of latitude is ~69 miles.
+    if (Math.abs(placeLat - lat) * 69 > maxMiles) continue
+    const miles = distanceMiles({ lat, lng }, { lat: placeLat, lng: placeLng })
+    if (miles > maxMiles) continue
+    const score = miles / Math.max(1, Math.sqrt(area / Math.PI))
+    if (score < bestScore) {
+      bestScore = score
+      best = `${name}, ${state}`
+    }
+  }
+  return best
 }
 
 /**
