@@ -5,11 +5,9 @@ import { Star } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import SearchBox from './SearchBox'
-import { SEARCH_INDEX_FILE } from '@/lib/snapshot-path'
+import { loadSearchIndex, normalize, type IndexedEntry, type SearchEntry } from '@/lib/search-index'
 import { baseSlug, titleFromSlug } from '@/lib/legacy-slug'
 import { typeLabel } from '@/lib/place-types'
-
-type Entry = { s: string; n: string; c: string; t: string; a: string; r: number | null }
 
 /**
  * Turns the 404 into a way forward.
@@ -22,7 +20,7 @@ type Entry = { s: string; n: string; c: string; t: string; a: string; r: number 
  */
 export default function NotFoundSuggestions() {
   const pathname = usePathname()
-  const [entries, setEntries] = useState<Entry[] | null>(null)
+  const [entries, setEntries] = useState<IndexedEntry[] | null>(null)
 
   const slug = useMemo(() => {
     const match = /^\/places\/([^/]+)\/?$/.exec(pathname ?? '')
@@ -32,9 +30,8 @@ export default function NotFoundSuggestions() {
   useEffect(() => {
     if (!slug) return
     let active = true
-    fetch(`/${SEARCH_INDEX_FILE}`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data: Entry[] | null) => active && data && setEntries(data))
+    loadSearchIndex()
+      .then((loaded) => active && setEntries(loaded))
       .catch(() => {
         // Suggestions are a bonus; the links below always work.
       })
@@ -47,18 +44,19 @@ export default function NotFoundSuggestions() {
 
   const matches = useMemo(() => {
     if (!entries || !slug) return []
-    const terms = baseSlug(slug).split('-').filter(Boolean)
+    const terms = normalize(baseSlug(slug)).split('-').filter(Boolean)
     if (terms.length === 0) return []
 
+    // Deliberately a partial match, unlike the search scorer: a dead legacy
+    // slug rarely matches a live place on every word, so rank by how much of
+    // it matched rather than requiring all of it.
     return entries
-      .map((entry) => {
-        const haystack = `${entry.n} ${entry.c} ${entry.a} ${typeLabel(entry.t)}`.toLowerCase()
+      .map(({ entry, haystack }) => {
         const hits = terms.filter((term) => haystack.includes(term)).length
         if (hits === 0) return null
-        // Rank by how much of the original name matched, then by rating.
         return { entry, score: hits / terms.length + (entry.r ?? 0) / 10 }
       })
-      .filter((hit): hit is { entry: Entry; score: number } => hit !== null)
+      .filter((hit): hit is { entry: SearchEntry; score: number } => hit !== null)
       .sort((a, b) => b.score - a.score)
       .slice(0, 6)
       .map((hit) => hit.entry)

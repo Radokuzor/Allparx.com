@@ -9,7 +9,7 @@ import PhotoCredit from '@/components/PhotoCredit'
 import StayEnquiryForm from '@/components/StayEnquiryForm'
 import { AFFILIATION_NOTICE, HOTELS, getHotel } from '@/lib/hotels'
 import { googleListingUrl, mapEmbedUrl } from '@/lib/google-maps'
-import { photoAtWidth } from '@/lib/photos'
+import { photoAtWidth, photoCredits } from '@/lib/photos'
 import { SITE_NAME, absoluteUrl } from '@/lib/site'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -59,6 +59,7 @@ export default async function HotelPage({ params }: Props) {
   const hero = hotel.photos[0]
   const gallery = hotel.photos.slice(1)
   const others = HOTELS.filter((h) => h.slug !== hotel.slug)
+  const credits = photoCredits(hotel.photos.map(({ photo }) => photo))
   const mapEmbedSrc = mapEmbedUrl({ googlePlaceId: hotel.googlePlaceId, lat: hotel.lat, lng: hotel.lng })
   const listingUrl = googleListingUrl({
     googlePlaceId: hotel.googlePlaceId,
@@ -152,12 +153,6 @@ export default async function HotelPage({ params }: Props) {
           </div>
         </div>
 
-        {hero && (
-          <p className="-mt-6 mb-8 text-right text-xs text-gray-400">
-            <PhotoCredit photo={hero.photo} />
-          </p>
-        )}
-
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="space-y-8 lg:col-span-2">
             <section>
@@ -206,7 +201,7 @@ export default async function HotelPage({ params }: Props) {
                         />
                       </a>
                       <figcaption className="mt-2 text-sm leading-snug text-gray-500">
-                        {caption} <PhotoCredit photo={photo} />
+                        {caption}
                       </figcaption>
                     </figure>
                   ))}
@@ -296,6 +291,18 @@ export default async function HotelPage({ params }: Props) {
             />
           </aside>
         </div>
+
+        {/* Attribution for every picture above, in one place — the same shape
+            a place page uses, so the two read alike. */}
+        {credits.length > 0 && (
+          <footer className="mt-12 space-y-1 border-t border-gray-100 pt-6 text-xs leading-relaxed text-gray-400">
+            {credits.map((photo) => (
+              <p key={`${photo.author}|${photo.license}`}>
+                <PhotoCredit photo={photo} />
+              </p>
+            ))}
+          </footer>
+        )}
       </div>
     </>
   )

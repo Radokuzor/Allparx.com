@@ -7,8 +7,13 @@
  *
  *   npm run ingest -- --cities=5
  *   npm run ingest -- --cities=5 --types=park,dog_park
+ *   npm run ingest -- --only=austin,dallas       # just these cities
+ *   npm run ingest -- --list-cities              # names --only accepts
  *   npm run ingest -- --dry-run          # hits Places API, writes nothing
  *   npm run ingest                       # all cities, all types
+ *
+ * Every city+type pair is one billed Places API call, so prefer `--only` over
+ * raising `--cities`: the latter re-sweeps everything before it in the list.
  */
 import * as admin from 'firebase-admin'
 import axios from 'axios'
@@ -89,6 +94,9 @@ const US_CITIES: City[] = [
   { name: 'Anchorage', state: 'AK', lat: 61.2181, lng: -149.9003 },
   { name: 'Salt Lake City', state: 'UT', lat: 40.7608, lng: -111.891 },
   { name: 'Boise', state: 'ID', lat: 43.615, lng: -116.2023 },
+  // Below the top 50 by population, but added on request. Reach these with
+  // --only=<name>; a bare --cities=N stops before them.
+  { name: 'College Station', state: 'TX', lat: 30.628, lng: -96.3344 },
 ]
 
 // --- CLI flags -------------------------------------------------------------
@@ -101,9 +109,35 @@ const hasFlag = (name: string) => process.argv.slice(2).includes(`--${name}`)
 
 const cityLimit = Number(flag('cities') ?? US_CITIES.length)
 const typeFilter = flag('types')?.split(',').map((t) => t.trim()).filter(Boolean)
+const onlyFilter = flag('only')?.split(',').map((c) => c.trim()).filter(Boolean)
 const dryRun = hasFlag('dry-run')
 
-const cities = US_CITIES.slice(0, cityLimit)
+/** Match `--only` values loosely: "college-station", "College Station", "SAN ANTONIO". */
+const cityKey = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, '')
+
+if (hasFlag('list-cities')) {
+  console.log('Cities this script can ingest (pass any of these to --only):\n')
+  for (const city of US_CITIES) console.log(`  ${cityKey(city.name).padEnd(20)} ${city.name}, ${city.state}`)
+  process.exit(0)
+}
+
+let cities: City[]
+if (onlyFilter) {
+  const wanted = onlyFilter.map(cityKey)
+  cities = US_CITIES.filter((c) => wanted.includes(cityKey(c.name)))
+
+  // A typo here would otherwise look like a city Google has no places for.
+  const missing = onlyFilter.filter((name) => !cities.some((c) => cityKey(c.name) === cityKey(name)))
+  if (missing.length > 0) {
+    console.error(`✖ Not in US_CITIES: ${missing.join(', ')}`)
+    console.error('  Run `npm run ingest -- --list-cities` to see the accepted names,')
+    console.error('  or add the city (with its lat/lng) to US_CITIES in this file.')
+    process.exit(1)
+  }
+} else {
+  cities = US_CITIES.slice(0, cityLimit)
+}
+
 const types: string[] = typeFilter ?? [...PLACE_TYPES]
 
 // --- Helpers ---------------------------------------------------------------

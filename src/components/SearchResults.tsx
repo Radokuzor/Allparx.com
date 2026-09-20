@@ -5,48 +5,32 @@ import { Star } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import SearchBox from './SearchBox'
-import { SEARCH_INDEX_FILE } from '@/lib/snapshot-path'
+import { loadSearchIndex, rankPlaces, type IndexedEntry } from '@/lib/search-index'
 import { typeLabel } from '@/lib/place-types'
-
-type Entry = { s: string; n: string; c: string; t: string; a: string; r: number | null }
 
 const LIMIT = 60
 
 export default function SearchResults() {
   const query = (useSearchParams().get('q') ?? '').trim()
-  const [entries, setEntries] = useState<Entry[] | null>(null)
+  const [index, setIndex] = useState<IndexedEntry[] | null>(null)
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     let active = true
-    fetch(`/${SEARCH_INDEX_FILE}`)
-      .then((response) => {
-        if (!response.ok) throw new Error(String(response.status))
-        return response.json()
-      })
-      .then((data: Entry[]) => active && setEntries(data))
+    loadSearchIndex()
+      .then((loaded) => active && setIndex(loaded))
       .catch(() => active && setFailed(true))
     return () => {
       active = false
     }
   }, [])
 
-  const matches = useMemo(() => {
-    if (!entries || query.length === 0) return []
-    const terms = query.toLowerCase().split(/\s+/)
-    return entries
-      .map((entry) => {
-        const haystack = `${entry.n} ${entry.c} ${entry.a} ${typeLabel(entry.t)}`.toLowerCase()
-        if (!terms.every((term) => haystack.includes(term))) return null
-        // Prefer name matches over city/category matches, then higher ratings.
-        const score = (entry.n.toLowerCase().startsWith(terms[0]) ? 100 : 0) + (entry.r ?? 0)
-        return { entry, score }
-      })
-      .filter((hit): hit is { entry: Entry; score: number } => hit !== null)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, LIMIT)
-      .map((hit) => hit.entry)
-  }, [entries, query])
+  // Same scorer the suggestion dropdown uses, so the ordering a visitor saw
+  // while typing is the ordering they land on.
+  const matches = useMemo(
+    () => (index ? rankPlaces(index, query, LIMIT) : []),
+    [index, query],
+  )
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
@@ -65,7 +49,7 @@ export default function SearchResults() {
           </Link>{' '}
           instead.
         </p>
-      ) : entries === null ? (
+      ) : index === null ? (
         <p className="mt-8 text-gray-400">Searching…</p>
       ) : matches.length === 0 ? (
         <p className="mt-8 text-gray-500">

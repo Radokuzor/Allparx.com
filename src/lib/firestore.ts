@@ -1,5 +1,6 @@
 import 'server-only'
 import { FieldPath } from 'firebase-admin/firestore'
+import { citySlug } from './city-slug'
 import { db } from './firebase-admin'
 import { snapshotBySlug, snapshotPlaces } from './places-snapshot'
 import { docSlug, publishedSlug } from './slug-alias'
@@ -384,11 +385,9 @@ export async function resolveCity(slug: string): Promise<string | null> {
   return cities.find((c) => citySlug(c) === slug) ?? null
 }
 
-/** URL-safe form of a city name, e.g. "Salt Lake City" -> "salt-lake-city". */
-export function citySlug(city: string): string {
-  return city
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-}
+/**
+ * URL-safe form of a city name, e.g. "Salt Lake City" -> "salt-lake-city".
+ * Defined in `city-slug.ts` so the browser-side search suggestions can build
+ * the same slugs without pulling in this `server-only` module.
+ */
+export { citySlug }

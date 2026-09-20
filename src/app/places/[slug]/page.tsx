@@ -32,7 +32,7 @@ import JsonLd from '@/components/JsonLd'
 import PhotoCredit from '@/components/PhotoCredit'
 import PlaceCard from '@/components/PlaceCard'
 import { googleListingUrl, mapEmbedUrl } from '@/lib/google-maps'
-import { photoAtWidth, placePhoto, type Photo } from '@/lib/photos'
+import { photoAtWidth, photoCredits, placePhoto } from '@/lib/photos'
 import {
   citySlug,
   findPlacesByBaseName,
@@ -672,16 +672,3 @@ export default async function PlacePage({ params }: Props) {
   )
 }
 
-/**
- * One credit line per photographer and licence, however many of their photos
- * appear. A Commons set is usually one afternoon's work, so six identical lines
- * would say the same thing.
- */
-function photoCredits(photos: Photo[]): Photo[] {
-  const seen = new Map<string, Photo>()
-  for (const photo of photos) {
-    const key = `${photo.author}|${photo.license}`
-    if (!seen.has(key)) seen.set(key, photo)
-  }
-  return [...seen.values()]
-}

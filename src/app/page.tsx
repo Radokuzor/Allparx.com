@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
 import PlaceGrid from '@/components/PlaceGrid'
+import HeroVideo from '@/components/HeroVideo'
 import JsonLd from '@/components/JsonLd'
 import SearchBox from '@/components/SearchBox'
 import { getAllCities, getPlacesByType, citySlug } from '@/lib/firestore'
@@ -37,27 +38,24 @@ export default async function HomePage() {
         }}
       />
 
-      <div className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(ellipse_60%_55%_at_50%_-10%,rgba(21,128,61,0.10),transparent)]"
-        />
+      <section className="relative isolate overflow-hidden rounded-b-[2rem] text-white sm:rounded-b-[2.5rem]">
+        <HeroVideo />
 
-        <div className="mx-auto max-w-6xl px-6 pb-12 pt-16 text-center sm:pt-20">
+        <div className="mx-auto flex min-h-[34rem] max-w-6xl flex-col items-center justify-center px-6 py-20 text-center lg:min-h-[40rem]">
           {cities.length > 0 && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-white px-3.5 py-1.5 text-xs font-medium text-green-700 shadow-sm">
-              <MapPin className="h-3.5 w-3.5" />
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white shadow-lg backdrop-blur-xl">
+              <MapPin className="h-3.5 w-3.5 text-green-300" />
               {cities.length} cities · {PLACE_TYPES.length} outdoor categories
             </span>
           )}
-          <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
+          <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-bold tracking-tight text-white [text-shadow:0_2px_28px_rgba(0,0,0,0.5)] sm:text-5xl lg:text-6xl">
             Find Your Next Outdoor Adventure
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500 sm:text-xl">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/85 [text-shadow:0_1px_16px_rgba(0,0,0,0.5)] sm:text-xl">
             Parks, trails, dog parks, beaches, and campgrounds — with real hours, ratings and
             directions.
           </p>
-          <div className="mx-auto mt-8 max-w-xl">
+          <div className="mx-auto mt-8 w-full max-w-xl rounded-full border border-white/25 bg-white/15 p-1.5 shadow-2xl backdrop-blur-xl">
             <SearchBox />
           </div>
           <div className="mt-8 flex flex-wrap justify-center gap-2.5">
@@ -65,16 +63,16 @@ export default async function HomePage() {
               <Link
                 key={type}
                 href={`/places/category/${type}`}
-                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 shadow-sm transition-colors hover:border-green-200 hover:text-green-700"
+                className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur-xl transition-colors hover:border-white/50 hover:bg-white/20"
               >
                 {typeLabelPlural(type)}
               </Link>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="mx-auto max-w-6xl px-6 pb-12">
+      <div className="mx-auto max-w-6xl px-6 pb-12 pt-14">
         {sections.map(({ type, places }) => (
           <section key={type} className="mb-16">
             <div className="mb-6 flex items-baseline justify-between">

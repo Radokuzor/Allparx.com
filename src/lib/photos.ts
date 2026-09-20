@@ -43,6 +43,20 @@ export function placePhoto(place: {
   return { photo: pool[hash(place.slug) % pool.length], illustrative: true }
 }
 
+/**
+ * One credit line per photographer and licence, however many of their photos
+ * appear. A Commons set is usually one afternoon's work, so six identical lines
+ * would say the same thing.
+ */
+export function photoCredits(photos: Photo[]): Photo[] {
+  const seen = new Map<string, Photo>()
+  for (const photo of photos) {
+    const key = `${photo.author}|${photo.license}`
+    if (!seen.has(key)) seen.set(key, photo)
+  }
+  return [...seen.values()]
+}
+
 /** Commons renders fixed widths; stored URLs are the 1280px rendition. */
 export function photoAtWidth(url: string, width: 500 | 960 | 1280): string {
   return url.replace('/1280px-', `/${width}px-`)
