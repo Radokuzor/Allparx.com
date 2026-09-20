@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Baby, Bath, PawPrint, Star } from 'lucide-react'
+import SaveButton from '@/components/SaveButton'
 import type { Place } from '@/lib/firestore'
 import { photoAtWidth, placePhoto } from '@/lib/photos'
 import { typeLabel } from '@/lib/place-types'
@@ -30,8 +31,11 @@ export default function PlaceCard({ place }: { place: Place }) {
         <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-gray-700 shadow-sm backdrop-blur-sm">
           {typeLabel(place.placeType)}
         </span>
+        {/* The heart takes the top-right corner, so the rating moves down to
+            the darkened edge of the photo where it still reads clearly. */}
+        <SaveButton slug={place.slug} name={place.name} className="absolute right-3 top-3" />
         {place.rating !== null && (
-          <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-xs font-semibold text-gray-800 shadow-sm backdrop-blur-sm">
+          <span className="absolute bottom-3 right-3 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-xs font-semibold text-gray-800 shadow-sm backdrop-blur-sm">
             <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
             {place.rating}
           </span>

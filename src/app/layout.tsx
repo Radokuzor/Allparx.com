@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google'
 import { LocateFixed, Search, TreePine } from 'lucide-react'
 import Link from 'next/link'
 import './globals.css'
+import AuthProvider from '@/components/auth/AuthProvider'
+import UserMenu from '@/components/auth/UserMenu'
 import FloatingNearMe from '@/components/FloatingNearMe'
 import MobileNav from '@/components/MobileNav'
 import { FEATURED_TYPES, typeLabelPlural } from '@/lib/place-types'
@@ -88,6 +90,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={cn('font-sans', inter.variable)}>
       <body className="font-sans antialiased">
+        {/* Wraps everything: the header menu, the save buttons on every card
+            and the sign-in popup all read the same session from here. */}
+        <AuthProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema) }}
@@ -132,6 +137,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Search className="h-4 w-4" />
                 Search
               </Link>
+              <UserMenu />
             </div>
             <MobileNav />
           </nav>
@@ -178,6 +184,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </footer>
 
         <FloatingNearMe />
+        </AuthProvider>
       </body>
     </html>
   )

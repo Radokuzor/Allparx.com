@@ -22,6 +22,9 @@ const legacyCategoryRedirects = PLACE_TYPES.filter((type) => type.includes("_"))
 });
 
 const nextConfig: NextConfig = {
+  // nodemailer resolves its transports with dynamic requires, which the
+  // bundler cannot follow — leave it as a plain node_modules import.
+  serverExternalPackages: ["nodemailer"],
   async redirects() {
     return legacyCategoryRedirects;
   },

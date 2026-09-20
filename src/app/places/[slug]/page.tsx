@@ -31,6 +31,7 @@ import type { LucideIcon } from 'lucide-react'
 import JsonLd from '@/components/JsonLd'
 import PhotoCredit from '@/components/PhotoCredit'
 import PlaceCard from '@/components/PlaceCard'
+import PlaceSaveActions from '@/components/PlaceSaveActions'
 import { googleListingUrl, mapEmbedUrl } from '@/lib/google-maps'
 import { photoAtWidth, photoCredits, placePhoto } from '@/lib/photos'
 import {
@@ -353,6 +354,7 @@ export default async function PlacePage({ params }: Props) {
               {typeLabel(place.placeType)} · {where}
             </span>
             <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl">{name}</h1>
+            <PlaceSaveActions slug={place.slug} name={name} />
           </div>
         </div>
 
