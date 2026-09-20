@@ -1,21 +1,26 @@
 import type { PlaceEditorial } from '@/lib/place-editorial'
 
 /**
- * /places/banyan-tree — the Kawela Bay banyan on O'ahu's North Shore.
+ * /places/banyan-tree-kawela-bay-oahu — the Kawela Bay banyan on O'ahu's
+ * North Shore.
  *
- * This URL carried the great majority of the previous allparx.com's organic
- * traffic and 404'd through the rebuild (see docs/seo/semrush-2026-09-12/).
- * People arrive here having searched the tree by name, so the page has to
+ * This was published at /places/banyan-tree until that URL was given over to
+ * the hotel hub, which is where the commercial half of the "banyan tree"
+ * searches was always going (see docs/seo/semrush-2026-09-12/). The hub links
+ * here in its first screen, so the people who wanted the tree still land on
+ * it. People arrive having searched the tree by name, so the page has to
  * answer what it is, where it is and how to reach it before anything else.
  */
 const banyanTree: PlaceEditorial = {
+  displayName: 'Kawela Bay Banyan Tree',
+
   metaDescription:
     'The Kawela Bay banyan tree on O‘ahu’s North Shore — the "Lost" filming site near Kahuku. How to find the unmarked trailhead, what the 5-minute walk is like, and what to bring.',
 
   lede: [
     'The banyan at Kawela Bay is one of the most photographed trees in Hawai‘i, and one of the easiest to walk straight past. It stands a few minutes off Kamehameha Highway near Kahuku, at the northern tip of O‘ahu, screened from the road by a wall of ironwood and hau. There is no gate, no ticket and no sign at the turn-off — which is most of the reason the crowds that fill the rest of the North Shore never reach it.',
     'What you find at the end of the path is less a tree than a small forest with one trunk somewhere in the middle of it. Banyans grow by dropping aerial roots from their branches; each root that reaches soil thickens into a new trunk, and the canopy walks outward on them. This one has been walking for a long time. The crown runs well over a hundred feet across, the roots hang in curtains you can stand inside, and the ground beneath stays cool and dim even at midday.',
-    'The tree sits just behind the beach at Kawela Bay, a shallow crescent tucked behind the Ritz-Carlton O‘ahu, Turtle Bay. Most people come for both: the tree first, then ten minutes further to a calm, shaded bay where green sea turtles feed close in. Google reviewers rate it 4.7 out of 5 across more than 260 reviews, which for a tree with no facilities, no staff and no admission is about as clear a verdict as the format allows.',
+    'The tree sits just behind the beach at Kawela Bay, a shallow crescent tucked behind The Ritz-Carlton O‘ahu, Turtle Bay — the resort a mile east along the same highway, which until 2024 was Turtle Bay Resort. Most people come for both: the tree first, then ten minutes further to a calm, shaded bay where green sea turtles feed close in. Google reviewers rate it 4.7 out of 5 across more than 260 reviews, which for a tree with no facilities, no staff and no admission is about as clear a verdict as the format allows.',
   ],
 
   sections: [

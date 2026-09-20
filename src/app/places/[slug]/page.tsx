@@ -145,15 +145,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const where = placeLocation(place)
-  const title = `${place.name} — ${where}`
+  const editorial = getEditorial(place.slug)
+  const name = editorial?.displayName ?? place.name
+  const title = `${name} — ${where}`
   // Only a photo of the place itself: a category stand-in in a share card
   // reads as a picture of this place, which it is not.
   const social = placePhoto(place)
   const image = social && !social.illustrative ? photoAtWidth(social.photo.url, 1280) : null
   const description =
-    getEditorial(place.slug)?.metaDescription ??
+    editorial?.metaDescription ??
     place.description ??
-    `${place.name} is a ${typeLabel(place.placeType).toLowerCase()} in ${where}. Find hours, directions, ratings, amenities and nearby outdoor spots on ${SITE_NAME}.`
+    `${name} is a ${typeLabel(place.placeType).toLowerCase()} in ${where}. Find hours, directions, ratings, amenities and nearby outdoor spots on ${SITE_NAME}.`
 
   return {
     title,
@@ -162,7 +164,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       type: 'website',
       url: absoluteUrl(`/places/${place.slug}`),
-      title: `${place.name} | ${SITE_NAME}`,
+      title: `${name} | ${SITE_NAME}`,
       description,
       images: image ? [image] : undefined,
     },
@@ -200,6 +202,9 @@ export default async function PlacePage({ params }: Props) {
   // questions lead the FAQ — they answer what the visitor actually searched.
   // Everything else on the page still comes from the listing data.
   const editorial = getEditorial(place.slug)
+  // Google's name for a place can be too generic to stand alone in a search
+  // result; the editorial may replace it. See PlaceEditorial.displayName.
+  const name = editorial?.displayName ?? place.name
   // placePhoto() already promotes photos[0] to the hero, so the gallery is the
   // remainder — otherwise the same picture would open the page twice.
   const gallery = editorial?.photos?.slice(1) ?? []
@@ -242,7 +247,7 @@ export default async function PlacePage({ params }: Props) {
             {
               '@type': SCHEMA_TYPE[place.placeType] ?? 'Park',
               '@id': `${url}/#place`,
-              name: place.name,
+              name,
               description: editorial?.metaDescription ?? place.description ?? undefined,
               // A category stand-in would be a false claim about this place.
               image:
@@ -296,7 +301,7 @@ export default async function PlacePage({ params }: Props) {
                   name: categoryName,
                   item: absoluteUrl(categoryHref),
                 },
-                { '@type': 'ListItem', position: 3, name: place.name, item: url },
+                { '@type': 'ListItem', position: 3, name, item: url },
               ],
             },
             // Mirrors the visible FAQ exactly — the answers come from the same
@@ -326,7 +331,7 @@ export default async function PlacePage({ params }: Props) {
             {place.city}
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-gray-600">{place.name}</span>
+          <span className="text-gray-600">{name}</span>
         </nav>
 
         <div className="relative mb-8 flex h-64 items-end overflow-hidden rounded-3xl bg-gradient-to-br from-green-800 to-emerald-500 p-8 sm:h-72">
@@ -334,7 +339,7 @@ export default async function PlacePage({ params }: Props) {
             <>
               <Image
                 src={photoAtWidth(hero.photo.url, 1280)}
-                alt={hero.illustrative ? '' : place.name}
+                alt={hero.illustrative ? '' : name}
                 fill
                 priority
                 unoptimized
@@ -347,7 +352,7 @@ export default async function PlacePage({ params }: Props) {
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white/90 backdrop-blur-sm">
               {typeLabel(place.placeType)} · {where}
             </span>
-            <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl">{place.name}</h1>
+            <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl">{name}</h1>
           </div>
         </div>
 
@@ -383,12 +388,7 @@ export default async function PlacePage({ params }: Props) {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {gallery.map(({ photo, caption }) => (
                     <figure key={photo.sourceUrl}>
-                      <a
-                        href={photo.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="relative block aspect-[3/2] overflow-hidden rounded-2xl border border-gray-100 bg-gray-50"
-                      >
+                      <div className="relative aspect-[3/2] overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
                         {/* Commons already serves sized renditions, so skip Vercel's optimizer. */}
                         <Image
                           src={photoAtWidth(photo.url, 960)}
@@ -396,9 +396,9 @@ export default async function PlacePage({ params }: Props) {
                           fill
                           unoptimized
                           sizes="(min-width: 640px) 50vw, 100vw"
-                          className="object-cover transition-transform duration-300 hover:scale-105"
+                          className="object-cover"
                         />
-                      </a>
+                      </div>
                       <figcaption className="mt-2 text-sm leading-snug text-gray-500">
                         {caption}
                       </figcaption>
@@ -519,7 +519,7 @@ export default async function PlacePage({ params }: Props) {
               <section>
                 <h2 className="mb-3 text-xl font-semibold text-gray-800">Map</h2>
                 <iframe
-                  title={`Map of ${place.name}`}
+                  title={`Map of ${name}`}
                   src={mapEmbedSrc}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
@@ -532,7 +532,7 @@ export default async function PlacePage({ params }: Props) {
             {/* <details> keeps this interactive without shipping a client component. */}
             <section>
               <h2 className="mb-3 text-xl font-semibold text-gray-800">
-                Common questions about {place.name}
+                Common questions about {name}
               </h2>
               <div className="divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-100 shadow-sm">
                 {questions.map((faq) => (
@@ -559,20 +559,7 @@ export default async function PlacePage({ params }: Props) {
                 </p>
                 {editorial.sources && editorial.sources.length > 0 && (
                   <p className="mt-2">
-                    Further reading:{' '}
-                    {editorial.sources.map((source, i) => (
-                      <span key={source.url}>
-                        {i > 0 && ', '}
-                        <a
-                          href={source.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-green-700 hover:underline"
-                        >
-                          {source.label}
-                        </a>
-                      </span>
-                    ))}
+                    Sources consulted: {editorial.sources.map((source) => source.label).join(', ')}.
                   </p>
                 )}
               </section>
@@ -669,31 +656,13 @@ export default async function PlacePage({ params }: Props) {
           </section>
         )}
 
-        {/* Attribution for every picture above, in one place. Each photo still
-            links to its own Commons file page from the image itself. */}
+        {/* Attribution for every picture above, in one place. Plain text: the
+            site does not link visitors off to other domains. */}
         {credits.length > 0 && (
           <footer className="mt-12 space-y-1 border-t border-gray-100 pt-6 text-xs leading-relaxed text-gray-400">
-            {credits.map(({ photo, files }) => (
+            {credits.map((photo) => (
               <p key={`${photo.author}|${photo.license}`}>
-                <PhotoCredit photo={photo} href={files.length === 1 ? photo.sourceUrl : undefined} />
-                {files.length > 1 && (
-                  <>
-                    {' · '}
-                    {files.map((file, i) => (
-                      <span key={file.sourceUrl}>
-                        {i > 0 && ', '}
-                        <a
-                          href={file.sourceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline decoration-gray-300 underline-offset-2 hover:text-green-700"
-                        >
-                          {i + 1}
-                        </a>
-                      </span>
-                    ))}
-                  </>
-                )}
+                <PhotoCredit photo={photo} />
               </p>
             ))}
           </footer>
@@ -706,15 +675,13 @@ export default async function PlacePage({ params }: Props) {
 /**
  * One credit line per photographer and licence, however many of their photos
  * appear. A Commons set is usually one afternoon's work, so six identical lines
- * would say the same thing; `files` keeps a link to each original.
+ * would say the same thing.
  */
-function photoCredits(photos: Photo[]): { photo: Photo; files: Photo[] }[] {
-  const groups = new Map<string, { photo: Photo; files: Photo[] }>()
+function photoCredits(photos: Photo[]): Photo[] {
+  const seen = new Map<string, Photo>()
   for (const photo of photos) {
     const key = `${photo.author}|${photo.license}`
-    const group = groups.get(key) ?? { photo, files: [] }
-    if (!group.files.some((f) => f.sourceUrl === photo.sourceUrl)) group.files.push(photo)
-    groups.set(key, group)
+    if (!seen.has(key)) seen.set(key, photo)
   }
-  return [...groups.values()]
+  return [...seen.values()]
 }

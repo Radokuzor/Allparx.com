@@ -2,6 +2,7 @@ import 'server-only'
 import { FieldPath } from 'firebase-admin/firestore'
 import { db } from './firebase-admin'
 import { snapshotBySlug, snapshotPlaces } from './places-snapshot'
+import { docSlug, publishedSlug } from './slug-alias'
 import type { Place } from './types'
 
 export type { Place }
@@ -88,11 +89,14 @@ export async function getPlace(slug: string): Promise<Place | null> {
   const index = snapshotBySlug()
   if (index) return index.get(slug) ?? null
 
+  // Without the snapshot the read goes to the document id, and the result is
+  // stamped back with the slug it publishes at.
+  const id = docSlug(slug)
   return resilient(
-    `getPlace(${slug})`,
+    `getPlace(${id})`,
     async () => {
-      const doc = await db.collection(COLLECTION).doc(slug).get()
-      return doc.exists ? (doc.data() as Place) : null
+      const doc = await db.collection(COLLECTION).doc(id).get()
+      return doc.exists ? { ...(doc.data() as Place), slug } : null
     },
     null,
   )
@@ -257,7 +261,7 @@ export async function getAllPlaceSlugs(): Promise<string[]> {
     'getAllPlaceSlugs',
     async () => {
       const snapshot = await db.collection(COLLECTION).select('slug').get()
-      return snapshot.docs.map((doc) => doc.data().slug as string)
+      return snapshot.docs.map((doc) => publishedSlug(doc.data().slug as string))
     },
     [],
   )
@@ -276,7 +280,11 @@ export async function getAllPlaceRefs(): Promise<
       const snapshot = await db.collection(COLLECTION).select('slug', 'city', 'placeType').get()
       return snapshot.docs.map((doc) => {
         const d = doc.data()
-        return { slug: d.slug as string, city: d.city as string, placeType: d.placeType as string }
+        return {
+          slug: publishedSlug(d.slug as string),
+          city: d.city as string,
+          placeType: d.placeType as string,
+        }
       })
     },
     [],

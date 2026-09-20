@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { CATEGORY_PAGE_SIZE, citySlug, getAllCities, getAllPlaceRefs } from '@/lib/firestore'
+import { HOTELS } from '@/lib/hotels'
 import { PLACE_TYPES } from '@/lib/place-types'
 import { absoluteUrl } from '@/lib/site'
 
@@ -69,6 +70,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
+    })),
+    // The hotel hub sits on /places/banyan-tree, which no longer comes from
+    // the places collection, so both it and the hotel pages are listed here.
+    {
+      url: absoluteUrl('/places/banyan-tree'),
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    },
+    ...HOTELS.map((hotel) => ({
+      url: absoluteUrl(`/hotels/${hotel.slug}`),
+      lastModified: new Date(hotel.updated),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
     })),
   ]
 }

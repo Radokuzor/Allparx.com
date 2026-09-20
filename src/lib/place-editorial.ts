@@ -37,6 +37,13 @@ export type EditorialSection = {
 
 export type PlaceEditorial = {
   /**
+   * Replaces the listing name in the heading, the title tag and the
+   * breadcrumb. Google's name for a place is sometimes a bare noun that only
+   * made sense next to a map pin — "Banyan Tree" — and a page that has to
+   * stand on its own in a search result needs to say which one.
+   */
+  displayName?: string
+  /**
    * Overrides the meta description, which otherwise falls back to Google's
    * one-line editorial summary or a filled-in template. Keep it near 155
    * characters so it survives to the end in a search result.
@@ -60,7 +67,9 @@ export type PlaceEditorial = {
 }
 
 const EDITORIAL: Record<string, PlaceEditorial> = {
-  'banyan-tree': banyanTree,
+  // Keyed by published slug, not document id — /places/banyan-tree is the
+  // hotel hub now, and the tree publishes at the longer URL (see slug-alias.ts).
+  'banyan-tree-kawela-bay-oahu': banyanTree,
 }
 
 export function getEditorial(slug: string): PlaceEditorial | null {

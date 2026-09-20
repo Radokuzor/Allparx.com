@@ -3,6 +3,7 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import type { Place } from './types'
 import { SNAPSHOT_PATH } from './snapshot-path'
+import { publishedSlug } from './slug-alias'
 
 /**
  * Build-time snapshot of the `places` collection, produced by
@@ -34,7 +35,11 @@ export function snapshotPlaces(): Place[] | null {
       places?: Place[]
     }
     if (!Array.isArray(parsed.places)) return (places = null)
-    places = parsed.places
+    // The snapshot stores document ids. Swapping in the published slug here,
+    // once, means every read below this line already has the right URL.
+    places = parsed.places.map((place) =>
+      place.slug === publishedSlug(place.slug) ? place : { ...place, slug: publishedSlug(place.slug) },
+    )
     console.log(
       `[snapshot] serving ${places.length} places from ${SNAPSHOT_PATH}` +
         (parsed.generatedAt ? ` (generated ${parsed.generatedAt})` : ''),
