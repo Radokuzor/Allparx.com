@@ -30,6 +30,7 @@ export type SearchEntry = {
 export type IndexedEntry = {
   entry: SearchEntry
   name: string
+  city: string
   haystack: string
 }
 
@@ -47,6 +48,7 @@ function build(entries: SearchEntry[]): IndexedEntry[] {
   return entries.map((entry) => ({
     entry,
     name: normalize(entry.n),
+    city: normalize(entry.c),
     haystack: normalize(`${entry.n} ${entry.c} ${entry.a} ${typeLabel(entry.t)}`),
   }))
 }
@@ -101,15 +103,23 @@ export function rankPlaces(index: IndexedEntry[], query: string, limit: number):
   for (const item of index) {
     if (!terms.every((term) => item.haystack.includes(term))) continue
 
-    // Rating is the tiebreaker inside a tier, never across tiers.
-    let score = item.entry.r ?? 0
-    if (item.name.startsWith(q)) score += 1000
-    else if (startsWord(item.name, q)) score += 600
-    else if (item.name.includes(q)) score += 300
-    else if (terms.every((term) => startsWord(item.name, term))) score += 150
-    else if (terms.every((term) => item.name.includes(term))) score += 100
+    // Tiers rank first, rating only breaks ties inside a tier.
+    //
+    // Matches that land mid-word sit *below* a plain city or category match:
+    // someone typing "hou" wants Houston's parks, not a historical landmark in
+    // Georgia whose name happens to contain "House".
+    let tier = 2 // matched on city, state or category rather than the name
+    if (item.name.startsWith(q)) tier = 10
+    else if (startsWord(item.name, q)) tier = 8
+    else if (terms.every((term) => startsWord(item.name, term))) tier = 6
+    else if (terms.every((term) => item.name.includes(term))) tier = 1 // mid-word only
 
-    hits.push({ entry: item.entry, score })
+    // A place in a city the query names beats an equally-scoring one somewhere
+    // else: "hou" should reach Houston before a landmark called "… House".
+    // Sits above the 0-5 rating so it orders within a tier, not across tiers.
+    const local = item.city.startsWith(terms[0]) ? 50 : 0
+
+    hits.push({ entry: item.entry, score: tier * 100 + local + (item.entry.r ?? 0) })
   }
 
   hits.sort((a, b) => b.score - a.score || a.entry.n.localeCompare(b.entry.n))

@@ -42,7 +42,7 @@ export default function SearchBox({
   const [value, setValue] = useState(defaultValue)
   const [index, setIndex] = useState<IndexedEntry[] | null>(null)
   const [open, setOpen] = useState(false)
-  const [active, setActive] = useState(-1)
+  const [active, setActive] = useState({ row: -1, forQuery: '' })
   const [anchor, setAnchor] = useState<{ top: number; left: number; width: number } | null>(null)
 
   // The index is ~220KB, so it is fetched on first intent to search rather
@@ -84,11 +84,11 @@ export default function SearchBox({
 
   const visible = open && suggestions.length > 0
 
-  // Reset the highlight whenever the candidate list changes, so Enter never
-  // navigates to a row the visitor cannot see any more.
-  useEffect(() => {
-    setActive(-1)
-  }, [query])
+  // The highlight is tied to the query it was made against, so typing another
+  // letter drops it rather than leaving Enter pointed at a row that has since
+  // scrolled out of the list. Derived here rather than reset in an effect.
+  const highlight = active.forQuery === query ? active.row : -1
+  const setHighlight = (row: number) => setActive({ row, forQuery: query })
 
   // Anchored to the viewport rather than nested in the form: the homepage hero
   // is `overflow-hidden` to clip its video, which would otherwise cut the
@@ -126,10 +126,10 @@ export default function SearchBox({
 
     if (event.key === 'ArrowDown') {
       event.preventDefault()
-      setActive((current) => (current + 1) % suggestions.length)
+      setHighlight((highlight + 1) % suggestions.length)
     } else if (event.key === 'ArrowUp') {
       event.preventDefault()
-      setActive((current) => (current <= 0 ? suggestions.length - 1 : current - 1))
+      setHighlight(highlight <= 0 ? suggestions.length - 1 : highlight - 1)
     }
   }
 
@@ -140,7 +140,7 @@ export default function SearchBox({
       onSubmit={(event) => {
         event.preventDefault()
         // Enter on a highlighted suggestion opens it; otherwise run the search.
-        if (visible && active >= 0) go(suggestions[active].href)
+        if (visible && highlight >= 0) go(suggestions[highlight].href)
         else submit()
       }}
       className="flex w-full gap-2"
@@ -170,7 +170,7 @@ export default function SearchBox({
           aria-expanded={visible}
           aria-controls={listId}
           aria-autocomplete="list"
-          aria-activedescendant={active >= 0 ? `${listId}-${active}` : undefined}
+          aria-activedescendant={highlight >= 0 ? `${listId}-${highlight}` : undefined}
           autoComplete="off"
           className="w-full rounded-full border border-gray-200 bg-white py-3 pl-11 pr-5 text-base text-gray-900 shadow-sm outline-none placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-100"
         />
@@ -198,14 +198,14 @@ export default function SearchBox({
                   type="button"
                   id={`${listId}-${i}`}
                   role="option"
-                  aria-selected={i === active}
+                  aria-selected={i === highlight}
                   // The input's blur would otherwise close the list before the
                   // click could register.
                   onMouseDown={(event) => event.preventDefault()}
-                  onMouseEnter={() => setActive(i)}
+                  onMouseEnter={() => setHighlight(i)}
                   onClick={() => go(suggestion.href)}
                   className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                    i === active ? 'bg-green-50' : 'bg-white'
+                    i === highlight ? 'bg-green-50' : 'bg-white'
                   }`}
                 >
                   {suggestion.city && (
