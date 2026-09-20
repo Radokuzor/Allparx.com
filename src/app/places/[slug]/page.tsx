@@ -49,7 +49,8 @@ import {
   visitPlan,
   type Insight,
 } from '@/lib/place-content'
-import { SCHEMA_TYPE, typeLabel, typeLabelPlural } from '@/lib/place-types'
+import { getEditorial } from '@/lib/place-editorial'
+import { SCHEMA_TYPE, isKnownType, typeLabel, typeLabelPlural } from '@/lib/place-types'
 import { SITE_NAME, absoluteUrl } from '@/lib/site'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -84,6 +85,19 @@ const INSIGHT_ICON: Record<string, LucideIcon> = {
   alert: AlertTriangle,
   help: HelpCircle,
   phone: Phone,
+}
+
+/**
+ * Formatted in UTC so the static build and the browser can never disagree —
+ * a locale-dependent date here would hydrate differently by timezone.
+ */
+function reviewedOn(iso: string): string {
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  })
 }
 
 function InsightList({ items, tone }: { items: Insight[]; tone: 'pro' | 'con' }) {
@@ -132,6 +146,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const where = placeLocation(place)
   const title = `${place.name} — ${where}`
   const description =
+    getEditorial(place.slug)?.metaDescription ??
     place.description ??
     `${place.name} is a ${typeLabel(place.placeType).toLowerCase()} in ${where}. Find hours, directions, ratings, amenities and nearby outdoor spots on ${SITE_NAME}.`
 
@@ -170,11 +185,22 @@ export default async function PlacePage({ params }: Props) {
   )
   const nearby = peers.slice(0, 6)
   const context = { peers }
-  const paragraphs = intro(place, context)
+  // Hand-written copy wins over the generated intro where it exists, and its
+  // questions lead the FAQ — they answer what the visitor actually searched.
+  // Everything else on the page still comes from the listing data.
+  const editorial = getEditorial(place.slug)
+  const paragraphs = editorial?.lede ?? intro(place, context)
   const pros = highlights(place, context)
   const cons = considerations(place, context)
   const plan = visitPlan(place)
-  const questions = faqs(place, context)
+  const questions = [...(editorial?.faqs ?? []), ...faqs(place, context)]
+
+  // A legacy restore keeps Google's primary type when it isn't one of ours, and
+  // /places/category/<type> only renders PLACE_TYPES — so for those the
+  // breadcrumb points at the all-categories index instead of a guaranteed 404.
+  const onBrand = isKnownType(place.placeType)
+  const categoryHref = onBrand ? `/places/category/${place.placeType}` : '/places'
+  const categoryName = onBrand ? typeLabelPlural(place.placeType) : 'All Places'
 
   const where = placeLocation(place)
   const url = absoluteUrl(`/places/${place.slug}`)
@@ -199,8 +225,9 @@ export default async function PlacePage({ params }: Props) {
               '@type': SCHEMA_TYPE[place.placeType] ?? 'Park',
               '@id': `${url}/#place`,
               name: place.name,
-              description: place.description ?? undefined,
+              description: editorial?.metaDescription ?? place.description ?? undefined,
               url,
+              dateModified: editorial?.updated,
               sameAs: place.website ?? undefined,
               telephone: place.phone ?? undefined,
               address: place.address
@@ -241,8 +268,8 @@ export default async function PlacePage({ params }: Props) {
                 {
                   '@type': 'ListItem',
                   position: 2,
-                  name: typeLabelPlural(place.placeType),
-                  item: absoluteUrl(`/places/category/${place.placeType}`),
+                  name: categoryName,
+                  item: absoluteUrl(categoryHref),
                 },
                 { '@type': 'ListItem', position: 3, name: place.name, item: url },
               ],
@@ -266,8 +293,8 @@ export default async function PlacePage({ params }: Props) {
         <nav aria-label="Breadcrumb" className="mb-6 text-sm text-gray-400">
           <Link href="/" className="hover:text-green-700">Home</Link>
           <span className="mx-2">/</span>
-          <Link href={`/places/category/${place.placeType}`} className="hover:text-green-700">
-            {typeLabelPlural(place.placeType)}
+          <Link href={categoryHref} className="hover:text-green-700">
+            {categoryName}
           </Link>
           <span className="mx-2">/</span>
           <Link href={`/cities/${citySlug(place.city)}`} className="hover:text-green-700">
@@ -311,6 +338,19 @@ export default async function PlacePage({ params }: Props) {
                 ))}
               </div>
             </section>
+
+            {editorial?.sections.map((section) => (
+              <section key={section.heading}>
+                <h2 className="mb-3 text-xl font-semibold text-gray-800">{section.heading}</h2>
+                <div className="space-y-4">
+                  {section.body.map((paragraph) => (
+                    <p key={paragraph} className="leading-relaxed text-gray-600">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </section>
+            ))}
 
             {(pros.length > 0 || cons.length > 0) && (
               <section>
@@ -453,6 +493,34 @@ export default async function PlacePage({ params }: Props) {
                 ))}
               </div>
             </section>
+
+            {editorial && (
+              <section className="border-t border-gray-100 pt-6 text-sm text-gray-400">
+                <p>
+                  Written and reviewed by the AllParx team. Last reviewed{' '}
+                  <time dateTime={editorial.updated}>{reviewedOn(editorial.updated)}</time>.
+                  Ratings and hours come from Google.
+                </p>
+                {editorial.sources && editorial.sources.length > 0 && (
+                  <p className="mt-2">
+                    Further reading:{' '}
+                    {editorial.sources.map((source, i) => (
+                      <span key={source.url}>
+                        {i > 0 && ', '}
+                        <a
+                          href={source.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green-700 hover:underline"
+                        >
+                          {source.label}
+                        </a>
+                      </span>
+                    ))}
+                  </p>
+                )}
+              </section>
+            )}
           </div>
 
           <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">

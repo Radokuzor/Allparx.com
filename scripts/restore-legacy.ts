@@ -20,12 +20,19 @@
  *   npm run restore -- --limit=25           # the 25 highest-value slugs
  *   npm run restore -- --organic-only       # only slugs Google sent users to
  *   npm run restore -- --limit=0            # everything (see the cost line)
+ *   npm run restore -- --slug=banyan-tree   # a named URL, demand or not
  */
 import * as admin from 'firebase-admin'
-import axios from 'axios'
 import * as dotenv from 'dotenv'
-import { PLACE_TYPES } from '../src/lib/place-types'
-import { US_STATE_NAMES, isInUnitedStates } from '../src/lib/us-states'
+import {
+  apiCallCount,
+  bestMatch,
+  isAmbiguous,
+  searchByText,
+  sleep,
+  stripDedupeSuffix,
+  toDocument,
+} from './lib/resolve-place'
 
 dotenv.config({ path: '.env.local' })
 
@@ -66,191 +73,39 @@ const includeAmbiguous = flag('include-ambiguous')
 /** 0 means no limit. Defaults to 25 so an unqualified run cannot spend much. */
 const limit = Number(value('limit') ?? 25)
 const minHits = Number(value('min-hits') ?? 1)
+/**
+ * Slugs to restore regardless of demand: `--slug=banyan-tree,hole-in-the-wall`.
+ *
+ * The analytics queue can only see a URL *after* traffic has already landed on
+ * its 404, which means the highest-value pages are found last — a URL that
+ * still ranks but happens not to have been clicked this week is invisible to
+ * it. Indexed URLs are knowable up front from a Semrush "Indexed Pages" export,
+ * Search Console, or the Wayback CDX index, so this flag restores them before
+ * they decay out of the index rather than after.
+ *
+ * Explicit slugs bypass the ambiguity guard and the demand thresholds: naming
+ * one is itself the evidence that it is wanted.
+ */
+const explicitSlugs = (value('slug') ?? '')
+  .split(',')
+  .map((s) => s.trim().replace(/^\/?places\//, '').replace(/\/$/, ''))
+  .filter(Boolean)
+/**
+ * Overrides the search text for a single `--slug=` run, e.g.
+ * `--slug=banyan-tree --query="Banyan Tree Haleiwa HI"`.
+ *
+ * A slug is only the old page title, which for a landmark is often too generic
+ * to search on: "banyan tree" returns a Florida housing development long before
+ * the Oahu tree. Adding the locality finds the right place without weakening
+ * anything — the name guard still has to accept whatever comes back.
+ */
+const queryOverride = value('query')
 
 // --- Slug helpers ----------------------------------------------------------
 
-/**
- * The legacy slug format: the place name alone, no city suffix. This is the
- * format the indexed URLs use, so restored documents must key on it exactly.
- */
-function legacySlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-}
-
-/** WordPress appended -2, -3 … to disambiguate duplicate titles. */
-function stripDedupeSuffix(slug: string): string {
-  return slug.replace(/-\d+$/, '')
-}
-
-function isAmbiguous(slug: string): boolean {
-  return /-\d+$/.test(slug)
-}
-
 function searchQuery(slug: string): string {
+  if (queryOverride && explicitSlugs.length === 1) return queryOverride
   return stripDedupeSuffix(slug).replace(/-/g, ' ')
-}
-
-/** Comparison key that ignores punctuation and spacing entirely. */
-function normalize(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]/g, '')
-}
-
-type Confidence = 'exact' | 'strong' | 'reject'
-
-/**
- * Text Search is a fuzzy endpoint: given "t t cafe" it will happily return an
- * unrelated cafe. A result is only trustworthy when the name it returns
- * reduces back to the slug that was requested.
- */
-function confidence(requestedSlug: string, returnedName: string): Confidence {
-  const base = stripDedupeSuffix(requestedSlug)
-  const returned = legacySlug(returnedName)
-  if (returned === base) return 'exact'
-  if (normalize(returned) === normalize(base)) return 'strong'
-  return 'reject'
-}
-
-// --- Places API ------------------------------------------------------------
-
-const FIELD_MASK = [
-  'places.id',
-  'places.displayName',
-  'places.formattedAddress',
-  'places.addressComponents',
-  'places.location',
-  'places.rating',
-  'places.userRatingCount',
-  'places.types',
-  'places.primaryType',
-  'places.websiteUri',
-  'places.nationalPhoneNumber',
-  'places.regularOpeningHours',
-  'places.photos',
-  'places.editorialSummary',
-  'places.goodForChildren',
-  'places.allowsDogs',
-  'places.restroom',
-  'places.parkingOptions',
-].join(',')
-
-type AddressComponent = { longText?: string; shortText?: string; types?: string[] }
-
-type GooglePlace = {
-  id?: string
-  displayName?: { text?: string }
-  formattedAddress?: string
-  addressComponents?: AddressComponent[]
-  location?: { latitude?: number; longitude?: number }
-  rating?: number
-  userRatingCount?: number
-  types?: string[]
-  primaryType?: string
-  websiteUri?: string
-  nationalPhoneNumber?: string
-  regularOpeningHours?: { weekdayDescriptions?: string[] }
-  photos?: { name?: string }[]
-  editorialSummary?: { text?: string }
-  goodForChildren?: boolean
-  allowsDogs?: boolean
-  restroom?: boolean
-  parkingOptions?: Record<string, boolean>
-}
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-let apiCalls = 0
-
-async function searchByText(query: string): Promise<GooglePlace[]> {
-  apiCalls++
-  try {
-    const response = await axios.post(
-      'https://places.googleapis.com/v1/places:searchText',
-      { textQuery: query, maxResultCount: 5, regionCode: 'US' },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Goog-Api-Key': API_KEY as string,
-          'X-Goog-FieldMask': FIELD_MASK,
-        },
-        timeout: 20000,
-      },
-    )
-    return response.data.places ?? []
-  } catch (error: unknown) {
-    const detail = axios.isAxiosError(error)
-      ? (error.response?.data?.error?.message ?? error.message)
-      : error instanceof Error
-        ? error.message
-        : String(error)
-    console.error(`   ✖ Places API: ${detail}`)
-    return []
-  }
-}
-
-// --- Mapping ---------------------------------------------------------------
-
-function component(place: GooglePlace, type: string, short = false): string | null {
-  const match = place.addressComponents?.find((c) => c.types?.includes(type))
-  return (short ? match?.shortText : match?.longText) ?? null
-}
-
-/**
- * The old directory covered far more than outdoor places. When a result maps
- * to one of our categories we use it; otherwise we keep Google's own primary
- * type. Category pages only iterate PLACE_TYPES, so an off-category place
- * stays reachable at its own URL without appearing in the outdoor nav.
- */
-function resolvePlaceType(place: GooglePlace): { placeType: string; onBrand: boolean } {
-  const outdoor = (place.types ?? []).find((t) => (PLACE_TYPES as readonly string[]).includes(t))
-  if (outdoor) return { placeType: outdoor, onBrand: true }
-  return { placeType: place.primaryType ?? place.types?.[0] ?? 'point_of_interest', onBrand: false }
-}
-
-function toDocument(place: GooglePlace, slug: string) {
-  const { placeType, onBrand } = resolvePlaceType(place)
-  const state = component(place, 'administrative_area_level_1', true)
-  // Rivers, reservoirs and mountains have no locality. Fall back to the state
-  // name rather than "Unknown", which would surface in breadcrumbs, headings,
-  // schema addressLocality and a /cities/unknown page.
-  const city =
-    component(place, 'locality') ??
-    component(place, 'sublocality') ??
-    component(place, 'administrative_area_level_2') ??
-    (state ? (US_STATE_NAMES[state] ?? state) : 'United States')
-
-  return {
-    slug,
-    name: place.displayName?.text ?? 'Unknown Place',
-    city,
-    state,
-    placeType,
-    googlePlaceId: place.id ?? null,
-    address: place.formattedAddress ?? '',
-    lat: place.location?.latitude ?? null,
-    lng: place.location?.longitude ?? null,
-    rating: place.rating ?? null,
-    reviewCount: place.userRatingCount ?? 0,
-    types: place.types ?? [],
-    website: place.websiteUri ?? null,
-    phone: place.nationalPhoneNumber ?? null,
-    hours: place.regularOpeningHours?.weekdayDescriptions ?? [],
-    description: place.editorialSummary?.text ?? null,
-    goodForChildren: place.goodForChildren ?? null,
-    allowsDogs: place.allowsDogs ?? null,
-    hasRestroom: place.restroom ?? null,
-    parking: place.parkingOptions ?? null,
-    photoReference: place.photos?.[0]?.name ?? null,
-    /** Marks a document restored from a legacy URL rather than a city sweep. */
-    legacy: true,
-    onBrand,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-  }
 }
 
 // --- Demand ----------------------------------------------------------------
@@ -297,15 +152,37 @@ async function deadSlugsByDemand(): Promise<Demand[]> {
   return unambiguous.sort((a, b) => b.organic - a.organic || b.hits - a.hits)
 }
 
+/**
+ * The named-slug queue. Only the `places` collection is read — the analytics
+ * scan is skipped entirely, since demand is not what selected these.
+ */
+async function namedSlugs(slugs: string[]): Promise<Demand[]> {
+  const placeSnap = await db.collection('places').select('slug').get()
+  const live = new Set(placeSnap.docs.map((doc) => doc.id))
+
+  for (const slug of slugs.filter((s) => live.has(s))) {
+    console.log(`   ⚠ ${slug} already has a document — it will be overwritten`)
+  }
+
+  return slugs.map((slug) => ({ slug, hits: 0, organic: 0 }))
+}
+
 // --- Main ------------------------------------------------------------------
 
 async function main() {
   console.log('🔁 AllParx legacy URL recovery\n')
 
-  const queue = await deadSlugsByDemand()
-  const batchQueue = limit > 0 ? queue.slice(0, limit) : queue
+  const named = explicitSlugs.length > 0
+  const queue = named ? await namedSlugs(explicitSlugs) : await deadSlugsByDemand()
+  // Naming slugs is the cost decision; the demand queue's spend guard does not
+  // apply to them.
+  const batchQueue = named || limit <= 0 ? queue : queue.slice(0, limit)
 
-  console.log(`   Dead slugs with demand : ${queue.length}`)
+  if (named) {
+    console.log(`   Named slugs            : ${queue.length} (demand queue skipped)`)
+  } else {
+    console.log(`   Dead slugs with demand : ${queue.length}`)
+  }
   if (ambiguousSkipped > 0) {
     console.log(`   Held back as ambiguous : ${ambiguousSkipped} (name+number slugs — --include-ambiguous to force)`)
   }
@@ -322,7 +199,7 @@ async function main() {
   for (const [i, entry] of batchQueue.entries()) {
     const position = `[${i + 1}/${batchQueue.length}]`
     const query = searchQuery(entry.slug)
-    const results = await searchByText(query)
+    const results = await searchByText(query, API_KEY as string)
 
     if (results.length === 0) {
       notFound++
@@ -331,15 +208,7 @@ async function main() {
       continue
     }
 
-    // Take the best-matching result, not simply the first. Results outside
-    // the US are dropped first: `regionCode` only biases the search, and a
-    // name-perfect match in the UK is still the wrong place.
-    const scored = results
-      .filter((place) => isInUnitedStates(place.location?.latitude ?? null, place.location?.longitude ?? null))
-      .map((place) => ({ place, score: confidence(entry.slug, place.displayName?.text ?? '') }))
-      .sort((a, b) => (a.score === 'exact' ? -1 : b.score === 'exact' ? 1 : 0))
-
-    const best = scored.find((s) => s.score !== 'reject')
+    const best = bestMatch(entry.slug, results)
 
     if (!best) {
       rejected++
@@ -349,7 +218,7 @@ async function main() {
       continue
     }
 
-    const doc = toDocument(best.place, entry.slug)
+    const doc = toDocument(best.place, entry.slug, { legacy: true })
     if (!dryRun) {
       await db.collection('places').doc(entry.slug).set(doc)
     }
@@ -365,7 +234,7 @@ async function main() {
   console.log(`   Restored     : ${restored}`)
   console.log(`   No match     : ${rejected}`)
   console.log(`   No result    : ${notFound}`)
-  console.log(`   API calls    : ${apiCalls}`)
+  console.log(`   API calls    : ${apiCallCount()}`)
   console.log(`   Remaining    : ${Math.max(0, queue.length - batchQueue.length)}`)
 
   if (rejects.length > 0) {

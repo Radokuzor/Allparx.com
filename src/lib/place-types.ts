@@ -111,14 +111,32 @@ export const SCHEMA_TYPE: Record<string, string> = {
   playground: 'Playground',
   swimming_pool: 'PublicSwimmingPool',
   skateboard_park: 'SportsActivityLocation',
+  // Off-category types that legacy restores can carry through.
+  tourist_attraction: 'TouristAttraction',
+  historical_landmark: 'LandmarksOrHistoricalBuildings',
+  hiking_trail: 'Park',
+}
+
+/**
+ * Legacy restores keep Google's own primary type when it isn't one of ours
+ * (see scripts/restore-legacy.ts), so labels have to cope with types that were
+ * never in the tables above — `tourist_attraction`, `historical_landmark`.
+ * Title-casing them keeps headings and eyebrows reading as labels rather than
+ * as raw API values.
+ */
+function titleCase(type: string): string {
+  return type
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
 }
 
 export function typeLabel(type: string): string {
-  return TYPE_LABEL[type] ?? type.replace(/_/g, ' ')
+  return TYPE_LABEL[type] ?? titleCase(type)
 }
 
 export function typeLabelPlural(type: string): string {
-  return TYPE_LABEL_PLURAL[type] ?? `${type.replace(/_/g, ' ')}s`
+  return TYPE_LABEL_PLURAL[type] ?? `${titleCase(type)}s`
 }
 
 export function isKnownType(type: string): boolean {
