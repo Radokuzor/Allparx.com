@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Baby, Bath, Car, LocateFixed, MapPin, PawPrint, Star } from 'lucide-react'
+import { Baby, Bath, Car, ChevronDown, LocateFixed, MapPin, PawPrint, Star } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type FormEvent } from 'react'
 import { NEAR_FLAGS, type NearEntry, type NearFlag } from '@/lib/near-index-format'
 import {
@@ -18,6 +18,7 @@ import {
   type Origin,
   type SortKey,
 } from '@/lib/near-me'
+import { rememberList } from '@/lib/browse-list'
 import { typeLabel, typeLabelPlural } from '@/lib/place-types'
 import { coarsen, track } from '@/lib/track-event'
 
@@ -115,6 +116,7 @@ export default function NearMe() {
   const [sort, setSort] = useState<SortKey>('top')
   const [shown, setShown] = useState({ count: PAGE, signature: '' })
   const pendingSearch = useRef<PendingSearch | null>(null)
+  const resultsRef = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
     let live = true
@@ -169,6 +171,17 @@ export default function NearMe() {
   // Back to the first page whenever anything that changes the list changes.
   const signature = `${origin?.label}|${[...types].sort().join()}|${amenities}|${radius}|${sort}`
   const visibleCount = shown.signature === signature ? shown.count : PAGE
+
+  // When a filter or sort changes the list, bring the list up to the top of
+  // the screen so the visitor sees what changed rather than more filters.
+  // Only the visitor's own changes count, not the first render.
+  const filterKey = `${[...types].sort().join()}|${amenities}|${radius}|${sort}`
+  const lastFilterKey = useRef(filterKey)
+  useEffect(() => {
+    if (lastFilterKey.current === filterKey) return
+    lastFilterKey.current = filterKey
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [filterKey])
 
   function useMyLocation() {
     if (!('geolocation' in navigator)) {
@@ -393,20 +406,12 @@ export default function NearMe() {
             </label>
           </div>
 
-          <div className="mt-5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Category</p>
-            <div className="mt-2 flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
-              {typeChips.map((type) => (
-                <Chip
-                  key={type}
-                  active={types.has(type)}
-                  onClick={() => toggleType(type)}
-                  label={typeLabelPlural(type)}
-                  count={counts.types.get(type) ?? 0}
-                />
-              ))}
-            </div>
-          </div>
+          <CategoryRow
+            chips={typeChips}
+            selected={types}
+            counts={counts.types}
+            onToggle={toggleType}
+          />
 
           <div className="mt-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Good to know</p>
@@ -428,7 +433,7 @@ export default function NearMe() {
             </p>
           </div>
 
-          <p aria-live="polite" className="mt-8 text-sm text-gray-500">
+          <p ref={resultsRef} aria-live="polite" className="mt-8 scroll-mt-24 text-sm text-gray-500">
             {view.items.length === 0 ? (
               'No places match those filters. Try removing one.'
             ) : view.widened ? (
@@ -452,6 +457,12 @@ export default function NearMe() {
               <li key={entry.s}>
                 <Link
                   href={`/places/${entry.s}`}
+                  onClick={() =>
+                    rememberList(
+                      `Near ${origin.label}`,
+                      view.items.map((item) => ({ slug: item.entry.s, name: item.entry.n })),
+                    )
+                  }
                   className="flex items-start justify-between gap-4 py-4 transition-colors hover:text-green-700"
                 >
                   <span className="min-w-0">
@@ -515,13 +526,118 @@ function Badges({ flags }: { flags: number }) {
   )
 }
 
+/**
+ * Category chips, one row at a time until the visitor asks for the rest —
+ * there are up to eighteen, and a wall of them pushes the results off screen.
+ * The row scrolls sideways on phones and clips on wider screens; either way
+ * the toggle says how many are out of sight.
+ */
+function CategoryRow({
+  chips,
+  selected,
+  counts,
+  onToggle,
+}: {
+  chips: string[]
+  selected: ReadonlySet<string>
+  counts: ReadonlyMap<string, number>
+  onToggle: (type: string) => void
+}) {
+  const rowRef = useRef<HTMLDivElement>(null)
+  const [expanded, setExpanded] = useState(false)
+  const [hidden, setHidden] = useState<string[]>([])
+
+  const chipKey = chips.join()
+  useEffect(() => {
+    const row = rowRef.current
+    if (!row) return
+    const measure = () => {
+      if (expanded) return setHidden([])
+      const box = row.getBoundingClientRect()
+      const out: string[] = []
+      row.querySelectorAll<HTMLElement>('[data-type]').forEach((chip) => {
+        const rect = chip.getBoundingClientRect()
+        if (rect.top >= box.bottom - 1 || rect.right > box.right + 1) out.push(chip.dataset.type!)
+      })
+      setHidden(out)
+    }
+    const frame = requestAnimationFrame(measure)
+    const observer = new ResizeObserver(measure)
+    observer.observe(row)
+    row.addEventListener('scroll', measure, { passive: true })
+    return () => {
+      cancelAnimationFrame(frame)
+      observer.disconnect()
+      row.removeEventListener('scroll', measure)
+    }
+  }, [chipKey, expanded])
+
+  const hiddenSelected = hidden.filter((type) => selected.has(type)).length
+  const toggleable = expanded || hidden.length > 0
+
+  return (
+    <div className="mt-5">
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Category</p>
+      <div className="mt-2 flex items-start gap-2">
+        <div
+          ref={rowRef}
+          className={`flex min-w-0 flex-1 gap-2 ${
+            expanded
+              ? 'flex-wrap'
+              : 'overflow-x-auto pb-1 sm:max-h-[2.125rem] sm:flex-wrap sm:overflow-hidden sm:pb-0'
+          }`}
+        >
+          {chips.map((type) => (
+            <Chip
+              key={type}
+              type={type}
+              active={selected.has(type)}
+              onClick={() => onToggle(type)}
+              label={typeLabelPlural(type)}
+              count={counts.get(type) ?? 0}
+            />
+          ))}
+        </div>
+        {toggleable && (
+          <button
+            type="button"
+            onClick={() => setExpanded((open) => !open)}
+            aria-expanded={expanded}
+            className="flex shrink-0 items-center gap-1 rounded-full border border-green-700 bg-green-50 px-3.5 py-1.5 text-sm font-semibold text-green-800 transition-colors hover:bg-green-100"
+          >
+            {expanded ? (
+              'Less'
+            ) : (
+              <>
+                <span className="sm:hidden">More</span>
+                <span className="hidden sm:inline">{hidden.length} more</span>
+                {hiddenSelected > 0 && (
+                  <span className="rounded-full bg-green-700 px-1.5 text-xs text-white">
+                    {hiddenSelected}
+                  </span>
+                )}
+              </>
+            )}
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`}
+              aria-hidden
+            />
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function Chip({
   active,
   onClick,
   label,
   count,
   Icon,
+  type,
 }: {
+  type?: string
   active: boolean
   onClick: () => void
   label: string
@@ -535,6 +651,7 @@ function Chip({
   return (
     <button
       type="button"
+      data-type={type}
       onClick={onClick}
       aria-pressed={active}
       disabled={empty}

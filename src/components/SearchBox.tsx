@@ -4,7 +4,7 @@ import { MapPin, Search, Star } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { typeLabel } from '@/lib/place-types'
+import { typeLabel, typeLabelPlural } from '@/lib/place-types'
 import {
   cityHref,
   loadSearchIndex,
@@ -28,12 +28,22 @@ type Suggestion = {
   city: boolean
 }
 
+/** The results page for a query, optionally kept inside one category. */
+export function searchHref(query: string, type?: string): string {
+  const params = new URLSearchParams({ q: query })
+  if (type) params.set('type', type)
+  return `/search?${params}`
+}
+
 export default function SearchBox({
   defaultValue = '',
   autoFocus = false,
+  type,
 }: {
   defaultValue?: string
   autoFocus?: boolean
+  /** Keeps suggestions and results inside one category, e.g. on /places/category/park. */
+  type?: string
 }) {
   const router = useRouter()
   const listId = useId()
@@ -58,10 +68,16 @@ export default function SearchBox({
 
   const query = value.trim()
 
-  const suggestions = useMemo<Suggestion[]>(() => {
-    if (!index || query.length < MIN_QUERY) return []
+  const scoped = useMemo(
+    () => (index && type ? index.filter((item) => item.entry.t === type) : index),
+    [index, type],
+  )
 
-    const cities = rankCities(index, query, MAX_CITIES).map((hit) => ({
+  const suggestions = useMemo<Suggestion[]>(() => {
+    if (!scoped || query.length < MIN_QUERY) return []
+
+    // A city page lists every category, so inside one it would lead back out.
+    const cities = (type ? [] : rankCities(scoped, query, MAX_CITIES)).map((hit) => ({
       key: `city:${hit.city}-${hit.state}`,
       href: cityHref(hit),
       label: `${hit.city}${hit.state ? `, ${hit.state}` : ''}`,
@@ -70,7 +86,7 @@ export default function SearchBox({
       city: true,
     }))
 
-    const places = rankPlaces(index, query, MAX_PLACES).map((entry) => ({
+    const places = rankPlaces(scoped, query, MAX_PLACES).map((entry) => ({
       key: `place:${entry.s}`,
       href: `/places/${entry.s}`,
       label: entry.n,
@@ -80,7 +96,7 @@ export default function SearchBox({
     }))
 
     return [...cities, ...places]
-  }, [index, query])
+  }, [scoped, type, query])
 
   const visible = open && suggestions.length > 0
 
@@ -114,7 +130,7 @@ export default function SearchBox({
   }
 
   function submit() {
-    if (query) go(`/search?q=${encodeURIComponent(query)}`)
+    if (query) go(searchHref(query, type))
   }
 
   function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -164,8 +180,12 @@ export default function SearchBox({
           // Closing on blur has to wait for a suggestion's click to land.
           onBlur={() => window.setTimeout(() => setOpen(false), 120)}
           onKeyDown={onKeyDown}
-          placeholder="Search parks, trails, beaches or a city…"
-          aria-label="Search places"
+          placeholder={
+            type
+              ? `Search ${typeLabelPlural(type).toLowerCase()} by name or city…`
+              : 'Search parks, trails, beaches or a city…'
+          }
+          aria-label={type ? `Search ${typeLabelPlural(type).toLowerCase()}` : 'Search places'}
           role="combobox"
           aria-expanded={visible}
           aria-controls={listId}

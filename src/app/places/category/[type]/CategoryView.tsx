@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import JsonLd from '@/components/JsonLd'
 import PlaceGrid from '@/components/PlaceGrid'
+import RememberList from '@/components/RememberList'
+import SearchBox from '@/components/SearchBox'
 import Pagination from '@/components/Pagination'
 import { CATEGORY_PAGE_SIZE, getPlacesByTypePage } from '@/lib/firestore'
 import { typeLabelPlural } from '@/lib/place-types'
@@ -71,13 +73,21 @@ export async function CategoryView({ type, page }: { type: string; page: number 
       />
 
       <div className="mx-auto max-w-6xl px-6 py-12">
+        <div className="mb-8 max-w-2xl">
+          <SearchBox type={type} />
+        </div>
         <h1 className="mb-2 text-4xl font-bold text-gray-900">{label}</h1>
         <p className="mb-10 text-gray-500">
           {total === 0
             ? `No ${label.toLowerCase()} listed on ${SITE_NAME} yet`
             : `Showing ${start}–${end} of ${total} ${label.toLowerCase()} on ${SITE_NAME}`}
         </p>
-        <PlaceGrid places={items} wide />
+        <RememberList
+          label={label}
+          items={items.map((place) => ({ slug: place.slug, name: place.name }))}
+        >
+          <PlaceGrid places={items} wide />
+        </RememberList>
         <Pagination
           currentPage={page}
           totalPages={totalPages}

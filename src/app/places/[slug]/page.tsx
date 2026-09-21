@@ -32,6 +32,7 @@ import JsonLd from '@/components/JsonLd'
 import PhotoCredit from '@/components/PhotoCredit'
 import PlaceCard from '@/components/PlaceCard'
 import PlaceSaveActions from '@/components/PlaceSaveActions'
+import PlaceStepper from '@/components/PlaceStepper'
 import { googleListingUrl, mapEmbedUrl } from '@/lib/google-maps'
 import { photoAtWidth, photoCredits, placePhoto } from '@/lib/photos'
 import {
@@ -194,9 +195,8 @@ export default async function PlacePage({ params }: Props) {
 
   // One query serves both the editorial context (how this place ranks among
   // its neighbours) and the "more in this city" grid at the foot of the page.
-  const peers = (await getPlacesByCityAndType(place.city, place.placeType)).filter(
-    (p) => p.slug !== place.slug,
-  )
+  const sameKind = await getPlacesByCityAndType(place.city, place.placeType)
+  const peers = sameKind.filter((p) => p.slug !== place.slug)
   const nearby = peers.slice(0, 6)
   const context = { peers }
   // Hand-written copy wins over the generated intro where it exists, and its
@@ -349,6 +349,13 @@ export default async function PlacePage({ params }: Props) {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
             </>
           )}
+          <PlaceStepper
+            slug={place.slug}
+            fallback={{
+              label: `${typeLabelPlural(place.placeType)} in ${place.city}`,
+              items: sameKind.map((p) => ({ slug: p.slug, name: p.name })),
+            }}
+          />
           <div className="relative">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white/90 backdrop-blur-sm">
               {typeLabel(place.placeType)} · {where}

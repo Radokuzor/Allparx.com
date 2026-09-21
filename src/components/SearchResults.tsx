@@ -4,14 +4,19 @@ import Link from 'next/link'
 import { Star } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
-import SearchBox from './SearchBox'
+import SearchBox, { searchHref } from './SearchBox'
+import { rememberList } from '@/lib/browse-list'
 import { loadSearchIndex, rankPlaces, type IndexedEntry } from '@/lib/search-index'
-import { typeLabel } from '@/lib/place-types'
+import { isKnownType, typeLabel, typeLabelPlural } from '@/lib/place-types'
 
 const LIMIT = 60
 
 export default function SearchResults() {
-  const query = (useSearchParams().get('q') ?? '').trim()
+  const params = useSearchParams()
+  const query = (params.get('q') ?? '').trim()
+  // A search started on a category page stays inside that category.
+  const rawType = params.get('type')
+  const type = rawType && isKnownType(rawType) ? rawType : undefined
   const [index, setIndex] = useState<IndexedEntry[] | null>(null)
   const [failed, setFailed] = useState(false)
 
@@ -27,16 +32,26 @@ export default function SearchResults() {
 
   // Same scorer the suggestion dropdown uses, so the ordering a visitor saw
   // while typing is the ordering they land on.
-  const matches = useMemo(
-    () => (index ? rankPlaces(index, query, LIMIT) : []),
-    [index, query],
-  )
+  const matches = useMemo(() => {
+    if (!index) return []
+    const scoped = type ? index.filter((item) => item.entry.t === type) : index
+    return rankPlaces(scoped, query, LIMIT)
+  }, [index, query, type])
+
+  const scopeLabel = type ? typeLabelPlural(type) : null
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
-      <h1 className="text-3xl font-bold text-gray-900">Search</h1>
+      <h1 className="text-3xl font-bold text-gray-900">
+        {scopeLabel ? `Search ${scopeLabel}` : 'Search'}
+      </h1>
       <div className="mt-6">
-        <SearchBox defaultValue={query} autoFocus={query.length === 0} />
+        <SearchBox
+          key={type ?? 'all'}
+          defaultValue={query}
+          autoFocus={query.length === 0}
+          type={type}
+        />
       </div>
 
       {query.length === 0 ? (
@@ -53,20 +68,42 @@ export default function SearchResults() {
         <p className="mt-8 text-gray-400">Searching…</p>
       ) : matches.length === 0 ? (
         <p className="mt-8 text-gray-500">
-          No matches for <span className="font-medium text-gray-700">{query}</span>. Try a broader
-          term, like a city name or a category.
+          No {scopeLabel ? scopeLabel.toLowerCase() : 'matches'} for{' '}
+          <span className="font-medium text-gray-700">{query}</span>.{' '}
+          {scopeLabel ? (
+            <Link href={searchHref(query)} className="text-green-700 hover:underline">
+              Search all categories
+            </Link>
+          ) : (
+            'Try a broader term, like a city name or a category.'
+          )}
         </p>
       ) : (
         <>
           <p className="mt-8 text-sm text-gray-400">
             {matches.length === LIMIT ? `Top ${LIMIT} matches` : `${matches.length} matches`} for{' '}
             <span className="font-medium text-gray-600">{query}</span>
+            {scopeLabel && (
+              <>
+                {' '}
+                in {scopeLabel.toLowerCase()} ·{' '}
+                <Link href={searchHref(query)} className="text-green-700 hover:underline">
+                  search all categories
+                </Link>
+              </>
+            )}
           </p>
           <ul className="mt-4 divide-y divide-gray-100">
             {matches.map((entry) => (
               <li key={entry.s}>
                 <Link
                   href={`/places/${entry.s}`}
+                  onClick={() =>
+                    rememberList(
+                      `Results for “${query}”`,
+                      matches.map((match) => ({ slug: match.s, name: match.n })),
+                    )
+                  }
                   className="flex items-baseline justify-between gap-4 py-4 transition-colors hover:text-green-700"
                 >
                   <span>

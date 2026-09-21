@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import NearMe from '@/components/NearMe'
+import SearchBox from '@/components/SearchBox'
 
 // The list is built in the browser from the visitor's own location, so there is
 // nothing here for a crawler to index beyond this shell — keep it out of the
@@ -15,10 +16,9 @@ export default function NearMePage() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
       <h1 className="text-3xl font-bold text-gray-900">Outdoor places near you</h1>
-      <p className="mt-2 max-w-2xl text-gray-500">
-        Top-rated parks, trails, beaches and more close to you. Share your location or enter a ZIP
-        code or city, then filter by category and sort by what matters to you.
-      </p>
+      <div className="mt-5">
+        <SearchBox />
+      </div>
       <NearMe />
     </div>
   )
