@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { DEAD_URL_DESTINATION } from '@/lib/dead-url'
 import {
   AlertTriangle,
   Baby,
@@ -190,7 +191,7 @@ export default async function PlacePage({ params }: Props) {
     if (candidates.length > 0) {
       return <PlaceDisambiguation title={titleFromSlug(slug)} places={candidates} />
     }
-    redirect('/')
+    redirect(DEAD_URL_DESTINATION)
   }
 
   // One query serves both the editorial context (how this place ranks among

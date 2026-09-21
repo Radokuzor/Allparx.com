@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { DEAD_URL_DESTINATION } from '@/lib/dead-url'
 import { ExternalLink, Info, MapPin, Phone, Star } from 'lucide-react'
 import JsonLd from '@/components/JsonLd'
 import HotelCard from '@/components/HotelCard'
@@ -53,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function HotelPage({ params }: Props) {
   const { slug } = await params
   const hotel = getHotel(slug)
-  if (!hotel) redirect('/')
+  if (!hotel) redirect(DEAD_URL_DESTINATION)
 
   const url = absoluteUrl(`/hotels/${hotel.slug}`)
   const hero = hotel.photos[0]

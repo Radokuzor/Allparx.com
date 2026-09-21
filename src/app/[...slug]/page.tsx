@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { DEAD_URL_DESTINATION } from '@/lib/dead-url'
 
 /**
  * Catch-all for every URL no other route claims — /contact, /about, old
@@ -9,5 +10,5 @@ import { redirect } from 'next/navigation'
  * later, and a 308 would be cached by browsers and crawlers.
  */
 export default function UnmatchedPage(): never {
-  redirect('/')
+  redirect(DEAD_URL_DESTINATION)
 }

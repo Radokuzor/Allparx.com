@@ -4,8 +4,27 @@ import { geolocation, ipAddress } from '@vercel/functions'
 import { db } from './firebase-admin'
 
 const COUNTER_REF = db.collection('analytics').doc('visitCounter')
+const SETTINGS_REF = db.collection('analytics').doc('settings')
 export const VISITS_COLLECTION = db.collection('analytics_visits')
-const NOTIFY_EVERY = 10
+
+/** Telegram pings on every Nth visit. Editable from the /analytics dashboard; 0 turns pings off. */
+export const DEFAULT_NOTIFY_EVERY = 10
+export const MAX_NOTIFY_EVERY = 1_000_000
+
+/** Accepts only a whole number from 0 to MAX_NOTIFY_EVERY; anything else means "not set". */
+export function parseNotifyEvery(value: unknown): number | null {
+  const n = typeof value === 'string' && value.trim() !== '' ? Number(value) : value
+  return typeof n === 'number' && Number.isInteger(n) && n >= 0 && n <= MAX_NOTIFY_EVERY ? n : null
+}
+
+export async function getNotifyEvery(): Promise<number> {
+  const doc = await SETTINGS_REF.get()
+  return parseNotifyEvery(doc.data()?.notifyEvery) ?? DEFAULT_NOTIFY_EVERY
+}
+
+export async function setNotifyEvery(every: number): Promise<void> {
+  await SETTINGS_REF.set({ notifyEvery: every, updatedAt: new Date().toISOString() }, { merge: true })
+}
 
 /**
  * Set from the /analytics dashboard (see actions.ts) to stop tracking the
@@ -229,17 +248,17 @@ function buildVisitRecord(request: NextRequest, context: VisitContext): VisitRec
 export async function trackVisit(request: NextRequest, context: VisitContext): Promise<void> {
   const visit = buildVisitRecord(request, context)
 
-  const [count] = await Promise.all([
+  const [{ count, every }] = await Promise.all([
     db.runTransaction(async (tx) => {
-      const doc = await tx.get(COUNTER_REF)
-      const next = (doc.data()?.count ?? 0) + 1
+      const [counter, settings] = await tx.getAll(COUNTER_REF, SETTINGS_REF)
+      const next = (counter.data()?.count ?? 0) + 1
       tx.set(COUNTER_REF, { count: next, updatedAt: new Date().toISOString() })
-      return next
+      return { count: next, every: parseNotifyEvery(settings.data()?.notifyEvery) ?? DEFAULT_NOTIFY_EVERY }
     }),
     VISITS_COLLECTION.add(visit),
   ])
 
-  if (count % NOTIFY_EVERY !== 0) return
+  if (every === 0 || count % every !== 0) return
 
   const location =
     [visit.city, visit.countryRegion, visit.country].filter(Boolean).join(', ') || 'Unknown'

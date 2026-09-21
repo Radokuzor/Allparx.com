@@ -2,8 +2,8 @@
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { ANALYTICS_COOKIE, checkPassword, sessionToken } from '@/lib/analytics-auth'
-import { IGNORE_COOKIE } from '@/lib/analytics'
+import { ANALYTICS_COOKIE, checkPassword, isAnalyticsAuthed, sessionToken } from '@/lib/analytics-auth'
+import { IGNORE_COOKIE, parseNotifyEvery, setNotifyEvery } from '@/lib/analytics'
 
 export async function login(formData: FormData) {
   const candidate = String(formData.get('password') ?? '')
@@ -21,6 +21,18 @@ export async function login(formData: FormData) {
 
 export async function logout() {
   ;(await cookies()).delete({ name: ANALYTICS_COOKIE, path: '/analytics' })
+  redirect('/analytics')
+}
+
+/** Sets how many visits pass between Telegram pings; 0 turns them off. */
+export async function saveNotifyEvery(formData: FormData) {
+  // Server actions are public endpoints, and this one changes a setting.
+  if (!(await isAnalyticsAuthed())) redirect('/analytics')
+
+  const every = parseNotifyEvery(formData.get('every'))
+  if (every === null) redirect('/analytics?notify=invalid')
+
+  await setNotifyEvery(every)
   redirect('/analytics')
 }
 

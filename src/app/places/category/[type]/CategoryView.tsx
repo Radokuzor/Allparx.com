@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { DEAD_URL_DESTINATION } from '@/lib/dead-url'
 import JsonLd from '@/components/JsonLd'
 import PlaceGrid from '@/components/PlaceGrid'
 import RememberList from '@/components/RememberList'
@@ -37,7 +38,7 @@ export async function CategoryView({ type, page }: { type: string; page: number 
   const label = typeLabelPlural(type)
   const totalPages = Math.max(1, Math.ceil(total / CATEGORY_PAGE_SIZE))
   // A page past the end is a dead URL, like any other.
-  if (page > totalPages) redirect('/')
+  if (page > totalPages) redirect(DEAD_URL_DESTINATION)
   const start = total === 0 ? 0 : (page - 1) * CATEGORY_PAGE_SIZE + 1
   const end = Math.min(page * CATEGORY_PAGE_SIZE, total)
 

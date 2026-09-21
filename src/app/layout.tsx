@@ -5,6 +5,7 @@ import Link from 'next/link'
 import './globals.css'
 import AuthProvider from '@/components/auth/AuthProvider'
 import ClickTracker from '@/components/ClickTracker'
+import TidyUrl from '@/components/TidyUrl'
 import UserMenu from '@/components/auth/UserMenu'
 import FloatingNearMe from '@/components/FloatingNearMe'
 import MobileNav from '@/components/MobileNav'
@@ -186,6 +187,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <FloatingNearMe />
         <ClickTracker />
+        <TidyUrl />
         </AuthProvider>
       </body>
     </html>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { DEAD_URL_DESTINATION } from '@/lib/dead-url'
 import PlaceGrid from '@/components/PlaceGrid'
 import JsonLd from '@/components/JsonLd'
 import { citySlug, getAllPlaceRefs, getPlacesByCityAndType, resolveCity } from '@/lib/firestore'
@@ -54,10 +55,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CityTypePage({ params }: Props) {
   const { city: slug, type } = await params
   const city = await resolveCity(slug)
-  if (!city || !isKnownType(type)) redirect('/')
+  if (!city || !isKnownType(type)) redirect(DEAD_URL_DESTINATION)
 
   const places = await getPlacesByCityAndType(city, type)
-  if (places.length === 0) redirect('/')
+  if (places.length === 0) redirect(DEAD_URL_DESTINATION)
   const label = typeLabelPlural(type)
 
   return (

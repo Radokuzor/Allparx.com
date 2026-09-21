@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { DEAD_URL_DESTINATION } from '@/lib/dead-url'
 import { CategoryView, categoryMetadata } from '../../CategoryView'
 import { CATEGORY_PAGE_SIZE, getAllPlaceRefs } from '@/lib/firestore'
 import { PLACE_TYPES, isKnownType } from '@/lib/place-types'
@@ -43,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CategoryPagedPage({ params }: Props) {
   const { type, page } = await params
   const pageNumber = parsePage(page)
-  if (!isKnownType(type) || pageNumber === null) redirect('/')
+  if (!isKnownType(type) || pageNumber === null) redirect(DEAD_URL_DESTINATION)
 
   return <CategoryView type={type} page={pageNumber} />
 }

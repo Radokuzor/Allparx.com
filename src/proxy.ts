@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextFetchEvent, NextRequest } from 'next/server'
 import { IGNORE_COOKIE, SESSION_COOKIE, VISITOR_COOKIE, isAssetPath, trackVisit } from './lib/analytics'
+import { REDIRECT_MARKER } from './lib/dead-url'
 
 const VISITOR_MAX_AGE = 60 * 60 * 24 * 365 * 2
 // A session ends after 30 minutes without a page view.
@@ -25,9 +26,13 @@ export function proxy(request: NextRequest, event: NextFetchEvent) {
   response.cookies.set(VISITOR_COOKIE, context.visitorId, { ...cookieOptions, maxAge: VISITOR_MAX_AGE })
   response.cookies.set(SESSION_COOKIE, context.sessionId, { ...cookieOptions, maxAge: SESSION_MAX_AGE })
 
+  // A dead URL was already counted when it was requested; the redirect that
+  // lands on `/` is the same visit, not a second page view.
+  const followedDeadUrl = request.nextUrl.pathname === '/' && request.nextUrl.searchParams.has(REDIRECT_MARKER)
+
   // Set from the /analytics dashboard so the person viewing it doesn't
   // pollute their own numbers — see IGNORE_COOKIE.
-  if (request.cookies.get(IGNORE_COOKIE)?.value !== '1') {
+  if (!followedDeadUrl && request.cookies.get(IGNORE_COOKIE)?.value !== '1') {
     event.waitUntil(
       trackVisit(request, context).catch((error) => console.warn('[analytics] trackVisit failed', error)),
     )

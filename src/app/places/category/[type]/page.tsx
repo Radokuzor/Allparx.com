@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { DEAD_URL_DESTINATION } from '@/lib/dead-url'
 import { CategoryView, categoryMetadata } from './CategoryView'
 import { PLACE_TYPES, isKnownType } from '@/lib/place-types'
 
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryPage({ params }: Props) {
   const { type } = await params
-  if (!isKnownType(type)) redirect('/')
+  if (!isKnownType(type)) redirect(DEAD_URL_DESTINATION)
 
   return <CategoryView type={type} page={1} />
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { DEAD_URL_DESTINATION } from '@/lib/dead-url'
 import PlaceGrid from '@/components/PlaceGrid'
 import JsonLd from '@/components/JsonLd'
 import { citySlug, getAllCities, getPlacesByCity, resolveCity } from '@/lib/firestore'
@@ -39,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CityPage({ params }: Props) {
   const { city: slug } = await params
   const city = await resolveCity(slug)
-  if (!city) redirect('/')
+  if (!city) redirect(DEAD_URL_DESTINATION)
 
   const places = await getPlacesByCity(city)
 

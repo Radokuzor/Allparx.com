@@ -2,12 +2,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { isAnalyticsAuthed } from '@/lib/analytics-auth'
-import { IGNORE_COOKIE } from '@/lib/analytics'
+import { DEFAULT_NOTIFY_EVERY, IGNORE_COOKIE, MAX_NOTIFY_EVERY, getNotifyEvery } from '@/lib/analytics'
 import { MAX_CLICKS, type ClickReport, type ClickRow } from '@/lib/analytics-clicks'
 import { MAX_EVENTS, type Coverage, type NearMeReport } from '@/lib/analytics-near-me'
 import { loadReport, MAX_VISITS, RANGES, type Bucket, type RangeKey, type Row } from '@/lib/analytics-report'
 import { cn } from '@/lib/utils'
-import { login, logout, setSelfExclusion } from './actions'
+import { login, logout, saveNotifyEvery, setSelfExclusion } from './actions'
 
 export const metadata: Metadata = {
   title: 'Analytics',
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 // Longer ranges read tens of thousands of documents; don't let the host's default cut that off.
 export const maxDuration = 60
 
-type SearchParams = Promise<{ range?: string; bots?: string; error?: string }>
+type SearchParams = Promise<{ range?: string; bots?: string; error?: string; notify?: string }>
 
 const number = new Intl.NumberFormat('en-US')
 const percent = new Intl.NumberFormat('en-US', { style: 'percent', maximumFractionDigits: 1 })
@@ -65,7 +65,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
   const range: RangeKey = params.range && params.range in RANGES ? (params.range as RangeKey) : '7'
   const includeBots = params.bots === '1'
   const selfExcluded = (await cookies()).get(IGNORE_COOKIE)?.value === '1'
-  const report = await loadReport(range, includeBots)
+  const [report, notifyEvery] = await Promise.all([loadReport(range, includeBots), getNotifyEvery()])
   const { totals } = report
   const href = (next: { range?: string; bots?: boolean }) =>
     `/analytics?range=${next.range ?? range}${(next.bots ?? includeBots) ? '&bots=1' : ''}`
@@ -103,7 +103,38 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
         </div>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2">
+      <form
+        action={saveNotifyEvery}
+        className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-gray-200 px-4 py-3 text-sm text-gray-600"
+      >
+        <label htmlFor="notify-every" className="font-medium text-gray-900">
+          Telegram alerts
+        </label>
+        <span>ping me every</span>
+        <input
+          key={notifyEvery}
+          id="notify-every"
+          name="every"
+          type="number"
+          inputMode="numeric"
+          min={0}
+          max={MAX_NOTIFY_EVERY}
+          step={1}
+          defaultValue={notifyEvery}
+          className="w-24 rounded-md border border-gray-300 px-2 py-1 text-gray-900"
+        />
+        <span>visits (bots included)</span>
+        <button className="rounded-full border border-gray-200 px-3.5 py-1 font-medium hover:border-gray-300">Save</button>
+        <span className={cn('text-xs', params.notify === 'invalid' ? 'text-red-600' : 'text-gray-400')}>
+          {params.notify === 'invalid'
+            ? `Enter a whole number from 0 to ${number.format(MAX_NOTIFY_EVERY)}.`
+            : notifyEvery === 0
+              ? 'Alerts are off. Enter a number to turn them back on.'
+              : `0 turns alerts off · default ${DEFAULT_NOTIFY_EVERY}`}
+        </span>
+      </form>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         {(Object.keys(RANGES) as RangeKey[]).map((key) => (
           <Link
             key={key}
