@@ -306,11 +306,6 @@ export default function NearMe() {
             {problem}
           </p>
         )}
-
-        <p className="mt-6 text-xs leading-relaxed text-gray-400">
-          Your exact location never leaves your browser. We only note the general area you searched
-          (like “Austin, TX”) and how many places we found there, so we know where to add more.
-        </p>
       </div>
     )
   }
