@@ -136,7 +136,13 @@ function explainMissingIndex(error: unknown): never {
 }
 
 async function countBots(since: Date): Promise<number> {
-  const result = await VISITS_COLLECTION.where('bot', '==', true).where('ts', '>=', since).count().get()
+  // The explicit descending order is what lets the (bot, ts DESC) index serve
+  // this count; without it Firestore wants a second, ascending index.
+  const result = await VISITS_COLLECTION.where('bot', '==', true)
+    .where('ts', '>=', since)
+    .orderBy('ts', 'desc')
+    .count()
+    .get()
   return result.data().count
 }
 
