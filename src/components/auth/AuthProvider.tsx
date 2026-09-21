@@ -1,10 +1,17 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
 import type { User } from 'firebase/auth'
 import { firebaseAuth, firebaseConfigured } from '@/lib/firebase-client'
 import { WISHLIST, type SavedMap } from '@/lib/lists'
-import AuthDialog from './AuthDialog'
+
+/**
+ * Split out of the bundle every page loads. This provider is in the root
+ * layout, so a static import would put the whole sign-in popup in front of
+ * every visitor, including the ones who never open it.
+ */
+const AuthDialog = dynamic(() => import('./AuthDialog'))
 
 /**
  * Holds the signed-in session for the whole site.

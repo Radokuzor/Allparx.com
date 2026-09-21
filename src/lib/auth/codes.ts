@@ -162,9 +162,20 @@ export async function verifyCode(email: string, candidate: string): Promise<Veri
     return rejected
   }
 
-  // Single use: consumed the moment it works.
-  await ref.delete().catch(() => {})
+  // Deliberately still valid here. The caller has more to do — create the
+  // account, mint a token — and if that fails, burning the code would leave
+  // the person holding a dead code and a resend cooldown, with nothing they
+  // did wrong. `consumeCode` retires it once the sign-in has actually landed.
   return { ok: true }
+}
+
+/** Retires a code after the sign-in it authorised has completed. */
+export async function consumeCode(email: string): Promise<void> {
+  await db
+    .collection(COLLECTION)
+    .doc(docId(email))
+    .delete()
+    .catch(() => {})
 }
 
 /**
@@ -182,9 +193,16 @@ async function ipIsFlooding(ip: string, now: Date): Promise<boolean> {
   const expired = !doc || secondsSince(doc.windowStartedAt, now) / 60 >= SEND_WINDOW_MINUTES
   if (!expired && doc.sendCount >= MAX_SENDS_PER_IP) return true
 
+  const windowStartedAt = expired ? Timestamp.fromDate(now) : doc.windowStartedAt
   await ref.set({
     sendCount: expired ? 1 : doc.sendCount + 1,
-    windowStartedAt: expired ? Timestamp.fromDate(now) : doc.windowStartedAt,
+    windowStartedAt,
+    // Carries the same field name as a code document so that one Firestore TTL
+    // policy on authCodes.expiresAt clears both. Without it these counters are
+    // the only thing in the database that grows and never shrinks.
+    expiresAt: Timestamp.fromDate(
+      new Date(windowStartedAt.toDate().getTime() + SEND_WINDOW_MINUTES * 60_000),
+    ),
   })
   return false
 }

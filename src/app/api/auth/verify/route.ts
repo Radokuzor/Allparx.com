@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import type { UserRecord } from 'firebase-admin/auth'
 import admin from '@/lib/firebase-admin'
-import { CODE_LENGTH, verifyCode } from '@/lib/auth/codes'
+import { CODE_LENGTH, consumeCode, verifyCode } from '@/lib/auth/codes'
 import { normalizeEmail } from '@/lib/auth/disposable'
 import { ensureProfile } from '@/lib/account'
 
@@ -39,25 +39,35 @@ export async function POST(request: NextRequest) {
 
   const auth = admin.auth()
   let user: UserRecord
+  let token: string
   try {
-    user = await auth.getUserByEmail(email)
-    // An account made through Google carries a verified address already; this
-    // only matters for records created before this flow existed.
-    if (!user.emailVerified) {
-      await auth.updateUser(user.uid, { emailVerified: true })
+    try {
+      user = await auth.getUserByEmail(email)
+      // An account made through Google carries a verified address already;
+      // this only matters for records created before this flow existed.
+      if (!user.emailVerified) {
+        await auth.updateUser(user.uid, { emailVerified: true })
+      }
+    } catch {
+      user = await auth.createUser({ email, emailVerified: true })
     }
-  } catch {
-    user = await auth.createUser({ email, emailVerified: true })
+    token = await auth.createCustomToken(user.uid)
+  } catch (error) {
+    // Reaching here with a correct code means the fault is ours — most often
+    // Firebase Authentication not being enabled for the project. The code is
+    // left valid so the next attempt works without waiting out a cooldown.
+    console.error('[auth] could not create the session', error)
+    return NextResponse.json(
+      { error: 'We could not finish signing you in. Please try again shortly.' },
+      { status: 503 },
+    )
   }
 
-  const token = await auth.createCustomToken(user.uid)
+  await consumeCode(email)
   await ensureProfile(user.uid, email, {
     displayName: user.displayName ?? null,
     photoURL: user.photoURL ?? null,
   })
 
-  return NextResponse.json(
-    { ok: true, token },
-    { headers: { 'Cache-Control': 'no-store' } },
-  )
+  return NextResponse.json({ ok: true, token }, { headers: { 'Cache-Control': 'no-store' } })
 }
