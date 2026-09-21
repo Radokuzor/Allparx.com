@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
+// Longer ranges read tens of thousands of documents; don't let the host's default cut that off.
+export const maxDuration = 60
+
 type SearchParams = Promise<{ range?: string; bots?: string; error?: string }>
 
 const number = new Intl.NumberFormat('en-US')
