@@ -43,8 +43,13 @@ async function load(): Promise<Auth> {
   }
 
   const { getApp, getApps, initializeApp } = await import('firebase/app')
-  const { browserLocalPersistence, indexedDBLocalPersistence, initializeAuth, getAuth } =
-    await import('firebase/auth')
+  const {
+    browserLocalPersistence,
+    browserPopupRedirectResolver,
+    indexedDBLocalPersistence,
+    initializeAuth,
+    getAuth,
+  } = await import('firebase/auth')
 
   const app = getApps().length ? getApp() : initializeApp(config)
 
@@ -54,6 +59,11 @@ async function load(): Promise<Auth> {
     // for private windows, where IndexedDB can be unavailable.
     return initializeAuth(app, {
       persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+      // getAuth() supplies this on its own; initializeAuth() does not, and
+      // without it every signInWithPopup/Redirect call throws
+      // auth/argument-error. It is also what completes a redirect sign-in when
+      // the browser returns to the site.
+      popupRedirectResolver: browserPopupRedirectResolver,
     })
   } catch {
     // initializeAuth throws if auth was already set up on this app instance.

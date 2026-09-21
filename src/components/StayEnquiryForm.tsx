@@ -197,6 +197,7 @@ export default function StayEnquiryForm({
 
       <button
         type="submit"
+        data-track="Stay enquiry: send"
         disabled={state === 'sending'}
         className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-green-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-800 disabled:opacity-60"
       >

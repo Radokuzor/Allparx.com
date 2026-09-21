@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { CategoryView, categoryMetadata } from '../../CategoryView'
 import { CATEGORY_PAGE_SIZE, getAllPlaceRefs } from '@/lib/firestore'
 import { PLACE_TYPES, isKnownType } from '@/lib/place-types'
@@ -7,7 +7,7 @@ import { PLACE_TYPES, isKnownType } from '@/lib/place-types'
 type Props = { params: Promise<{ type: string; page: string }> }
 
 export const dynamic = 'force-static'
-export const dynamicParams = false
+export const dynamicParams = true
 
 // Page 1 lives at the parent route, so this only ever generates page >= 2 —
 // and only as many pages as a category actually has, so `/page/99` 404s.
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CategoryPagedPage({ params }: Props) {
   const { type, page } = await params
   const pageNumber = parsePage(page)
-  if (!isKnownType(type) || pageNumber === null) notFound()
+  if (!isKnownType(type) || pageNumber === null) redirect('/')
 
   return <CategoryView type={type} page={pageNumber} />
 }

@@ -3,10 +3,10 @@ import { Suspense } from 'react'
 import NotFoundSuggestions from '@/components/NotFoundSuggestions'
 
 /**
- * Still a real 404 — the status code is what tells Google a URL is gone, and
- * returning 200 here would make every dead link a soft 404. Only the content
- * changes: most of these URLs come from the previous allparx.com and still
- * name the place the visitor wanted, so the page tries to find it.
+ * A last-resort fallback only. Dead URLs no longer reach it: unmatched paths
+ * are caught by app/[...slug]/page.tsx and the dynamic routes redirect to the
+ * home page instead of calling notFound(). It would show if something threw
+ * notFound() again, so it stays rather than falling back to Next's bare 404.
  */
 export default function NotFound() {
   return (

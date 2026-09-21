@@ -36,6 +36,7 @@ export default function UserMenu({ className }: { className?: string }) {
     return (
       <button
         type="button"
+        data-track="Sign in (header)"
         onClick={() => openSignIn()}
         className={`text-sm font-medium text-gray-600 transition-colors hover:text-green-700 ${className ?? ''}`}
       >
@@ -54,6 +55,7 @@ export default function UserMenu({ className }: { className?: string }) {
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Your account"
+        data-track="Account menu"
         className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-green-700 text-sm font-semibold text-white transition-transform hover:scale-105"
       >
         {user?.photoURL ? (
@@ -93,6 +95,7 @@ export default function UserMenu({ className }: { className?: string }) {
           <button
             type="button"
             role="menuitem"
+            data-track="Sign out"
             onClick={() => {
               setOpen(false)
               void signOut()

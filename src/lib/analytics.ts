@@ -112,8 +112,33 @@ function isGooglebotIp(ip: string | null): boolean {
   return secondOctet >= 64 && secondOctet <= 95
 }
 
+/**
+ * Scrapers reuse one stale Chrome build for months. Chrome 100 shipped in
+ * March 2022 and browsers auto-update, so a "person" on anything older is
+ * almost always automation — a day of traffic had ~110 such hits, each with
+ * its own fresh cookie, which inflated "unique visitors".
+ */
+const OLDEST_PLAUSIBLE_CHROME = 100
+
+function isStaleChrome(ua: string): boolean {
+  const major = /Chrome\/(\d+)\./.exec(ua)?.[1]
+  return major !== undefined && Number(major) < OLDEST_PLAUSIBLE_CHROME
+}
+
 export function isBot(ua: string, ip: string | null): boolean {
-  return !ua || BOT_PATTERN.test(ua) || isGooglebotIp(ip)
+  return !ua || BOT_PATTERN.test(ua) || isGooglebotIp(ip) || isStaleChrome(ua)
+}
+
+/**
+ * Requests for files rather than pages: the search index the search box
+ * downloads, ads.txt, the hero video, generated icons. They pass through the
+ * proxy like everything else but are not page views, and counting them made
+ * /search-index.json the "top page" and inflated every total.
+ */
+const ASSET_PATH = /\.(?:json|txt|xml|mp4|webm|jpe?g|png|gif|svg|webp|avif|ico|js|css|map|woff2?)$|^\/(?:icon|apple-icon|opengraph-image)$/i
+
+export function isAssetPath(pathname: string): boolean {
+  return ASSET_PATH.test(pathname)
 }
 
 function hostOf(url: string | null): string | null {

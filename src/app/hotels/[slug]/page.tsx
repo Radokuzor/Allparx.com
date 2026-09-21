@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { ExternalLink, Info, MapPin, Phone, Star } from 'lucide-react'
 import JsonLd from '@/components/JsonLd'
 import HotelCard from '@/components/HotelCard'
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function HotelPage({ params }: Props) {
   const { slug } = await params
   const hotel = getHotel(slug)
-  if (!hotel) notFound()
+  if (!hotel) redirect('/')
 
   const url = absoluteUrl(`/hotels/${hotel.slug}`)
   const hero = hotel.photos[0]

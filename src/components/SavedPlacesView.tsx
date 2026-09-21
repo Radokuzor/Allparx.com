@@ -68,6 +68,7 @@ export default function SavedPlacesView({ list, intro, emptyLine }: Props) {
         <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-gray-500">{intro}</p>
         <button
           type="button"
+          data-track="Sign in (saved places)"
           onClick={() => openSignIn()}
           className="mt-5 rounded-full bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-800"
         >
@@ -154,6 +155,7 @@ export default function SavedPlacesView({ list, intro, emptyLine }: Props) {
 
           <button
             type="button"
+            data-track="Remove from saved list"
             onClick={() => void toggleSave(place.slug, list)}
             aria-label={`Remove ${place.name} from this list`}
             className="absolute bottom-4 right-3 flex h-9 w-9 items-center justify-center rounded-full text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500"

@@ -197,6 +197,7 @@ export default function SearchBox({
       </div>
       <button
         type="submit"
+        data-track="Search button"
         className="shrink-0 rounded-full bg-green-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-green-800"
       >
         Search
@@ -218,6 +219,7 @@ export default function SearchBox({
                   type="button"
                   id={`${listId}-${i}`}
                   role="option"
+                  data-track={suggestion.city ? 'Search suggestion: city' : 'Search suggestion: place'}
                   aria-selected={i === highlight}
                   // The input's blur would otherwise close the list before the
                   // click could register.
@@ -249,6 +251,7 @@ export default function SearchBox({
             <li className="mt-1 border-t border-gray-100 pt-1">
               <button
                 type="button"
+                data-track="Search suggestions: see all results"
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={submit}
                 className="w-full px-4 py-2.5 text-left text-xs font-semibold text-green-700 hover:bg-green-50"

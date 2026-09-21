@@ -2,9 +2,18 @@ import 'server-only'
 import { db } from './firebase-admin'
 import { nearestPlaceLabel } from './geo-lookup'
 import { isKnownType } from './place-types'
-import { NEAR_ME_SOURCES, type Supply } from './track-event'
+import {
+  CLICK_KINDS,
+  CLICK_REGIONS,
+  NEAR_ME_SOURCES,
+  type ClickKind,
+  type ClickRegion,
+  type Supply,
+} from './track-event'
 
 export const EVENTS_COLLECTION = db.collection('analytics_events')
+/** Kept apart from near-me events: clicks are far more frequent and would crowd them out of the report's read cap. */
+export const CLICKS_COLLECTION = db.collection('analytics_clicks')
 
 /** Fields every stored event carries, taken from the request rather than the client. */
 export interface EventContext {
@@ -34,7 +43,16 @@ export type NearMeSearchEvent = {
   reason: string | null
 }
 
+export type ClickEvent = {
+  type: 'click'
+  kind: ClickKind
+  label: string
+  region: ClickRegion
+  path: string
+}
+
 export type StoredEvent = (NearMeClickEvent | NearMeSearchEvent) & EventContext & { ts: Date }
+export type StoredClick = ClickEvent & EventContext & { ts: Date }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -82,8 +100,16 @@ function parseSupply(value: unknown): Supply | null {
  * null. This endpoint is a public write path into Firestore, so nothing is
  * kept that isn't on an allow-list, and every string is length-capped.
  */
-export function parseEvent(body: unknown): NearMeClickEvent | NearMeSearchEvent | null {
+export function parseEvent(body: unknown): ClickEvent | NearMeClickEvent | NearMeSearchEvent | null {
   if (!isRecord(body)) return null
+
+  if (body.type === 'click') {
+    const label = text(body.label, 60)
+    const path = text(body.path, 200)
+    const kind = CLICK_KINDS.find((k) => k === body.kind)
+    const region = CLICK_REGIONS.find((r) => r === body.region)
+    return label && path?.startsWith('/') && kind && region ? { type: 'click', kind, label, region, path } : null
+  }
 
   if (body.type === 'near_me_click') {
     const path = text(body.path, 200)
@@ -136,7 +162,14 @@ export function parseEvent(body: unknown): NearMeClickEvent | NearMeSearchEvent 
   }
 }
 
-export async function saveEvent(event: NearMeClickEvent | NearMeSearchEvent, context: EventContext) {
-  const stored: StoredEvent = { ...event, ...context, ts: new Date() }
-  await EVENTS_COLLECTION.add(stored)
+export async function saveEvent(
+  event: ClickEvent | NearMeClickEvent | NearMeSearchEvent,
+  context: EventContext,
+) {
+  const ts = new Date()
+  if (event.type === 'click') {
+    await CLICKS_COLLECTION.add({ ...event, ...context, ts } satisfies StoredClick)
+  } else {
+    await EVENTS_COLLECTION.add({ ...event, ...context, ts } satisfies StoredEvent)
+  }
 }

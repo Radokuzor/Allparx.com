@@ -20,7 +20,15 @@ export type Supply = {
   byType: Record<string, number>
 }
 
+export const CLICK_KINDS = ['button', 'link'] as const
+export type ClickKind = (typeof CLICK_KINDS)[number]
+
+/** Which part of the page a control sits in — the same label can mean different things in each. */
+export const CLICK_REGIONS = ['header', 'footer', 'dialog', 'page'] as const
+export type ClickRegion = (typeof CLICK_REGIONS)[number]
+
 export type TrackPayload =
+  | { type: 'click'; kind: ClickKind; label: string; region: ClickRegion; path: string }
   | { type: 'near_me_click'; source: NearMeSource; path: string }
   | {
       type: 'near_me_search'

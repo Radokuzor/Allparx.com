@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { isAnalyticsAuthed } from '@/lib/analytics-auth'
 import { IGNORE_COOKIE } from '@/lib/analytics'
+import { MAX_CLICKS, type ClickReport, type ClickRow } from '@/lib/analytics-clicks'
 import { MAX_EVENTS, type Coverage, type NearMeReport } from '@/lib/analytics-near-me'
 import { loadReport, MAX_VISITS, RANGES, type Bucket, type RangeKey, type Row } from '@/lib/analytics-report'
 import { cn } from '@/lib/utils'
@@ -73,7 +74,9 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">Analytics</h1>
           <p className="mt-1 text-sm text-gray-500">
             {RANGES[range]} · all times UTC
-            {report.allTimeCount !== null && <> · {number.format(report.allTimeCount)} page views all-time</>}
+            {report.allTimeCount !== null && (
+              <> · {number.format(report.allTimeCount)} requests all-time (bots and files included)</>
+            )}
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -120,15 +123,30 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
         </Link>
       </div>
 
-      {report.capped && (
+      {report.capped && report.coveredFrom && (
         <p className="mt-4 rounded-lg bg-amber-50 px-4 py-2.5 text-sm text-amber-800">
-          Showing the most recent {number.format(MAX_VISITS)} page views only — pick a shorter range for complete numbers.
+          This range has more than {number.format(MAX_VISITS)} page views, so the figures below cover only{' '}
+          {timestamp(report.coveredFrom)} UTC onward. Pick a shorter range for complete numbers.
         </p>
       )}
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <Stat label="Page views" value={number.format(totals.views)} />
-        <Stat label="Unique visitors" value={number.format(totals.visitors)} />
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <Stat label="Page views" value={number.format(totals.views)} hint="pages only — bots and files excluded" />
+        <Stat
+          label="Unique visitors"
+          value={number.format(totals.visitors)}
+          hint="by browser cookie; scrapers with fresh cookies inflate it"
+        />
+        <Stat
+          label="Engaged visitors"
+          value={number.format(totals.engagedVisitors)}
+          hint="viewed 2+ pages or clicked something"
+        />
+        <Stat
+          label="From search engines"
+          value={number.format(totals.searchEngineVisitors)}
+          hint="visitors referred by Google, Bing, etc."
+        />
         <Stat label="New visitors" value={number.format(totals.newVisitors)} />
         <Stat label="Sessions" value={number.format(totals.sessions)} />
         <Stat label="Views in last hour" value={number.format(totals.lastHour)} />
@@ -139,7 +157,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
           label="Returning visitors"
           value={number.format(Math.max(0, totals.visitors - totals.newVisitors))}
         />
-        <Stat label="Bot hits" value={number.format(totals.bots)} />
+        <Stat label="Bot requests" value={number.format(totals.bots)} hint="exact count, files included" />
       </div>
 
       <Panel title={range === '1' ? 'Page views by hour' : 'Page views by day'} className="mt-6">
@@ -154,6 +172,8 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
           <BarChart buckets={report.weekdays} compact />
         </Panel>
       </div>
+
+      <ClicksSection clicks={report.clicks} />
 
       <NearMeSection nearMe={report.nearMe} />
 
@@ -190,7 +210,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
       </Panel>
 
       {report.botAgents.length > 0 && (
-        <Panel title="Bot user agents" className="mt-6">
+        <Panel title="Bot user agents (from the most recent bot hits)" className="mt-6">
           <Table
             head={['User agent', 'Hits']}
             rows={report.botAgents.map((row) => [
@@ -236,6 +256,85 @@ function Stat({ label, value, hint }: { label: string; value: string; hint?: str
       <p className="mt-1 text-2xl font-semibold tabular-nums text-gray-900">{value}</p>
       {hint && <p className="mt-0.5 text-xs text-gray-400">{hint}</p>}
     </div>
+  )
+}
+
+const REGION_LABEL: Record<string, string> = { header: 'Header', footer: 'Footer', dialog: 'Pop-up', page: 'Page body' }
+
+function ClickTable({ rows }: { rows: ClickRow[] }) {
+  return (
+    <Table
+      head={['Name', 'Where', 'People', 'Clicks', '% of visitors', 'Mostly on']}
+      rows={rows.map((row) => [
+        <span key="l" className="font-medium text-gray-900">{row.label}</span>,
+        REGION_LABEL[row.region] ?? row.region,
+        number.format(row.people),
+        number.format(row.clicks),
+        percent.format(row.reach),
+        <span key="p" className="break-all">{row.topPage}</span>,
+      ])}
+    />
+  )
+}
+
+/**
+ * What people do on the site, from the click tracker. "People" counts distinct
+ * visitors, so ten clicks by one person is one person, not ten.
+ */
+function ClicksSection({ clicks }: { clicks: ClickReport }) {
+  return (
+    <section className="mt-10">
+      <h2 className="text-xl font-bold tracking-tight text-gray-900">Buttons and links clicked</h2>
+      <p className="mt-1 text-sm text-gray-500">
+        Every button and link press by real visitors (bots excluded), ranked by how many different people pressed
+        it. Links are named by where they go; place pages are grouped as /places/:slug. Tracking began when this
+        was deployed, so earlier days show nothing.
+      </p>
+
+      {clicks.capped && (
+        <p className="mt-3 rounded-lg bg-amber-50 px-4 py-2.5 text-sm text-amber-800">
+          Showing the most recent {number.format(MAX_CLICKS)} clicks only — pick a shorter range for complete numbers.
+        </p>
+      )}
+
+      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Stat label="Clicks" value={number.format(clicks.totals.clicks)} />
+        <Stat label="People who clicked" value={number.format(clicks.totals.clickers)} />
+        <Stat label="Visitors who clicked anything" value={percent.format(clicks.totals.clickerRate)} />
+        <Stat label="Clicks per person" value={clicks.totals.clicksPerClicker.toFixed(1)} />
+      </div>
+
+      <Panel title="Buttons" className="mt-4">
+        <ClickTable rows={clicks.buttons} />
+      </Panel>
+      <Panel title="Links" className="mt-4">
+        <ClickTable rows={clicks.links} />
+      </Panel>
+
+      <div className="mt-4 grid gap-6 lg:grid-cols-2">
+        <Panel title="Pages where people click most">
+          <Table
+            head={['Page', 'People', 'Clicks']}
+            rows={clicks.pages.map((row) => [
+              <a key="p" href={row.label} className="break-all text-green-700 hover:underline">{row.label}</a>,
+              number.format(row.people),
+              number.format(row.count),
+            ])}
+          />
+        </Panel>
+        <Panel title={`Recent clicks (${clicks.recent.length})`}>
+          <Table
+            head={['Time', 'Clicked', 'On', 'Device']}
+            rows={clicks.recent.map((row) => [
+              timestamp(row.ts),
+              <span key="c" className="break-all">{row.label}</span>,
+              <span key="p" className="break-all">{row.path}</span>,
+              `${row.device}${row.country ? ` · ${row.country}` : ''}`,
+            ])}
+          />
+        </Panel>
+      </div>
+    </section>
   )
 }
 

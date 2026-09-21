@@ -26,6 +26,7 @@ export default function PlaceSaveActions({ slug, name }: { slug: string; name: s
     <div className="mt-4 flex flex-wrap gap-2">
       <button
         type="button"
+        data-track={wanted ? 'Remove from want-to-go list' : 'Add to want-to-go list'}
         onClick={() => void toggleSave(slug, WISHLIST)}
         aria-pressed={wanted}
         aria-label={wanted ? `Remove ${name} from your list` : `Save ${name} to your list`}
@@ -40,6 +41,7 @@ export default function PlaceSaveActions({ slug, name }: { slug: string; name: s
 
       <button
         type="button"
+        data-track={visited ? 'Unmark as visited' : 'Mark as visited'}
         onClick={() => void toggleSave(slug, VISITED)}
         aria-pressed={visited}
         aria-label={visited ? `Remove ${name} from your parks` : `Mark ${name} as visited`}

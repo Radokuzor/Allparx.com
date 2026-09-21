@@ -31,6 +31,14 @@
         { "fieldPath": "city", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "analytics_visits",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "bot", "order": "ASCENDING" },
+        { "fieldPath": "ts", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

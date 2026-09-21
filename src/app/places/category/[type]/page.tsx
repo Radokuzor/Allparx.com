@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { CategoryView, categoryMetadata } from './CategoryView'
 import { PLACE_TYPES, isKnownType } from '@/lib/place-types'
 
 type Props = { params: Promise<{ type: string }> }
 
 export const dynamic = 'force-static'
-export const dynamicParams = false
+export const dynamicParams = true
 
 export async function generateStaticParams() {
   return PLACE_TYPES.map((type) => ({ type }))
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryPage({ params }: Props) {
   const { type } = await params
-  if (!isKnownType(type)) notFound()
+  if (!isKnownType(type)) redirect('/')
 
   return <CategoryView type={type} page={1} />
 }

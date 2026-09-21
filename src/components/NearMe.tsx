@@ -268,6 +268,7 @@ export default function NearMe() {
       <div className="mt-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
         <button
           type="button"
+          data-track="Near me: use my location"
           onClick={useMyLocation}
           disabled={busy !== null}
           className="flex w-full items-center justify-center gap-2 rounded-full bg-green-700 px-6 py-3.5 text-base font-semibold text-white transition-colors hover:bg-green-800 disabled:opacity-60 sm:w-auto"
@@ -294,6 +295,7 @@ export default function NearMe() {
           />
           <button
             type="submit"
+            data-track="Near me: find places (typed)"
             disabled={busy !== null || text.trim().length === 0}
             className="shrink-0 rounded-full border border-green-700 px-6 py-3 text-sm font-semibold text-green-700 transition-colors hover:bg-green-50 disabled:opacity-50"
           >
@@ -327,6 +329,7 @@ export default function NearMe() {
         </p>
         <button
           type="button"
+          data-track="Near me: change location"
           onClick={() => {
             setAlternates([])
             setProblem(null)
@@ -344,6 +347,7 @@ export default function NearMe() {
                 {i > 0 && ' · '}
                 <button
                   type="button"
+                  data-track="Near me: pick suggested place"
                   onClick={() => {
                     setAlternates(alternates.filter((other) => other !== match))
                     saveOrigin(match)
@@ -596,6 +600,7 @@ function CategoryRow({
         {toggleable && (
           <button
             type="button"
+            data-track="Near me: show more categories"
             onClick={() => setExpanded((open) => !open)}
             aria-expanded={expanded}
             className="flex shrink-0 items-center gap-1 rounded-full border border-green-700 bg-green-50 px-3.5 py-1.5 text-sm font-semibold text-green-800 transition-colors hover:bg-green-100"
@@ -647,6 +652,7 @@ function Chip({
     <button
       type="button"
       data-type={type}
+      data-track={type ? `Near me filter: ${type}` : 'Near me filter: all'}
       onClick={onClick}
       aria-pressed={active}
       disabled={empty}

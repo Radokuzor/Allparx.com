@@ -20,6 +20,7 @@ export default function NearMeCta({
   return (
     <Link
       href="/near-me"
+      data-track={`Find near me (${source})`}
       onClick={() => track({ type: 'near_me_click', source, path: window.location.pathname })}
       className={cn(
         'group relative flex shrink-0 overflow-hidden rounded-full p-0.5 shadow-[0_0_28px_rgba(163,230,53,0.45)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_40px_rgba(163,230,53,0.75)]',

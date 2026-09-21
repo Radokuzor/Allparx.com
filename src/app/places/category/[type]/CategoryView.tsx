@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 import JsonLd from '@/components/JsonLd'
 import PlaceGrid from '@/components/PlaceGrid'
 import RememberList from '@/components/RememberList'
@@ -35,6 +36,8 @@ export async function CategoryView({ type, page }: { type: string; page: number 
   const { items, total } = await getPlacesByTypePage(type, page, CATEGORY_PAGE_SIZE)
   const label = typeLabelPlural(type)
   const totalPages = Math.max(1, Math.ceil(total / CATEGORY_PAGE_SIZE))
+  // A page past the end is a dead URL, like any other.
+  if (page > totalPages) redirect('/')
   const start = total === 0 ? 0 : (page - 1) * CATEGORY_PAGE_SIZE + 1
   const end = Math.min(page * CATEGORY_PAGE_SIZE, total)
 

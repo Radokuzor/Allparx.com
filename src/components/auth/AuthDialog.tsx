@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ArrowRight, Loader2, Mail, TreePine, X } from 'lucide-react'
+import type { Auth } from 'firebase/auth'
 import { firebaseAuth } from '@/lib/firebase-client'
 import { SITE_NAME } from '@/lib/site'
 import OtpInput from './OtpInput'
@@ -32,6 +33,20 @@ export default function AuthDialog({ prompt, onClose, onSignedIn }: Props) {
   const [cooldown, setCooldown] = useState(0)
 
   const panel = useRef<HTMLDivElement>(null)
+  /** Firebase, loaded ahead of time so Google's popup can open inside the click. */
+  const firebase = useRef<{ auth: Auth; sdk: typeof import('firebase/auth') } | null>(null)
+
+  useEffect(() => {
+    let active = true
+    Promise.all([firebaseAuth(), import('firebase/auth')])
+      .then(([auth, sdk]) => {
+        if (active) firebase.current = { auth, sdk }
+      })
+      .catch((error) => console.warn('[auth] could not load Firebase', error))
+    return () => {
+      active = false
+    }
+  }, [])
 
   // Escape closes, and the page behind must not scroll while this is up.
   useEffect(() => {
@@ -119,37 +134,55 @@ export default function AuthDialog({ prompt, onClose, onSignedIn }: Props) {
     [email, onSignedIn],
   )
 
-  const continueWithGoogle = useCallback(async () => {
-    setBusy(true)
+  /**
+   * Deliberately not async up to the popup call. Browsers only let a popup open
+   * from the click that asked for it, and Safari and in-app browsers are strict
+   * about how long after the click that is. Loading Firebase on demand would
+   * eat into that window, so it is loaded when the dialog opens (above) and
+   * this handler opens the popup immediately.
+   */
+  const continueWithGoogle = useCallback(() => {
     setError(null)
-    try {
-      const auth = await firebaseAuth()
-      const { GoogleAuthProvider, signInWithPopup, signInWithRedirect } = await import(
-        'firebase/auth'
-      )
-      const provider = new GoogleAuthProvider()
-      try {
-        await signInWithPopup(auth, provider)
-      } catch (popupError) {
-        // In-app browsers (Instagram, Facebook, some mail apps) block popups.
-        // A redirect is the only thing that works there.
-        const code = (popupError as { code?: string }).code ?? ''
-        if (code.includes('popup') || code.includes('not-supported')) {
-          await signInWithRedirect(auth, provider)
+    const ready = firebase.current
+    if (!ready) {
+      setError('Sign-in is still loading. Try again in a moment.')
+      return
+    }
+
+    const { auth, sdk } = ready
+    const provider = new sdk.GoogleAuthProvider()
+    setBusy(true)
+
+    sdk
+      .signInWithPopup(auth, provider)
+      .then(() => onSignedIn())
+      .catch(async (googleError: unknown) => {
+        const code = (googleError as { code?: string }).code ?? ''
+
+        // Closing the Google window is a decision, not a failure.
+        if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
           return
         }
-        throw popupError
-      }
-      onSignedIn()
-    } catch (googleError) {
-      const code = (googleError as { code?: string }).code ?? ''
-      // Closing the Google window is a decision, not a failure.
-      if (!code.includes('cancelled') && !code.includes('closed-by-user')) {
-        setError('Google sign-in did not complete. Try your email instead.')
-      }
-    } finally {
-      setBusy(false)
-    }
+        // In-app browsers (Instagram, Facebook, some mail apps) block popups.
+        // A full-page redirect is the only thing that works there.
+        if (
+          code === 'auth/popup-blocked' ||
+          code === 'auth/operation-not-supported-in-this-environment'
+        ) {
+          await sdk.signInWithRedirect(auth, provider)
+          return
+        }
+
+        // The code is the only way to tell a misconfigured project from a
+        // blocked popup, so keep it out of the void.
+        console.warn('[auth] Google sign-in failed:', code, googleError)
+        setError(
+          code === 'auth/unauthorized-domain'
+            ? 'Google sign-in is not enabled for this address yet. Use your email instead.'
+            : `Google sign-in did not complete${code ? ` (${code.replace('auth/', '')})` : ''}. Try your email instead.`,
+        )
+      })
+      .finally(() => setBusy(false))
   }, [onSignedIn])
 
   return (
@@ -240,7 +273,7 @@ export default function AuthDialog({ prompt, onClose, onSignedIn }: Props) {
 
             <button
               type="button"
-              onClick={() => void continueWithGoogle()}
+              onClick={continueWithGoogle}
               disabled={busy}
               className="flex h-12 w-full items-center justify-center gap-2.5 rounded-xl border border-gray-200 text-[15px] font-semibold text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
             >

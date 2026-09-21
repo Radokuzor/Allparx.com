@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import PlaceGrid from '@/components/PlaceGrid'
 import JsonLd from '@/components/JsonLd'
 import { citySlug, getAllCities, getPlacesByCity, resolveCity } from '@/lib/firestore'
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CityPage({ params }: Props) {
   const { city: slug } = await params
   const city = await resolveCity(slug)
-  if (!city) notFound()
+  if (!city) redirect('/')
 
   const places = await getPlacesByCity(city)
 

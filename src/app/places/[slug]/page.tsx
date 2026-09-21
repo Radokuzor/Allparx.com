@@ -2,7 +2,7 @@ import { cache } from 'react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import {
   AlertTriangle,
   Baby,
@@ -190,7 +190,7 @@ export default async function PlacePage({ params }: Props) {
     if (candidates.length > 0) {
       return <PlaceDisambiguation title={titleFromSlug(slug)} places={candidates} />
     }
-    notFound()
+    redirect('/')
   }
 
   // One query serves both the editorial context (how this place ranks among

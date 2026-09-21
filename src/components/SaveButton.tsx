@@ -41,6 +41,7 @@ export default function SaveButton({ slug, name, variant = 'card', list = WISHLI
     return (
       <button
         type="button"
+        data-track={saved ? 'Unsave place (page)' : 'Save place (page)'}
         onClick={handleClick}
         aria-pressed={saved}
         aria-label={label}
@@ -61,6 +62,7 @@ export default function SaveButton({ slug, name, variant = 'card', list = WISHLI
   return (
     <button
       type="button"
+      data-track={saved ? 'Unsave place (card)' : 'Save place (card)'}
       onClick={handleClick}
       aria-pressed={saved}
       aria-label={label}

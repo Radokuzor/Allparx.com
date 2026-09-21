@@ -18,6 +18,7 @@ export default function MobileNav() {
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
         aria-label={open ? 'Close menu' : 'Open menu'}
+        data-track="Mobile menu toggle"
         className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-600 transition-colors hover:border-green-200 hover:text-green-700"
       >
         {open ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
@@ -71,6 +72,7 @@ export default function MobileNav() {
                     </Link>
                     <button
                       type="button"
+                      data-track="Sign out"
                       onClick={() => {
                         setOpen(false)
                         void signOut()
@@ -84,6 +86,7 @@ export default function MobileNav() {
                 ) : (
                   <button
                     type="button"
+                    data-track="Sign in (mobile menu)"
                     onClick={() => {
                       setOpen(false)
                       openSignIn()
