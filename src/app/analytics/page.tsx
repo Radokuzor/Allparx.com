@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { isAnalyticsAuthed } from '@/lib/analytics-auth'
 import { DEFAULT_NOTIFY_EVERY, IGNORE_COOKIE, MAX_NOTIFY_EVERY, getNotifyEvery } from '@/lib/analytics'
+import type { AccountsReport, SignupRow } from '@/lib/analytics-accounts'
 import { MAX_CLICKS, type ClickReport, type ClickRow } from '@/lib/analytics-clicks'
 import { MAX_EVENTS, type Coverage, type NearMeReport } from '@/lib/analytics-near-me'
 import { loadReport, MAX_VISITS, RANGES, type Bucket, type RangeKey, type Row } from '@/lib/analytics-report'
@@ -207,6 +208,8 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
         </Panel>
       </div>
 
+      <AccountsSection accounts={report.accounts} range={range} />
+
       <ClicksSection clicks={report.clicks} />
 
       <NearMeSection nearMe={report.nearMe} />
@@ -308,6 +311,99 @@ function ClickTable({ rows }: { rows: ClickRow[] }) {
         <span key="p" className="break-all">{row.topPage}</span>,
       ])}
     />
+  )
+}
+
+const METHOD_LABEL: Record<SignupRow['method'], string> = {
+  'google.com': 'Google',
+  'email code': 'Email code',
+}
+
+function SignupTable({ rows }: { rows: SignupRow[] }) {
+  return (
+    <Table
+      head={['Email', 'Method', 'Signed up', 'Last signed in']}
+      rows={rows.map((row) => [
+        <span key="e" className="font-medium text-gray-900">{row.email}</span>,
+        METHOD_LABEL[row.method],
+        timestamp(row.createdAt),
+        row.lastSignedIn ? timestamp(row.lastSignedIn) : '—',
+      ])}
+    />
+  )
+}
+
+/**
+ * Accounts created through the sign-in popup (see components/auth), and what
+ * they have saved. Sign-up figures come from Firebase Auth directly — it is
+ * the only place the account and its method live — while saved-place figures
+ * come from Firestore, which is what actually holds them.
+ */
+function AccountsSection({ accounts, range }: { accounts: AccountsReport; range: RangeKey }) {
+  return (
+    <section className="mt-10">
+      <h2 className="text-xl font-bold tracking-tight text-gray-900">Accounts</h2>
+      <p className="mt-1 text-sm text-gray-500">
+        People who signed in through the pop-up, and what they have saved. This page shows full
+        email addresses — keep the dashboard password real and don&apos;t share this link.
+      </p>
+
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <Stat label="Accounts, all time" value={number.format(accounts.totals.allTime)} />
+        <Stat
+          label="New sign-ups"
+          value={number.format(accounts.totals.inRange)}
+          hint={RANGES[range]}
+        />
+        <Stat label="via Google" value={number.format(accounts.totals.google)} hint={RANGES[range]} />
+        <Stat
+          label="via email code"
+          value={number.format(accounts.totals.emailCode)}
+          hint={RANGES[range]}
+        />
+        <Stat
+          label="Accounts with a saved place"
+          value={number.format(accounts.totals.withSaves)}
+        />
+        <Stat label="Places saved" value={number.format(accounts.savedPlaces.total)} />
+      </div>
+
+      <Panel title={range === '1' ? 'Sign-ups by hour' : 'Sign-ups by day'} className="mt-6">
+        {accounts.series.every((b) => b.count === 0) ? (
+          <p className="text-sm text-gray-400">No sign-ups in this range yet.</p>
+        ) : (
+          <BarChart buckets={accounts.series.map((b) => ({ ...b, visitors: b.count }))} />
+        )}
+      </Panel>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <RankPanel title="Most saved places" rows={accounts.mostSaved} />
+        <Panel title="Wishlist vs. visited">
+          {accounts.savedPlaces.total === 0 ? (
+            <p className="text-sm text-gray-400">No saves yet.</p>
+          ) : (
+            <ul className="space-y-1 text-sm">
+              <li className="flex justify-between">
+                <span className="text-gray-600">Want to go</span>
+                <span className="tabular-nums text-gray-900">
+                  {number.format(accounts.savedPlaces.wishlist)}
+                </span>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-gray-600">Been there</span>
+                <span className="tabular-nums text-gray-900">
+                  {number.format(accounts.savedPlaces.visited)}
+                </span>
+              </li>
+            </ul>
+          )}
+        </Panel>
+      </div>
+
+      <Panel title={`Recent sign-ups (${accounts.recent.length})`} className="mt-6">
+        <SignupTable rows={accounts.recent} />
+      </Panel>
+    </section>
   )
 }
 

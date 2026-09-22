@@ -1,6 +1,7 @@
 import 'server-only'
 import type { Timestamp } from 'firebase-admin/firestore'
 import { VISITS_COLLECTION, isAssetPath, isBot, type VisitRecord } from './analytics'
+import { loadAccountsReport, type AccountsReport } from './analytics-accounts'
 import { loadClickReport, type ClickReport } from './analytics-clicks'
 import { loadNearMeReport, type NearMeReport } from './analytics-near-me'
 import { db } from './firebase-admin'
@@ -75,6 +76,7 @@ export interface Report {
   botAgents: Row[]
   nearMe: NearMeReport
   clicks: ClickReport
+  accounts: AccountsReport
   topVisitors: { id: string; views: number; sessions: number; lastSeen: Date; location: string; ip: string | null; device: string }[]
   recent: Visit[]
 }
@@ -252,12 +254,13 @@ export async function loadReport(range: RangeKey, includeBots: boolean): Promise
     .filter((v) => v.utmSource || v.utmCampaign)
     .map((v) => [v.utmSource, v.utmMedium, v.utmCampaign].filter(Boolean).join(' / '))
 
-  const [nearMe, clicks] = await Promise.all([
+  const [nearMe, clicks, accounts] = await Promise.all([
     loadNearMeReport(since, {
       sessions: sessions.size,
       nearMePageViews: visits.filter((v) => v.path === '/near-me').length,
     }),
     loadClickReport(since, visitorIds),
+    loadAccountsReport(since, days),
   ])
 
   const engagedVisitors = [...byVisitor.entries()].filter(
@@ -305,6 +308,7 @@ export async function loadReport(range: RangeKey, includeBots: boolean): Promise
     botAgents: rank(botAgentRows.map((v) => v.userAgent), botAgentRows.length),
     nearMe,
     clicks,
+    accounts,
     topVisitors,
     recent: visits.slice(0, 200),
   }
