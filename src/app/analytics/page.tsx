@@ -79,7 +79,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
           <p className="mt-1 text-sm text-gray-500">
             {RANGES[range]} · all times UTC
             {report.allTimeCount !== null && (
-              <> · {number.format(report.allTimeCount)} requests all-time (bots and files included)</>
+              <> · {number.format(report.allTimeCount)} real page views all-time (bots excluded)</>
             )}
           </p>
         </div>
@@ -124,7 +124,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
           defaultValue={notifyEvery}
           className="w-24 rounded-md border border-gray-300 px-2 py-1 text-gray-900"
         />
-        <span>visits (bots included)</span>
+        <span>visits (bots excluded)</span>
         <button className="rounded-full border border-gray-200 px-3.5 py-1 font-medium hover:border-gray-300">Save</button>
         <span className={cn('text-xs', params.notify === 'invalid' ? 'text-red-600' : 'text-gray-400')}>
           {params.notify === 'invalid'
@@ -247,9 +247,9 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
       </Panel>
 
       {report.botAgents.length > 0 && (
-        <Panel title="Bot user agents (from the most recent bot hits)" className="mt-6">
+        <Panel title="Bot traffic by crawler (from the most recent bot hits)" className="mt-6">
           <Table
-            head={['User agent', 'Hits']}
+            head={['Crawler', 'Hits']}
             rows={report.botAgents.map((row) => [
               <span key="ua" className="break-all">{row.label}</span>,
               number.format(row.count),

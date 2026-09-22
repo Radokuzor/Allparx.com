@@ -26,7 +26,7 @@ const BOT_AGENT_SAMPLE = 3_000
 const VISIT_FIELDS = [
   'ts', 'path', 'query', 'searchQuery', 'referrer', 'referrerHost', 'utmSource', 'utmMedium', 'utmCampaign',
   'visitorId', 'sessionId', 'newVisitor', 'newSession', 'device', 'browser', 'os', 'bot', 'language',
-  'country', 'countryRegion', 'city', 'flag', 'edgeRegion', 'ip', 'userAgent',
+  'country', 'countryRegion', 'city', 'flag', 'edgeRegion', 'ip', 'userAgent', 'botName',
 ] as const satisfies readonly (keyof VisitRecord)[]
 
 export type Visit = Pick<VisitRecord, Exclude<(typeof VISIT_FIELDS)[number], 'ts'>> & { id: string; ts: Date }
@@ -40,7 +40,12 @@ export interface Report {
   /** Set when the range holds more than MAX_VISITS page views; the figures then cover only `coveredFrom` onward. */
   capped: boolean
   coveredFrom: Date | null
-  /** Every tracked request since tracking began — bots included, so not a visitor count. */
+  /**
+   * Real (non-bot) page views since tracking began — not a visitor count,
+   * since one visitor can rack up many. Bots stopped advancing this counter
+   * on 2026-09-21 to cut their Firestore write/read cost in half; counts
+   * from before that date still had bot hits mixed in.
+   */
   allTimeCount: number | null
   totals: {
     views: number
@@ -159,7 +164,7 @@ export async function loadReport(range: RangeKey, includeBots: boolean): Promise
       true,
       since,
       includeBots ? MAX_BOT_SAMPLE : BOT_AGENT_SAMPLE,
-      includeBots ? VISIT_FIELDS : ['ts', 'path', 'userAgent'],
+      includeBots ? VISIT_FIELDS : ['ts', 'path', 'userAgent', 'botName'],
     ),
     countBots(since),
     db.collection('analytics').doc('visitCounter').get(),
@@ -305,7 +310,7 @@ export async function loadReport(range: RangeKey, includeBots: boolean): Promise
     os: rank(visits.map((v) => v.os), total),
     languages: rank(visits.map((v) => v.language), total),
     edgeRegions: rank(visits.map((v) => v.edgeRegion), total),
-    botAgents: rank(botAgentRows.map((v) => v.userAgent), botAgentRows.length),
+    botAgents: rank(botAgentRows.map((v) => v.botName || v.userAgent), botAgentRows.length),
     nearMe,
     clicks,
     accounts,

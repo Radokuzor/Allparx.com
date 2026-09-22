@@ -7,7 +7,7 @@ const COUNTER_REF = db.collection('analytics').doc('visitCounter')
 const SETTINGS_REF = db.collection('analytics').doc('settings')
 export const VISITS_COLLECTION = db.collection('analytics_visits')
 
-/** Telegram pings on every Nth visit. Editable from the /analytics dashboard; 0 turns pings off. */
+/** Telegram pings on every Nth real visit (bots don't advance this). Editable from the /analytics dashboard; 0 turns pings off. */
 export const DEFAULT_NOTIFY_EVERY = 10
 export const MAX_NOTIFY_EVERY = 1_000_000
 
@@ -71,6 +71,8 @@ export interface VisitRecord {
   edgeRegion: string | null
   ip: string | null
   userAgent: string | null
+  /** Which crawler this was, when `bot` is true — see `botName`. Null for real visits. */
+  botName: string | null
 }
 
 export interface VisitContext {
@@ -149,6 +151,27 @@ export function isBot(ua: string, ip: string | null): boolean {
 }
 
 /**
+ * Groups a bot hit under a named crawler instead of its raw user agent, so
+ * the dashboard's bot breakdown stays a short, readable list (crawl-budget
+ * and indexing checks) instead of hundreds of near-duplicate UA strings.
+ */
+function botName(ua: string, ip: string | null): string {
+  if (!ua) return 'No user agent'
+  if (isGooglebotIp(ip) || /googlebot|google-inspectiontool|googleother/i.test(ua)) return 'Google'
+  if (/bingbot|bingpreview/i.test(ua)) return 'Bing'
+  if (/gptbot|oai-searchbot|chatgpt-user/i.test(ua)) return 'OpenAI'
+  if (/claudebot|claude-web/i.test(ua)) return 'Anthropic'
+  if (/bytespider/i.test(ua)) return 'ByteDance'
+  if (/ahrefsbot/i.test(ua)) return 'Ahrefs'
+  if (/semrushbot/i.test(ua)) return 'Semrush'
+  if (/facebookexternalhit|meta-externalagent/i.test(ua)) return 'Meta'
+  if (/darkvisitor/i.test(ua)) return 'DarkVisitor'
+  if (/perplexitybot|perplexity/i.test(ua)) return 'Perplexity'
+  if (isStaleChrome(ua)) return 'Stale Chrome (likely scraper)'
+  return 'Other bot'
+}
+
+/**
  * Requests for files rather than pages: the search index the search box
  * downloads, ads.txt, the hero video, generated icons. They pass through the
  * proxy like everything else but are not page views, and counting them made
@@ -204,6 +227,7 @@ function buildVisitRecord(request: NextRequest, context: VisitContext): VisitRec
   const params = request.nextUrl.searchParams
   const decode = (value: string | undefined) => (value ? decodeURIComponent(value) : null)
   const ip = ipAddress(request) ?? null
+  const bot = isBot(userAgent, ip)
 
   return {
     ts: new Date(),
@@ -224,7 +248,8 @@ function buildVisitRecord(request: NextRequest, context: VisitContext): VisitRec
     device: deviceType(userAgent),
     browser: browserName(userAgent),
     os: osName(userAgent),
-    bot: isBot(userAgent, ip),
+    bot,
+    botName: bot ? botName(userAgent, ip) : null,
     language: request.headers.get('accept-language')?.split(',')[0]?.trim() || null,
     country: geo.country ?? null,
     countryRegion: geo.countryRegion ?? null,
@@ -244,9 +269,19 @@ function buildVisitRecord(request: NextRequest, context: VisitContext): VisitRec
  * site-wide visit counter and, every Nth visit, notifies Telegram. Runs from
  * Proxy on every real page view (see src/proxy.ts for the matcher that
  * filters out prefetches, assets, and API routes).
+ *
+ * Bots are stored too (crawl-budget/indexing visibility on the dashboard),
+ * but skip the counter transaction, the settings read, and Telegram — they
+ * were ~80% of hits, so routing them through the same read+write path as a
+ * real visit doubled Firestore usage for a number nobody was watching.
  */
 export async function trackVisit(request: NextRequest, context: VisitContext): Promise<void> {
   const visit = buildVisitRecord(request, context)
+
+  if (visit.bot) {
+    await VISITS_COLLECTION.add(visit)
+    return
+  }
 
   const [{ count, every }] = await Promise.all([
     db.runTransaction(async (tx) => {
