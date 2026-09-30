@@ -39,6 +39,46 @@
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Churchill_Field_Park_-_Chicago,_IL_-_April_2023.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Cavell_Park.jpg/1280px-Cavell_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Cavell Park",
+      "author": "Gobonobo",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cavell_Park.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Nov_2020%2C_Portland%2C_Oregon_08.jpg/1280px-Nov_2020%2C_Portland%2C_Oregon_08.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "Nov 2020, Portland, Oregon 08",
+      "author": "Another Believer",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nov_2020,_Portland,_Oregon_08.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/Parkview_Playlot_Park%2C_Chicago.jpg/1280px-Parkview_Playlot_Park%2C_Chicago.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 570,
+      "title": "Parkview Playlot Park, Chicago",
+      "author": "Nick Number",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Parkview_Playlot_Park,_Chicago.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Minneapolis_neighborhood_Camden_Industrial_Area_%2852083142585%29.jpg/1280px-Minneapolis_neighborhood_Camden_Industrial_Area_%2852083142585%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 854,
+      "title": "Minneapolis neighborhood Camden Industrial Area (52083142585)",
+      "author": "Fibonacci Blue from Minnesota, USA",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Minneapolis_neighborhood_Camden_Industrial_Area_(52083142585).jpg"
     }
   ],
   "dog_park": [
@@ -91,6 +131,46 @@
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Off_leash_dog_park,_Perry.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0d/Dog_park_and_pub_with_great_dane.jpg/1280px-Dog_park_and_pub_with_great_dane.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Dog park and pub with great dane",
+      "author": "Kurt Kaiser",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dog_park_and_pub_with_great_dane.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Zona_per_a_gossos_del_parc_del_Pa%C3%ADs_Valenci%C3%A0%2C_Gandia.jpg/1280px-Zona_per_a_gossos_del_parc_del_Pa%C3%ADs_Valenci%C3%A0%2C_Gandia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 849,
+      "title": "Zona per a gossos del parc del País Valencià, Gandia",
+      "author": "Joanbanjo",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zona_per_a_gossos_del_parc_del_Pa%C3%ADs_Valenci%C3%A0,_Gandia.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Dogs_and_people_in_snowy_dog_park.jpg/1280px-Dogs_and_people_in_snowy_dog_park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Dogs and people in snowy dog park",
+      "author": "sarah n",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dogs_and_people_in_snowy_dog_park.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Campo_de_Marte_de_Lima_o_Plaza_de_La_Revoluci%C3%B3n_-_14230922911.jpg/1280px-Campo_de_Marte_de_Lima_o_Plaza_de_La_Revoluci%C3%B3n_-_14230922911.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 852,
+      "title": "Campo de Marte de Lima o Plaza de La Revolución - 14230922911",
+      "author": "Art DiNo",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Campo_de_Marte_de_Lima_o_Plaza_de_La_Revoluci%C3%B3n_-_14230922911.jpg"
     }
   ],
   "campground": [
@@ -143,6 +223,46 @@
       "license": "Public domain",
       "licenseUrl": null,
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Patos_camping_(21229958858).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Babler_SP_campground-20131102-001.jpg/1280px-Babler_SP_campground-20131102-001.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Babler SP campground-20131102-001",
+      "author": "Kbh3rd",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Babler_SP_campground-20131102-001.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Camping_Tents_in_the_Woods.jpg/1280px-Camping_Tents_in_the_Woods.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 854,
+      "title": "Camping Tents in the Woods",
+      "author": "Jess Mann",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camping_Tents_in_the_Woods.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Lomsesanden_Familiecamping.jpg/1280px-Lomsesanden_Familiecamping.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 578,
+      "title": "Lomsesanden Familiecamping",
+      "author": "JOestby",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lomsesanden_Familiecamping.jpg"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Leave_no_trace_site.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "width": 1280,
+      "height": 925,
+      "title": "Leave no trace site",
+      "author": "© 2002 Todd VerBeek, (WT-en) TVerBeek at English Wikivoyage",
+      "license": "CC BY-SA 1.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/1.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Leave_no_trace_site.jpg"
     }
   ],
   "hiking_area": [
@@ -195,6 +315,56 @@
       "license": "CC BY-SA 3.0 us",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/us/deed.en",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fall-hiking-trail_ForestWander.JPG"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Kirstenbosch_National_Botanical_Garden%2C_Cape_Town_%28P1060068%29.jpg/1280px-Kirstenbosch_National_Botanical_Garden%2C_Cape_Town_%28P1060068%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Kirstenbosch National Botanical Garden, Cape Town (P1060068)",
+      "author": "Matti Blume",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kirstenbosch_National_Botanical_Garden,_Cape_Town_(P1060068).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/94/Farlow_Gap_%28creek_crossing%29_04.jpg/1280px-Farlow_Gap_%28creek_crossing%29_04.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Farlow Gap (creek crossing) 04",
+      "author": "LithiumFlash",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Farlow_Gap_(creek_crossing)_04.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Hiking_path_on_the_peninsula_La_Vict%C3%B2ria_01.jpg/1280px-Hiking_path_on_the_peninsula_La_Vict%C3%B2ria_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Hiking path on the peninsula La Victòria 01",
+      "author": "Kritzolina",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hiking_path_on_the_peninsula_La_Vict%C3%B2ria_01.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/OWAIS-GRAPHY_04.JPG/1280px-OWAIS-GRAPHY_04.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 848,
+      "title": "OWAIS-GRAPHY 04",
+      "author": "Owais8668",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:OWAIS-GRAPHY_04.JPG"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/Stream_of_the_Chefna_river.jpg/1280px-Stream_of_the_Chefna_river.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Stream of the Chefna river",
+      "author": "ManonB2024",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stream_of_the_Chefna_river.jpg"
     }
   ],
   "beach": [
@@ -299,6 +469,26 @@
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hudson_Commodore_at_the_Enchanted_Trails_Trading_Post,_Albuquerque_NM.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Stellplatz_in_D_78333_Stockach%2C_sch%C3%B6ner_Platz_mit_super_Duschen_-_panoramio.jpg/1280px-Stellplatz_in_D_78333_Stockach%2C_sch%C3%B6ner_Platz_mit_super_Duschen_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Stellplatz in D 78333 Stockach, schöner Platz mit super Duschen - panoramio",
+      "author": "Karl-Heinz Böhm",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stellplatz_in_D_78333_Stockach,_sch%C3%B6ner_Platz_mit_super_Duschen_-_panoramio.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Halte_VR_%C3%A0_Fermont.jpg/1280px-Halte_VR_%C3%A0_Fermont.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Halte VR à Fermont",
+      "author": "sf-dvs",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Halte_VR_%C3%A0_Fermont.jpg"
     }
   ],
   "national_park": [
@@ -547,6 +737,46 @@
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:NorwalkIowaSportsComplex.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/Camp_avoda_field.jpg/1280px-Camp_avoda_field.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Camp avoda field",
+      "author": "QuentinV",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camp_avoda_field.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Baseball_Banner.jpg/1280px-Baseball_Banner.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 427,
+      "title": "Baseball Banner",
+      "author": "Salmaboskey boskey",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Baseball_Banner.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Commerce_March_2017_028_%28Nathaniel_%22Sambo%22_Stiggers_Field%29.jpg/1280px-Commerce_March_2017_028_%28Nathaniel_%22Sambo%22_Stiggers_Field%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Commerce March 2017 028 (Nathaniel \"Sambo\" Stiggers Field)",
+      "author": "Michael Barera",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Commerce_March_2017_028_(Nathaniel_%22Sambo%22_Stiggers_Field).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/BaseballField-Sportek.jpg/1280px-BaseballField-Sportek.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "BaseballField-Sportek",
+      "author": "Himerosteam",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:BaseballField-Sportek.jpg"
     }
   ],
   "community_center": [
@@ -599,6 +829,36 @@
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blackshear_City_Park_tennis_court,_playground.jpg"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Laurelhurst_Park%2C_tennis.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "width": 1280,
+      "height": 932,
+      "title": "Laurelhurst Park, tennis",
+      "author": "Another Believer",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Laurelhurst_Park,_tennis.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Mineola_Memorial_Pk_td_%282019-06-08%29_066_-_Tennis_Courts.jpg/1280px-Mineola_Memorial_Pk_td_%282019-06-08%29_066_-_Tennis_Courts.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Mineola Memorial Pk td (2019-06-08) 066 - Tennis Courts",
+      "author": "Tdorante10",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mineola_Memorial_Pk_td_(2019-06-08)_066_-_Tennis_Courts.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Mineola_Memorial_Pk_td_%282019-06-08%29_071_-_Tennis_Courts.jpg/1280px-Mineola_Memorial_Pk_td_%282019-06-08%29_071_-_Tennis_Courts.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Mineola Memorial Pk td (2019-06-08) 071 - Tennis Courts",
+      "author": "Tdorante10",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mineola_Memorial_Pk_td_(2019-06-08)_071_-_Tennis_Courts.jpg"
     }
   ],
   "picnic_ground": [
@@ -661,6 +921,66 @@
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9D%D0%B8%D0%B6%D0%BD%D1%8C%D0%BE%D0%B4%D0%BD%D1%96%D1%81%D1%82%D1%80%D0%BE%D0%B2%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%9D%D0%9F%D0%9F42.JPG"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Kl%C3%B6vensteen_07.JPG/1280px-Kl%C3%B6vensteen_07.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 851,
+      "title": "Klövensteen 07",
+      "author": "Huhu Uet",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kl%C3%B6vensteen_07.JPG"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3b/Seattle%2C_September_8%2C_2024_-_112.jpg/1280px-Seattle%2C_September_8%2C_2024_-_112.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Seattle, September 8, 2024 - 112",
+      "author": "Another Believer",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Seattle,_September_8,_2024_-_112.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/14/Picnic_tables_at_the_top_of_the_ramp_%2853660958535%29.jpg/1280px-Picnic_tables_at_the_top_of_the_ramp_%2853660958535%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Picnic tables at the top of the ramp (53660958535)",
+      "author": "BLMUtah",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Picnic_tables_at_the_top_of_the_ramp_(53660958535).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Cement_Picnic_Table.jpg/1280px-Cement_Picnic_Table.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "Cement Picnic Table",
+      "author": "TheAriAlvarez",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cement_Picnic_Table.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Lake_T%C3%B6d%C3%BCrge%2C_Sivas.jpg/1280px-Lake_T%C3%B6d%C3%BCrge%2C_Sivas.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Lake Tödürge, Sivas",
+      "author": "Tiera",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lake_T%C3%B6d%C3%BCrge,_Sivas.jpg"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/52/Park_bench_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "width": 1280,
+      "height": 960,
+      "title": "Park bench - panoramio",
+      "author": "gary4now",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Park_bench_-_panoramio.jpg"
     }
   ],
   "fishing_pond": [
@@ -703,6 +1023,26 @@
       "license": "CC BY 2.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wetlands_(1975841750).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Norman_J._Levy_Park_%26_Preserve_from_Merrick_Bay.jpg/1280px-Norman_J._Levy_Park_%26_Preserve_from_Merrick_Bay.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Norman J. Levy Park & Preserve from Merrick Bay",
+      "author": "Joe Mabel",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Norman_J._Levy_Park_%26_Preserve_from_Merrick_Bay.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Fishing_Pier_Inks_Lake_State_Park_Texas_2023.jpg/1280px-Fishing_Pier_Inks_Lake_State_Park_Texas_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 854,
+      "title": "Fishing Pier Inks Lake State Park Texas 2023",
+      "author": "Larry D. Moore",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fishing_Pier_Inks_Lake_State_Park_Texas_2023.jpg"
     }
   ],
   "garden": [
@@ -765,6 +1105,76 @@
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sunken_Gardens_(inside_2),_Lincoln,_Nebraska,_USA.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Northeast_Regional_Office_Pollinator_Garden_%285890524013%29.jpg/1280px-Northeast_Regional_Office_Pollinator_Garden_%285890524013%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Northeast Regional Office Pollinator Garden (5890524013)",
+      "author": "U. S. Fish and Wildlife Service - Northeast Region",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Northeast_Regional_Office_Pollinator_Garden_(5890524013).jpg"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Myriad_Botanical_Gardens2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "width": 1280,
+      "height": 932,
+      "title": "Myriad Botanical Gardens2",
+      "author": "Kool Cats Photography over 2 Million Views (flickr.com)",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Myriad_Botanical_Gardens2.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/Baby_Flowers.jpg/1280px-Baby_Flowers.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Baby Flowers",
+      "author": "Pooja opatha",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Baby_Flowers.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Main_Atrium_U.S._Botanic_Garden.jpg/1280px-Main_Atrium_U.S._Botanic_Garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Main Atrium U.S. Botanic Garden",
+      "author": "Dconnellledwon",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Main_Atrium_U.S._Botanic_Garden.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/Bartholdi_Park_and_Rayburn_House_Office_Building_%2814632967806%29.jpg/1280px-Bartholdi_Park_and_Rayburn_House_Office_Building_%2814632967806%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 961,
+      "title": "Bartholdi Park and Rayburn House Office Building (14632967806)",
+      "author": "DC Gardens",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bartholdi_Park_and_Rayburn_House_Office_Building_(14632967806).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Part_of_Emil_Nolde%27s_garden_in_Seeb%C3%BCll_-_panoramio.jpg/1280px-Part_of_Emil_Nolde%27s_garden_in_Seeb%C3%BCll_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 852,
+      "title": "Part of Emil Nolde's garden in Seebüll - panoramio",
+      "author": "Jens Cederskjold",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Part_of_Emil_Nolde%27s_garden_in_Seeb%C3%BCll_-_panoramio.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Flowers_%2835168161040%29.jpg/1280px-Flowers_%2835168161040%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 863,
+      "title": "Flowers (35168161040)",
+      "author": "Rolf Dietrich Brecher from Germany",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Flowers_(35168161040).jpg"
     }
   ],
   "marina": [
@@ -827,6 +1237,56 @@
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:RS012.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/A_view_from_the_road.jpg/1280px-A_view_from_the_road.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 963,
+      "title": "A view from the road",
+      "author": "Obeahsalive",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:A_view_from_the_road.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Martinez%2C_CA_USA_%28_Benicia_-_Martinez_Bridge%29_-_panoramio.jpg/1280px-Martinez%2C_CA_USA_%28_Benicia_-_Martinez_Bridge%29_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Martinez, CA USA ( Benicia - Martinez Bridge) - panoramio",
+      "author": "MARELBU",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Martinez,_CA_USA_(_Benicia_-_Martinez_Bridge)_-_panoramio.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Marina_del_Rey_%2835426479685%29.jpg/1280px-Marina_del_Rey_%2835426479685%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 880,
+      "title": "Marina del Rey (35426479685)",
+      "author": "Pedro Szekely from Los Angeles, USA",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Marina_del_Rey_(35426479685).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/So_Cal_Sunset_%28252254097%29.jpeg/1280px-So_Cal_Sunset_%28252254097%29.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 855,
+      "title": "So Cal Sunset (252254097)",
+      "author": "Terry Lucas",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:So_Cal_Sunset_(252254097).jpeg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Forks_Resort_Boat_Dock.jpg/1280px-Forks_Resort_Boat_Dock.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "Forks Resort Boat Dock",
+      "author": "Guywelch2000",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Forks_Resort_Boat_Dock.jpg"
     }
   ],
   "playground": [
@@ -869,6 +1329,36 @@
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hiwasse_Park_playground.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Wall_%26_Reinoso_2018_SilversetPark6.jpg/1280px-Wall_%26_Reinoso_2018_SilversetPark6.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Wall & Reinoso 2018 SilversetPark6",
+      "author": "Rebeccamarie22",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wall_%26_Reinoso_2018_SilversetPark6.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Jean_Claude_Velasquez_Swings.jpg/1280px-Jean_Claude_Velasquez_Swings.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Jean Claude Velasquez Swings",
+      "author": "Suppjcs ( talk )J.C. Velasquez",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jean_Claude_Velasquez_Swings.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/Colorful_fence_of_children_playground.jpg/1280px-Colorful_fence_of_children_playground.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 854,
+      "title": "Colorful fence of children playground",
+      "author": "Shixart1985",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Colorful_fence_of_children_playground.jpg"
     }
   ],
   "swimming_pool": [
@@ -901,6 +1391,26 @@
       "license": "CC BY-SA 3.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pool_and_main_house_of_Virginia_Robinson_Estate.JPG"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/USVI_IMG_5409_-_Serene_tropical_poolside_with_palm_trees_stone_patio_and_a_villa_under_a_bright_sky.jpg/1280px-USVI_IMG_5409_-_Serene_tropical_poolside_with_palm_trees_stone_patio_and_a_villa_under_a_bright_sky.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 853,
+      "title": "USVI IMG 5409 - Serene tropical poolside with palm trees stone patio and a villa under a bright sky",
+      "author": "Category:Government of the United States Virgin Islands",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:USVI_IMG_5409_-_Serene_tropical_poolside_with_palm_trees_stone_patio_and_a_villa_under_a_bright_sky.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6c/2003-08-16_Campground_swimming_pool_in_Spearfish%2C_South_Dakota.jpg/1280px-2003-08-16_Campground_swimming_pool_in_Spearfish%2C_South_Dakota.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "2003-08-16 Campground swimming pool in Spearfish, South Dakota",
+      "author": "Ildar Sagdejev ( Specious )",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2003-08-16_Campground_swimming_pool_in_Spearfish,_South_Dakota.jpg"
     }
   ],
   "skateboard_park": [
@@ -963,6 +1473,138 @@
       "license": "CC BY-SA 3.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:North_Lowndes_Park5.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Maloof_Skatepark_3.jpg/1280px-Maloof_Skatepark_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 722,
+      "title": "Maloof Skatepark 3",
+      "author": "Hiersgarr",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Maloof_Skatepark_3.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9b/La_Junta%2C_Colorado_city_park_skateboard.JPG/1280px-La_Junta%2C_Colorado_city_park_skateboard.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 571,
+      "title": "La Junta, Colorado city park skateboard",
+      "author": "Ammodramus",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:La_Junta,_Colorado_city_park_skateboard.JPG"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Maloof_Skate_Park.jpg/1280px-Maloof_Skate_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 803,
+      "title": "Maloof Skate Park",
+      "author": "Cooldavid",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Maloof_Skate_Park.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/Skate_park_-_panoramio.jpg/1280px-Skate_park_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 510,
+      "title": "Skate park - panoramio",
+      "author": "The-number-too",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Skate_park_-_panoramio.jpg"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Memorial_Park%2C_Colorado_Springs_-_Skateboarders.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "width": 1280,
+      "height": 909,
+      "title": "Memorial Park, Colorado Springs - Skateboarders",
+      "author": "CaroleHenson",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Memorial_Park,_Colorado_Springs_-_Skateboarders.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Lebron_Eubanks_Memorial_Park_skatepark.JPG/1280px-Lebron_Eubanks_Memorial_Park_skatepark.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Lebron Eubanks Memorial Park skatepark",
+      "author": "Michael Rivera",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lebron_Eubanks_Memorial_Park_skatepark.JPG"
+    }
+  ],
+  "lake": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/I_Got_Your_Back_%28106897575%29.jpeg/1280px-I_Got_Your_Back_%28106897575%29.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 783,
+      "title": "I Got Your Back (106897575)",
+      "author": "Naveen Elangovan",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:I_Got_Your_Back_(106897575).jpeg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Colorado_USA_Lake_%28Summer_2005%29.jpg/1280px-Colorado_USA_Lake_%28Summer_2005%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 960,
+      "title": "Colorado USA Lake (Summer 2005)",
+      "author": "_G2",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Colorado_USA_Lake_(Summer_2005).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Ghost_Forest_as_a_Result_of_the_Creation_of_Inks_Lake.jpg/1280px-Ghost_Forest_as_a_Result_of_the_Creation_of_Inks_Lake.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 850,
+      "title": "Ghost Forest as a Result of the Creation of Inks Lake",
+      "author": "Wing-Chi Poon",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ghost_Forest_as_a_Result_of_the_Creation_of_Inks_Lake.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Lake_Shetek_Sunset%2C_Minnesota_%2824007890548%29.jpg/1280px-Lake_Shetek_Sunset%2C_Minnesota_%2824007890548%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 854,
+      "title": "Lake Shetek Sunset, Minnesota (24007890548)",
+      "author": "Tony Webster from Minneapolis, Minnesota, United States",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lake_Shetek_Sunset,_Minnesota_(24007890548).jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Medlak3.jpg/1280px-Medlak3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 956,
+      "title": "Medlak3",
+      "author": "Gneek",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Medlak3.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/Grindstone_Lake_-_Flickr_-_Me_in_ME.jpg/1280px-Grindstone_Lake_-_Flickr_-_Me_in_ME.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 783,
+      "title": "Grindstone Lake - Flickr - Me in ME",
+      "author": "Paul VanDerWerf from Brunswick, Maine, USA",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grindstone_Lake_-_Flickr_-_Me_in_ME.jpg"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/The_Low-altitude_Flight_of_the_Eagle_%2851163800391%29.jpg/1280px-The_Low-altitude_Flight_of_the_Eagle_%2851163800391%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1280,
+      "height": 720,
+      "title": "The Low-altitude Flight of the Eagle (51163800391)",
+      "author": "G. Lamar",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_Low-altitude_Flight_of_the_Eagle_(51163800391).jpg"
     }
   ]
 }

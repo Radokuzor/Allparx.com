@@ -4,6 +4,7 @@
  *   npm run photos:places -- --dry-run    # report matches, write nothing
  *   npm run photos:places -- --limit=50
  *   npm run photos:places -- --force      # recheck places already checked
+ *   npm run photos:search -- --dry-run    # Commons search by name, for places geosearch missed
  *   npm run photos:flickr -- --dry-run    # Flickr CC fallback for places Commons missed
  *   npm run photos:categories             # rewrite src/data/category-photos.json
  *   npm run photos:categories -- --only=park,beach   # refresh just these
@@ -23,7 +24,7 @@ const USER_AGENT = 'AllParxPhotoBot/1.0 (https://allparx.com)'
 const CATEGORY_FILE = 'src/data/category-photos.json'
 const SEARCH_RADIUS_M = 1000
 const MIN_WIDTH = 1000
-const CATEGORY_CANDIDATES = 12
+const CATEGORY_CANDIDATES = Number(process.argv.find((a) => a.startsWith('--per='))?.split('=')[1] ?? 12)
 
 // Direct members of these Commons categories were checked by eye to be on
 // topic. Deep (recursive) category search drifts badly, so don't switch to it.
@@ -55,6 +56,7 @@ const CATEGORY_SOURCES: Record<string, string[]> = {
   playground: ['Playgrounds in the United States', 'Playgrounds', 'Playground equipment'],
   swimming_pool: ['Outdoor swimming pools in the United States', 'Swimming pools in California'],
   skateboard_park: ['Skateparks in the United States'],
+  lake: ['Lakes of Minnesota', 'Lakes of Colorado', 'Lakes of Texas', 'Lakes of Washington (state)'],
 }
 
 // Connectors and generic-institution words: never distinctive, and too weak to
@@ -302,7 +304,9 @@ function words(value: string): string {
 function titleNamesPlace(fileTitle: string, placeName: string): boolean {
   const title = ` ${words(fileTitle.replace(/^File:/, ''))} `
   const name = words(placeName)
-  if (name.length >= 8 && name.includes(' ') && title.includes(` ${name} `)) return true
+  // A whole-name hit counts only when the name has two real words; "austin s" is not a name.
+  const realWords = name.split(' ').filter((w) => w.length >= 3)
+  if (name.length >= 8 && realWords.length >= 2 && title.includes(` ${name} `)) return true
 
   const nameWords = name.split(' ')
   const distinctive = nameWords.filter((w) => !GENERIC_WORDS.has(w) && (w.length >= 3 || /\d/.test(w)))
@@ -346,7 +350,54 @@ async function findPlacePhoto(name: string, lat: number, lng: number): Promise<P
   return closest?.photo ?? null
 }
 
-type Source = 'commons' | 'flickr'
+// --- Commons search (by name) ---------------------------------------------
+
+/** How far a search hit's camera location may be from the place. */
+const SEARCH_MAX_KM = 25
+
+function kmBetween(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const rad = Math.PI / 180
+  const a =
+    Math.sin(((lat2 - lat1) * rad) / 2) ** 2 +
+    Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(((lng2 - lng1) * rad) / 2) ** 2
+  return 12742 * Math.asin(Math.sqrt(a))
+}
+
+type SearchPage = CommonsPage & { coordinates?: { lat: number; lon: number }[] }
+
+/**
+ * Geosearch only sees files that carry a location near the place. Plenty of
+ * good photos have no location, or one just outside the radius, so this
+ * searches file titles for the name instead. A title match alone is weak —
+ * there are dozens of Lincoln Parks — so a hit must also be placed near the
+ * place by its coordinates, or, lacking any, name the city in its title.
+ */
+async function findCommonsByName(name: string, lat: number, lng: number, city: string): Promise<Photo | null> {
+  const result = await commons({
+    action: 'query',
+    generator: 'search',
+    gsrsearch: `filetype:bitmap intitle:"${name.replace(/"/g, '')}"`,
+    gsrnamespace: '6',
+    gsrlimit: '20',
+    ...IMAGE_INFO,
+    prop: `${IMAGE_INFO.prop}|coordinates`,
+  })
+  const citySlug = ` ${words(city)} `
+  const pages = ((result.query?.pages ?? []) as SearchPage[]).sort((a, b) => (a.index ?? 0) - (b.index ?? 0))
+  for (const page of pages) {
+    if (!titleNamesPlace(page.title, name)) continue
+    const at = page.coordinates?.[0]
+    const near = at
+      ? kmBetween(lat, lng, at.lat, at.lon) <= SEARCH_MAX_KM
+      : ` ${words(page.title.replace(/^File:/, ''))} `.includes(citySlug)
+    if (!near) continue
+    const photo = toPhoto(page)
+    if (photo) return photo
+  }
+  return null
+}
+
+type Source = 'commons' | 'search' | 'flickr'
 
 async function places(source: Source) {
   if (!admin.apps.length) {
@@ -361,15 +412,20 @@ async function places(source: Source) {
   const db = admin.firestore()
 
   const snapshot = await db.collection('places').get()
-  // Flickr only fills gaps Commons left, and keeps its own checked stamp so a
-  // Commons re-run and a Flickr run never skip each other's work.
-  const checkedField = source === 'flickr' ? 'flickrCheckedAt' : 'photoCheckedAt'
+  // Search and Flickr only fill gaps geosearch left, and each keeps its own
+  // checked stamp so no run skips another's work.
+  const checkedField = { commons: 'photoCheckedAt', search: 'searchCheckedAt', flickr: 'flickrCheckedAt' }[source]
+  const gapFill = source !== 'commons'
   const todo = snapshot.docs
-    .filter((doc) => source === 'commons' || (doc.get('photoCheckedAt') !== undefined && !doc.get('photo')))
+    .filter((doc) => !gapFill || (doc.get('photoCheckedAt') !== undefined && !doc.get('photo')))
     .filter((doc) => force || doc.get(checkedField) === undefined)
     .slice(0, limit)
-  const find = source === 'flickr' ? findFlickrPhoto : findPlacePhoto
-  const label = source === 'flickr' ? 'Flickr' : 'Commons'
+  const find = {
+    commons: findPlacePhoto,
+    search: findCommonsByName,
+    flickr: findFlickrPhoto,
+  }[source]
+  const label = { commons: 'Commons', search: 'Commons search', flickr: 'Flickr' }[source]
 
   console.log(`📷 Matching ${label} photos for ${todo.length} of ${snapshot.size} places`)
   if (dryRun) console.log('   DRY RUN — nothing will be written to Firestore')
@@ -385,10 +441,10 @@ async function places(source: Source) {
   }
 
   for (const [i, doc] of todo.entries()) {
-    const { name, lat, lng } = doc.data() as { name: string; lat: number | null; lng: number | null }
+    const { name, lat, lng, city } = doc.data() as { name: string; lat: number | null; lng: number | null; city: string }
     let photo: Photo | null = null
     try {
-      if (lat !== null && lng !== null && !REJECTED.has(name)) photo = await find(name, lat, lng)
+      if (lat !== null && lng !== null && !REJECTED.has(name)) photo = await find(name, lat, lng, city)
     } catch (error) {
       // Leave it unchecked so the next run retries it.
       failed += 1
@@ -401,10 +457,10 @@ async function places(source: Source) {
       console.log(`   ✓ ${name} → ${photo.title} (${photo.license})`)
     }
     const checkedAt = new Date().toISOString()
-    // A Flickr miss must leave the field alone; only a hit writes `photo`.
+    // A gap-fill miss must leave the field alone; only a hit writes `photo`.
     batch.update(
       doc.ref,
-      source === 'flickr'
+      gapFill
         ? { ...(photo ? { photo } : {}), [checkedField]: checkedAt }
         : { photo, [checkedField]: checkedAt },
     )
@@ -424,7 +480,8 @@ async function places(source: Source) {
 // --- Categories ------------------------------------------------------------
 
 async function categories() {
-  const file = path.resolve(process.cwd(), CATEGORY_FILE)
+  // --out writes candidates somewhere else for review, leaving the curated file alone.
+  const file = path.resolve(process.cwd(), option('out') ?? CATEGORY_FILE)
   const unknown = only?.filter((type) => !(type in CATEGORY_SOURCES)) ?? []
   if (unknown.length > 0) throw new Error(`Unknown category: ${unknown.join(', ')}`)
 
@@ -470,7 +527,7 @@ async function categories() {
   if (dryRun) return
   fs.mkdirSync(path.dirname(file), { recursive: true })
   fs.writeFileSync(file, `${JSON.stringify(out, null, 2)}\n`)
-  console.log(`\n✅ Wrote ${CATEGORY_FILE} — review the diff and delete any photo that doesn't fit.`)
+  console.log(`\n✅ Wrote ${path.relative(process.cwd(), file)} — review the diff and delete any photo that doesn't fit.`)
 }
 
 // --- Main ------------------------------------------------------------------
@@ -478,13 +535,15 @@ async function categories() {
 const run =
   mode === 'places'
     ? () => places('commons')
-    : mode === 'flickr'
-      ? () => places('flickr')
-      : mode === 'categories'
-        ? categories
-        : null
+    : mode === 'search'
+      ? () => places('search')
+      : mode === 'flickr'
+        ? () => places('flickr')
+        : mode === 'categories'
+          ? categories
+          : null
 if (!run) {
-  console.error('Usage: tsx scripts/fetch-photos.ts <places|flickr|categories> [--dry-run] [--limit=N] [--force]')
+  console.error('Usage: tsx scripts/fetch-photos.ts <places|search|flickr|categories> [--dry-run] [--limit=N] [--force]')
   process.exit(1)
 }
 run()

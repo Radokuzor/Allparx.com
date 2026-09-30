@@ -12,6 +12,7 @@
     "ingest:test": "tsx scripts/ingest-places.ts --cities=5",
     "snapshot": "tsx scripts/snapshot-places.ts",
     "photos:places": "tsx scripts/fetch-photos.ts places",
+    "photos:search": "tsx scripts/fetch-photos.ts search",
     "photos:flickr": "tsx scripts/fetch-photos.ts flickr",
     "photos:categories": "tsx scripts/fetch-photos.ts categories",
     "prebuild": "tsx scripts/snapshot-places.ts",
