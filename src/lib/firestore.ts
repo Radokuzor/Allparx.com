@@ -3,6 +3,7 @@ import { FieldPath } from 'firebase-admin/firestore'
 import { citySlug } from './city-slug'
 import { db } from './firebase-admin'
 import { snapshotBySlug, snapshotPlaces } from './places-snapshot'
+import { withEditorialFacts } from './place-editorial'
 import { docSlug, publishedSlug } from './slug-alias'
 import type { Place } from './types'
 
@@ -97,7 +98,7 @@ export async function getPlace(slug: string): Promise<Place | null> {
     `getPlace(${id})`,
     async () => {
       const doc = await db.collection(COLLECTION).doc(id).get()
-      return doc.exists ? { ...(doc.data() as Place), slug } : null
+      return doc.exists ? withEditorialFacts({ ...(doc.data() as Place), slug }) : null
     },
     null,
   )
@@ -266,6 +267,37 @@ export async function getAllPlaceSlugs(): Promise<string[]> {
     },
     [],
   )
+}
+
+/**
+ * Every place, full documents. Backs the state guides, which rank across a
+ * whole state and so cannot be answered by one city or category query.
+ *
+ * Free with a snapshot. Without one it is a full collection scan, memoised per
+ * process so a guide render doesn't repeat it for every page.
+ */
+let allPlacesPromise: Promise<Place[]> | null = null
+
+export async function getAllPlaces(): Promise<Place[]> {
+  const all = snapshotPlaces()
+  if (all) return all
+
+  allPlacesPromise ??= resilient(
+    'getAllPlaces',
+    async () => {
+      const snapshot = await db.collection(COLLECTION).get()
+      return snapshot.docs.map((doc) => {
+        const place = doc.data() as Place
+        return withEditorialFacts({ ...place, slug: publishedSlug(place.slug) })
+      })
+    },
+    [],
+  ).catch((error) => {
+    allPlacesPromise = null // don't cache a hard failure
+    throw error
+  })
+
+  return allPlacesPromise
 }
 
 /** Minimal projection for the sitemap — never pulls full documents. */

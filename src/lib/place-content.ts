@@ -454,6 +454,34 @@ export function intro(place: Place, context: PlaceContext): string[] {
   return paragraphs
 }
 
+/**
+ * The search-result snippet for a place with no Google summary. The page's
+ * own template ("X is a park in Y. Find hours…") read the same on every
+ * listing, so this leads with the facts a searcher is weighing — rating,
+ * whether dogs and kids are welcome, restrooms, parking — and stops before
+ * Google's ~155-character cut.
+ */
+export function metaDescription(place: Place): string {
+  const label = typeName(place.placeType)
+  const rated =
+    place.rating !== null && place.reviewCount >= 5
+      ? `${place.name} is a ${place.rating}-star ${label} in ${where(place)} (${place.reviewCount.toLocaleString()} reviews).`
+      : `${place.name} is a ${label} in ${where(place)}.`
+
+  const facts: string[] = []
+  if (place.allowsDogs) facts.push('dog-friendly')
+  if (place.goodForChildren) facts.push('good for kids')
+  if (place.hasRestroom) facts.push('restrooms')
+  const parking = readParking(place)
+  if (parking) facts.push(parking.free ? 'free parking' : 'parking')
+  if (readHours(place)?.allDay) facts.push('open 24 hours')
+
+  const detail = facts.length > 0 ? ` ${sentenceCase(list(facts))}.` : ''
+  const tail = ' Hours, directions and nearby spots.'
+  const text = `${rated}${detail}${tail}`
+  return text.length <= 160 ? text : `${rated}${detail}`.slice(0, 160)
+}
+
 // --- Pros ------------------------------------------------------------------
 
 export function highlights(place: Place, context: PlaceContext): Insight[] {

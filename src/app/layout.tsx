@@ -176,6 +176,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <li><Link href="/search" className="hover:text-green-700">Search</Link></li>
                 <li><Link href="/places" className="hover:text-green-700">All categories</Link></li>
                 <li><Link href="/cities" className="hover:text-green-700">All cities</Link></li>
+                <li><Link href="/guides" className="hover:text-green-700">Guides</Link></li>
                 <li><a href={absoluteUrl('/sitemap.xml')} className="hover:text-green-700">Sitemap</a></li>
               </ul>
             </div>

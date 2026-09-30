@@ -4,6 +4,7 @@
  *   npm run photos:places -- --dry-run    # report matches, write nothing
  *   npm run photos:places -- --limit=50
  *   npm run photos:places -- --force      # recheck places already checked
+ *   npm run photos:flickr -- --dry-run    # Flickr CC fallback for places Commons missed
  *   npm run photos:categories             # rewrite src/data/category-photos.json
  *   npm run photos:categories -- --only=park,beach   # refresh just these
  *
@@ -77,6 +78,24 @@ const KIND_WORDS = new Set(
 )
 
 const GENERIC_WORDS = new Set([...STOP_WORDS, ...KIND_WORDS])
+
+// Kind words that narrow a place to one specific facility inside a larger
+// one. When the name has one, the photo title must too: otherwise "Woodlawn
+// Lake Dog Park" takes a photo of the lake's lighthouse and "Lake Austin
+// Marina" a photo of a water plant on Lake Austin. Broad words like "park"
+// and "lake" are left out — they describe the whole site, not a part of it.
+const FACILITY_WORDS = new Set(
+  (
+    'dog skate skatepark marina harbor garden center centre pool aquatic aquatics ' +
+    'playground field fields sports complex trail trailhead campground recreation picnic'
+  ).split(' '),
+)
+
+// Matches that pass the title rules but show the wrong thing, found by eye
+// in the 2026-09-30 dry run. A listed name is recorded as checked with no photo.
+const REJECTED: Set<string> = new Set(
+  JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'scripts/photo-rejects.json'), 'utf8')) as string[],
+)
 
 const ALLOWED_LICENSE = /^(cc0|public domain|pd[\s-]|cc[\s-]by(-sa)?[\s-]\d)/i
 
@@ -181,6 +200,94 @@ function toPhoto(page: CommonsPage): Photo | null {
   }
 }
 
+// --- Flickr (fallback) -----------------------------------------------------
+
+// Flickr licence ids that permit reuse with attribution: CC BY 2.0, CC BY-SA
+// 2.0, CC0, Public Domain Mark, CC BY 4.0, CC BY-SA 4.0. NC and ND licences are
+// excluded — the site carries ads, and every slot crops the image.
+const FLICKR_LICENSES: Record<string, { name: string; url: string | null }> = {
+  '4': { name: 'CC BY 2.0', url: 'https://creativecommons.org/licenses/by/2.0/' },
+  '5': { name: 'CC BY-SA 2.0', url: 'https://creativecommons.org/licenses/by-sa/2.0/' },
+  '9': { name: 'CC0', url: 'https://creativecommons.org/publicdomain/zero/1.0/' },
+  '10': { name: 'Public domain', url: 'https://creativecommons.org/publicdomain/mark/1.0/' },
+  '11': { name: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
+  '12': { name: 'CC BY-SA 4.0', url: 'https://creativecommons.org/licenses/by-sa/4.0/' },
+}
+
+type FlickrPhoto = {
+  id: string
+  owner: string
+  title: string
+  license: string
+  ownername?: string
+  url_l?: string
+  width_l?: number | string
+  height_l?: number | string
+}
+
+type FlickrResponse = { stat: string; message?: string; photos?: { photo: FlickrPhoto[] } }
+
+async function flickr(params: Record<string, string>): Promise<FlickrResponse> {
+  const key = process.env.FLICKR_API_KEY
+  if (!key) throw new Error('FLICKR_API_KEY is not set in .env.local')
+  const query = new URLSearchParams({ api_key: key, format: 'json', nojsoncallback: '1', ...params })
+
+  for (let attempt = 1; ; attempt += 1) {
+    const response = await fetch(`https://api.flickr.com/services/rest/?${query}`, {
+      headers: { 'User-Agent': USER_AGENT },
+    })
+    if (response.ok) {
+      const body = (await response.json()) as FlickrResponse
+      if (body.stat !== 'ok') throw new Error(`Flickr API: ${body.message ?? body.stat}`)
+      return body
+    }
+    if ((response.status === 429 || response.status >= 500) && attempt < 5) {
+      await sleep(2 ** attempt * 1000)
+      continue
+    }
+    throw new Error(`Flickr API: HTTP ${response.status}`)
+  }
+}
+
+async function findFlickrPhoto(name: string, lat: number, lng: number): Promise<Photo | null> {
+  const result = await flickr({
+    method: 'flickr.photos.search',
+    text: name,
+    lat: String(lat),
+    lon: String(lng),
+    radius: String(SEARCH_RADIUS_M / 1000),
+    radius_units: 'km',
+    license: Object.keys(FLICKR_LICENSES).join(','),
+    content_type: '1',
+    media: 'photos',
+    safe_search: '1',
+    sort: 'relevance',
+    extras: 'license,owner_name,url_l',
+    per_page: '50',
+  })
+  for (const hit of result.photos?.photo ?? []) {
+    // Same corroboration rule as Commons: the photo's own title has to name
+    // the place. Flickr's text search also matches tags and descriptions,
+    // which is far too loose on its own.
+    if (!titleNamesPlace(hit.title, name)) continue
+    const license = FLICKR_LICENSES[hit.license]
+    const width = Number(hit.width_l)
+    const height = Number(hit.height_l)
+    if (!license || !hit.url_l || width < MIN_WIDTH || width < height * 1.2) continue
+    return {
+      url: hit.url_l,
+      width,
+      height,
+      title: hit.title,
+      author: (hit.ownername || 'Unknown author').slice(0, 80),
+      license: license.name,
+      licenseUrl: license.url,
+      sourceUrl: `https://www.flickr.com/photos/${hit.owner}/${hit.id}`,
+    }
+  }
+  return null
+}
+
 // --- Places ----------------------------------------------------------------
 
 function words(value: string): string {
@@ -201,6 +308,11 @@ function titleNamesPlace(fileTitle: string, placeName: string): boolean {
   const distinctive = nameWords.filter((w) => !GENERIC_WORDS.has(w) && (w.length >= 3 || /\d/.test(w)))
   if (distinctive.length === 0) return false
   if (!distinctive.every((w) => title.includes(` ${w} `))) return false
+  const singular = (w: string) => w.replace(/s$/, '')
+  const facilities = nameWords.filter((w) => FACILITY_WORDS.has(w) || FACILITY_WORDS.has(singular(w)))
+  if (!facilities.every((w) => title.includes(` ${w} `) || title.includes(` ${singular(w)} `) || title.includes(` ${singular(w)}s `))) {
+    return false
+  }
   // One distinctive word alone ("Lincoln") is too common; require a second
   // anchor, either another distinctive word or the place's own kind word.
   return (
@@ -234,7 +346,9 @@ async function findPlacePhoto(name: string, lat: number, lng: number): Promise<P
   return closest?.photo ?? null
 }
 
-async function places() {
+type Source = 'commons' | 'flickr'
+
+async function places(source: Source) {
   if (!admin.apps.length) {
     admin.initializeApp({
       credential: admin.credential.cert({
@@ -247,11 +361,17 @@ async function places() {
   const db = admin.firestore()
 
   const snapshot = await db.collection('places').get()
+  // Flickr only fills gaps Commons left, and keeps its own checked stamp so a
+  // Commons re-run and a Flickr run never skip each other's work.
+  const checkedField = source === 'flickr' ? 'flickrCheckedAt' : 'photoCheckedAt'
   const todo = snapshot.docs
-    .filter((doc) => force || doc.get('photoCheckedAt') === undefined)
+    .filter((doc) => source === 'commons' || (doc.get('photoCheckedAt') !== undefined && !doc.get('photo')))
+    .filter((doc) => force || doc.get(checkedField) === undefined)
     .slice(0, limit)
+  const find = source === 'flickr' ? findFlickrPhoto : findPlacePhoto
+  const label = source === 'flickr' ? 'Flickr' : 'Commons'
 
-  console.log(`📷 Matching Commons photos for ${todo.length} of ${snapshot.size} places`)
+  console.log(`📷 Matching ${label} photos for ${todo.length} of ${snapshot.size} places`)
   if (dryRun) console.log('   DRY RUN — nothing will be written to Firestore')
 
   let found = 0
@@ -268,7 +388,7 @@ async function places() {
     const { name, lat, lng } = doc.data() as { name: string; lat: number | null; lng: number | null }
     let photo: Photo | null = null
     try {
-      if (lat !== null && lng !== null) photo = await findPlacePhoto(name, lat, lng)
+      if (lat !== null && lng !== null && !REJECTED.has(name)) photo = await find(name, lat, lng)
     } catch (error) {
       // Leave it unchecked so the next run retries it.
       failed += 1
@@ -280,7 +400,14 @@ async function places() {
       found += 1
       console.log(`   ✓ ${name} → ${photo.title} (${photo.license})`)
     }
-    batch.update(doc.ref, { photo, photoCheckedAt: new Date().toISOString() })
+    const checkedAt = new Date().toISOString()
+    // A Flickr miss must leave the field alone; only a hit writes `photo`.
+    batch.update(
+      doc.ref,
+      source === 'flickr'
+        ? { ...(photo ? { photo } : {}), [checkedField]: checkedAt }
+        : { photo, [checkedField]: checkedAt },
+    )
     batched += 1
     if (batched === 400) await flush()
     if ((i + 1) % 100 === 0) console.log(`   … ${i + 1}/${todo.length} checked, ${found} photos`)
@@ -348,9 +475,16 @@ async function categories() {
 
 // --- Main ------------------------------------------------------------------
 
-const run = mode === 'places' ? places : mode === 'categories' ? categories : null
+const run =
+  mode === 'places'
+    ? () => places('commons')
+    : mode === 'flickr'
+      ? () => places('flickr')
+      : mode === 'categories'
+        ? categories
+        : null
 if (!run) {
-  console.error('Usage: tsx scripts/fetch-photos.ts <places|categories> [--dry-run] [--limit=N] [--force]')
+  console.error('Usage: tsx scripts/fetch-photos.ts <places|flickr|categories> [--dry-run] [--limit=N] [--force]')
   process.exit(1)
 }
 run()

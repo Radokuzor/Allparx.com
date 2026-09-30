@@ -3,6 +3,7 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import type { Place } from './types'
 import { SNAPSHOT_PATH } from './snapshot-path'
+import { withEditorialFacts } from './place-editorial'
 import { publishedSlug } from './slug-alias'
 
 /**
@@ -37,8 +38,11 @@ export function snapshotPlaces(): Place[] | null {
     if (!Array.isArray(parsed.places)) return (places = null)
     // The snapshot stores document ids. Swapping in the published slug here,
     // once, means every read below this line already has the right URL.
+    // Editorial corrections go on here too, so every list and guide sees them.
     places = parsed.places.map((place) =>
-      place.slug === publishedSlug(place.slug) ? place : { ...place, slug: publishedSlug(place.slug) },
+      withEditorialFacts(
+        place.slug === publishedSlug(place.slug) ? place : { ...place, slug: publishedSlug(place.slug) },
+      ),
     )
     console.log(
       `[snapshot] serving ${places.length} places from ${SNAPSHOT_PATH}` +

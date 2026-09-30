@@ -1,6 +1,11 @@
 import type { Faq } from './place-content'
 import type { Photo } from './photos'
+import type { Place } from './types'
 import banyanTree from '@/content/places/banyan-tree'
+import holeInTheWallBeach from '@/content/places/hole-in-the-wall-beach'
+import klahhaneRidge from '@/content/places/klahhane-ridge-trail'
+import spadraPark from '@/content/places/spadra-park'
+import stanleyCanyon from '@/content/places/stanley-canyon-reservoir-trailhead'
 
 /**
  * Hand-written page content for places that deserve more than the generated
@@ -62,6 +67,14 @@ export type PlaceEditorial = {
   faqs?: Faq[]
   /** Rendered as a provenance line under the content. */
   sources?: { label: string; url: string }[]
+  /**
+   * Corrections to Google's amenity flags where the operator's own rules say
+   * otherwise — Google marks trails inside Olympic National Park as allowing
+   * dogs, which the park forbids. `null` means "it depends" (a seasonal ban,
+   * say) and drops the generated yes/no answer, leaving the editorial FAQ to
+   * explain. Applied wherever the place is read, so the guides honour it too.
+   */
+  facts?: Partial<Pick<Place, 'allowsDogs' | 'goodForChildren' | 'hasRestroom'>>
   /** ISO date (YYYY-MM-DD), rendered as "Last reviewed". */
   updated: string
 }
@@ -70,10 +83,20 @@ const EDITORIAL: Record<string, PlaceEditorial> = {
   // Keyed by published slug, not document id — /places/banyan-tree is the
   // hotel hub now, and the tree publishes at the longer URL (see slug-alias.ts).
   'banyan-tree-kawela-bay-oahu': banyanTree,
+  'hole-in-the-wall-beach': holeInTheWallBeach,
+  'klahhane-ridge-trail': klahhaneRidge,
+  'spadra-park': spadraPark,
+  'stanley-canyon-reservoir-trailhead': stanleyCanyon,
 }
 
 export function getEditorial(slug: string): PlaceEditorial | null {
   return EDITORIAL[slug] ?? null
+}
+
+/** The place with any editorial fact corrections applied. Same object when there are none. */
+export function withEditorialFacts<T extends Place>(place: T): T {
+  const facts = EDITORIAL[place.slug]?.facts
+  return facts ? { ...place, ...facts } : place
 }
 
 export function hasEditorial(slug: string): boolean {

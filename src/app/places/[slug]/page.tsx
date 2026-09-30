@@ -50,10 +50,13 @@ import {
   faqs,
   highlights,
   intro,
+  metaDescription,
   visitPlan,
   type Insight,
 } from '@/lib/place-content'
 import { getEditorial } from '@/lib/place-editorial'
+import { guidesFeaturing } from '@/lib/guides'
+import { getGuides } from '@/lib/guides-server'
 import { SCHEMA_TYPE, isKnownType, typeLabel, typeLabelPlural } from '@/lib/place-types'
 import { SITE_NAME, absoluteUrl } from '@/lib/site'
 
@@ -68,6 +71,9 @@ export async function generateStaticParams() {
   const slugs = await getAllPlaceSlugs()
   return slugs.map((slug) => ({ slug }))
 }
+
+/** Subjects both the editorial and the generated FAQs cover; the first answer on each wins. */
+const FAQ_TOPICS = ['dogs', 'parking', 'restrooms', 'kids', 'opening hours']
 
 function placeLocation(place: { city: string; state: string | null }): string {
   return place.state ? `${place.city}, ${place.state}` : place.city
@@ -155,10 +161,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // reads as a picture of this place, which it is not.
   const social = placePhoto(place)
   const image = social && !social.illustrative ? photoAtWidth(social.photo.url, 1280) : null
-  const description =
-    editorial?.metaDescription ??
-    place.description ??
-    `${name} is a ${typeLabel(place.placeType).toLowerCase()} in ${where}. Find hours, directions, ratings, amenities and nearby outdoor spots on ${SITE_NAME}.`
+  const description = editorial?.metaDescription ?? place.description ?? metaDescription(place)
 
   return {
     title,
@@ -214,7 +217,16 @@ export default async function PlacePage({ params }: Props) {
   const pros = highlights(place, context)
   const cons = considerations(place, context)
   const plan = visitPlan(place)
-  const questions = [...(editorial?.faqs ?? []), ...faqs(place, context)]
+  const questions = [...(editorial?.faqs ?? []), ...faqs(place, context)].filter(
+    // A hand-written answer on a topic replaces the generated one on it.
+    (faq, i, all) => {
+      const topic = FAQ_TOPICS.find((word) => faq.question.toLowerCase().includes(word))
+      return !topic || all.findIndex((other) => other.question.toLowerCase().includes(topic)) === i
+    },
+  )
+  // The ranked guides this place appears in — the page's route into the
+  // "best X in Y" lists, and theirs back to it.
+  const featuredIn = guidesFeaturing(await getGuides(), place.slug)
 
   // A legacy restore keeps Google's primary type when it isn't one of ours, and
   // /places/category/<type> only renders PLACE_TYPES — so for those the
@@ -536,6 +548,27 @@ export default async function PlacePage({ params }: Props) {
                   allowFullScreen
                   className="h-80 w-full rounded-2xl border border-gray-100 shadow-sm"
                 />
+              </section>
+            )}
+
+            {featuredIn.length > 0 && (
+              <section>
+                <h2 className="mb-3 text-xl font-semibold text-gray-800">Featured in</h2>
+                <ul className="flex flex-wrap gap-2">
+                  {featuredIn.map((guide) => {
+                    const rank = guide.entries.findIndex((entry) => entry.place.slug === place.slug) + 1
+                    return (
+                      <li key={guide.slug}>
+                        <Link
+                          href={`/guides/${guide.slug}`}
+                          className="inline-block rounded-full border border-green-200 px-3 py-1.5 text-sm text-green-800 transition-colors hover:bg-green-50"
+                        >
+                          #{rank} in {guide.title}
+                        </Link>
+                      </li>
+                    )
+                  })}
+                </ul>
               </section>
             )}
 

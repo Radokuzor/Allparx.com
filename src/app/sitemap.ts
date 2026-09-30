@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { CATEGORY_PAGE_SIZE, citySlug, getAllCities, getAllPlaceRefs } from '@/lib/firestore'
+import { getGuides } from '@/lib/guides-server'
 import { HOTELS } from '@/lib/hotels'
 import { PLACE_TYPES } from '@/lib/place-types'
 import { absoluteUrl } from '@/lib/site'
@@ -12,7 +13,7 @@ export const revalidate = 86400
  * `generateSitemaps()` chunks plus a sitemap index.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [places, cities] = await Promise.all([getAllPlaceRefs(), getAllCities()])
+  const [places, cities, guides] = await Promise.all([getAllPlaceRefs(), getAllCities(), getGuides()])
   const now = new Date()
 
   const countsByType = new Map<string, number>()
@@ -33,6 +34,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/'), lastModified: now, changeFrequency: 'daily', priority: 1 },
     { url: absoluteUrl('/places'), lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: absoluteUrl('/cities'), lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: absoluteUrl('/guides'), lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    ...guides.map((guide) => ({
+      url: absoluteUrl(`/guides/${guide.slug}`),
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
     ...PLACE_TYPES.map((type) => ({
       url: absoluteUrl(`/places/category/${type}`),
       lastModified: now,
