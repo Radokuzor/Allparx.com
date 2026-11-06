@@ -1,4 +1,4 @@
-import { cache } from 'react'
+import { cache, Fragment } from 'react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -29,6 +29,7 @@ import {
   Users,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import GuideCta from '@/components/GuideCta'
 import JsonLd from '@/components/JsonLd'
 import PhotoCredit from '@/components/PhotoCredit'
 import PlaceCard from '@/components/PlaceCard'
@@ -214,6 +215,9 @@ export default async function PlacePage({ params }: Props) {
   // remainder — otherwise the same picture would open the page twice.
   const gallery = editorial?.photos?.slice(1) ?? []
   const paragraphs = editorial?.lede ?? intro(place, context)
+  // Index of the section the guide ask follows: the middle one, so it lands
+  // halfway down the article. -1 keeps it out of pages with too little to split.
+  const guideCtaAfter = (editorial?.sections.length ?? 0) >= 2 ? Math.floor(((editorial?.sections.length ?? 0) - 1) / 2) : -1
   const pros = highlights(place, context)
   const cons = considerations(place, context)
   const plan = visitPlan(place)
@@ -391,17 +395,24 @@ export default async function PlacePage({ params }: Props) {
               </div>
             </section>
 
-            {editorial?.sections.map((section) => (
-              <section key={section.heading}>
-                <h2 className="mb-3 text-xl font-semibold text-gray-800">{section.heading}</h2>
-                <div className="space-y-4">
-                  {section.body.map((paragraph) => (
-                    <p key={paragraph} className="leading-relaxed text-gray-600">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </section>
+            {editorial?.sections.map((section, index) => (
+              <Fragment key={section.heading}>
+                <section>
+                  <h2 className="mb-3 text-xl font-semibold text-gray-800">{section.heading}</h2>
+                  <div className="space-y-4">
+                    {section.body.map((paragraph) => (
+                      <p key={paragraph} className="leading-relaxed text-gray-600">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                </section>
+                {/* Mid-article, so the ask arrives while the reader is still
+                    deciding whether the place is worth the drive. */}
+                {index === guideCtaAfter && (
+                  <GuideCta placeSlug={place.slug} placeName={name} />
+                )}
+              </Fragment>
             ))}
 
             {gallery.length > 0 && (

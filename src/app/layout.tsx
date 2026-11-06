@@ -7,7 +7,6 @@ import AuthProvider from '@/components/auth/AuthProvider'
 import ClickTracker from '@/components/ClickTracker'
 import TidyUrl from '@/components/TidyUrl'
 import UserMenu from '@/components/auth/UserMenu'
-import FloatingNearMe from '@/components/FloatingNearMe'
 import MobileNav from '@/components/MobileNav'
 import PageViewBeacon from '@/components/PageViewBeacon'
 import { FEATURED_TYPES, typeLabelPlural } from '@/lib/place-types'
@@ -187,7 +186,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </p>
         </footer>
 
-        <FloatingNearMe />
         <PageViewBeacon />
         <ClickTracker />
         <TidyUrl />

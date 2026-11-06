@@ -2,7 +2,6 @@ import Link from 'next/link'
 import PlaceGrid from '@/components/PlaceGrid'
 import HeroVideo from '@/components/HeroVideo'
 import JsonLd from '@/components/JsonLd'
-import NearMeCta from '@/components/NearMeCta'
 import SearchBox from '@/components/SearchBox'
 import { getAllCities, getPlacesByType, citySlug } from '@/lib/firestore'
 import { FEATURED_TYPES, PLACE_TYPES, typeLabelPlural } from '@/lib/place-types'
@@ -49,11 +48,10 @@ export default async function HomePage() {
             Parks, trails, dog parks, beaches, and campgrounds — with real hours, ratings and
             directions.
           </p>
-          <div className="mx-auto mt-8 flex w-full max-w-3xl flex-col items-stretch gap-3 sm:flex-row">
-            <div className="w-full flex-1 rounded-full border border-white/25 bg-white/15 p-1.5 shadow-2xl backdrop-blur-xl">
+          <div className="mx-auto mt-8 w-full max-w-3xl">
+            <div className="w-full rounded-full border border-white/25 bg-white/15 p-1.5 shadow-2xl backdrop-blur-xl">
               <SearchBox />
             </div>
-            <NearMeCta source="hero" />
           </div>
           <div className="mt-8 flex flex-wrap justify-center gap-2.5">
             {FEATURED_TYPES.map((type) => (
