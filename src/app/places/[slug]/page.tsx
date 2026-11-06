@@ -395,6 +395,10 @@ export default async function PlacePage({ params }: Props) {
               </div>
             </section>
 
+            {/* Places without a written article end here, so the ask follows the
+                prose they just read. Pages with one get it between sections. */}
+            {guideCtaAfter === -1 && <GuideCta placeSlug={place.slug} placeName={name} />}
+
             {editorial?.sections.map((section, index) => (
               <Fragment key={section.heading}>
                 <section>
