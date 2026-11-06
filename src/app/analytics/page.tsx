@@ -78,8 +78,11 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">Analytics</h1>
           <p className="mt-1 text-sm text-gray-500">
             {RANGES[range]} · all times UTC
-            {report.allTimeCount !== null && (
-              <> · {number.format(report.allTimeCount)} real page views all-time (bots excluded)</>
+            {report.allTimePeople !== null && (
+              <> · {number.format(report.allTimePeople)} verified visitor page views since the beacon shipped</>
+            )}
+            {report.allTimePeople === null && report.allTimeCount !== null && (
+              <> · {number.format(report.allTimeCount)} raw page views all-time</>
             )}
           </p>
         </div>
@@ -124,7 +127,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
           defaultValue={notifyEvery}
           className="w-24 rounded-md border border-gray-300 px-2 py-1 text-gray-900"
         />
-        <span>visits (bots excluded)</span>
+        <span>verified visitors</span>
         <button className="rounded-full border border-gray-200 px-3.5 py-1 font-medium hover:border-gray-300">Save</button>
         <span className={cn('text-xs', params.notify === 'invalid' ? 'text-red-600' : 'text-gray-400')}>
           {params.notify === 'invalid'
@@ -166,11 +169,15 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
       )}
 
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        <Stat label="Page views" value={number.format(totals.views)} hint="pages only — bots and files excluded" />
         <Stat
-          label="Unique visitors"
+          label="Visitors"
           value={number.format(totals.visitors)}
-          hint="by browser cookie; scrapers with fresh cookies inflate it"
+          hint="browser-proven only: a real page rendered"
+        />
+        <Stat
+          label="Page views"
+          value={number.format(totals.views)}
+          hint="pages viewed by those verified visitors"
         />
         <Stat
           label="Engaged visitors"
@@ -192,6 +199,18 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
           label="Returning visitors"
           value={number.format(Math.max(0, totals.visitors - totals.newVisitors))}
         />
+        <Stat
+          label="Unverified"
+          value={number.format(totals.unverified)}
+          hint={`no browser proof: ${number.format(totals.unverifiedVisitors)} cookies, mostly datacenter and scrapers`}
+        />
+        {report.pushSubscribers !== null && (
+          <Stat
+            label="Push alerts"
+            value={number.format(report.pushSubscribers)}
+            hint="devices waiting for new places near them"
+          />
+        )}
         <Stat label="Bot requests" value={number.format(totals.bots)} hint="exact count, files included" />
       </div>
 

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import NearMe from '@/components/NearMe'
+import NearMeAlerts from '@/components/NearMeAlerts'
 import SearchBox from '@/components/SearchBox'
 
 // The list is built in the browser from the visitor's own location, so there is
@@ -20,6 +21,7 @@ export default function NearMePage() {
         <SearchBox />
       </div>
       <NearMe />
+      <NearMeAlerts />
     </div>
   )
 }

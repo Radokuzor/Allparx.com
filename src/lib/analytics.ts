@@ -2,12 +2,18 @@ import 'server-only'
 import type { NextRequest } from 'next/server'
 import { geolocation, ipAddress } from '@vercel/functions'
 import { db } from './firebase-admin'
+import type { ClientSignals } from './human-signals'
 
-const COUNTER_REF = db.collection('analytics').doc('visitCounter')
 const SETTINGS_REF = db.collection('analytics').doc('settings')
+/**
+ * Counts only visits the browser beacon has proven human. The old
+ * `visitCounter` kept climbing on datacenter traffic, so it is left alone as a
+ * raw-request figure instead of being rewritten.
+ */
+export const PEOPLE_COUNTER_REF = db.collection('analytics').doc('peopleCounter')
 export const VISITS_COLLECTION = db.collection('analytics_visits')
 
-/** Telegram pings on every Nth real visit (bots don't advance this). Editable from the /analytics dashboard; 0 turns pings off. */
+/** Telegram pings on every Nth verified visitor (see app/api/pageview). Editable from the /analytics dashboard; 0 turns pings off. */
 export const DEFAULT_NOTIFY_EVERY = 10
 export const MAX_NOTIFY_EVERY = 1_000_000
 
@@ -73,13 +79,33 @@ export interface VisitRecord {
   userAgent: string | null
   /** Which crawler this was, when `bot` is true — see `botName`. Null for real visits. */
   botName: string | null
+  /**
+   * Whether the browser beacon proved a browser was actually running.
+   * `null` means the question was never asked: either the hit predates the
+   * beacon (2026-11) or JavaScript never executed. The dashboard treats null
+   * as "unverified" and falls back to the IP reputation check in that case.
+   */
+  human: boolean | null
+  /** Why `human` came out the way it did, e.g. "webdriver", "no-screen". */
+  humanReason: string | null
+  /** Everything the beacon measured, kept so the rules can be retuned later. */
+  client: ClientSignals | null
 }
+
+/** Signals a real browser produces together and a scraper usually cannot. */
+export type { ClientSignals } from './human-signals'
+
 
 export interface VisitContext {
   visitorId: string
   sessionId: string
   newVisitor: boolean
   newSession: boolean
+  /**
+   * Chosen by the proxy, not by Firestore, so the browser beacon can find the
+   * document without a query: the id is handed to the page in HIT_COOKIE.
+   */
+  hitId: string
 }
 
 export function deviceType(userAgent: string): DeviceType {
@@ -196,7 +222,7 @@ function escapeHtml(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
 
-async function sendTelegramMessage(text: string): Promise<void> {
+export async function sendTelegramMessage(text: string): Promise<void> {
   const token = process.env.TELEGRAM_BOT_TOKEN
   const chatId = process.env.TELEGRAM_CHAT_ID
   if (!token || !chatId) {
@@ -216,6 +242,29 @@ async function sendTelegramMessage(text: string): Promise<void> {
   } catch (error) {
     console.warn('[analytics] failed to reach Telegram', error)
   }
+}
+
+/**
+ * The "visitor #N" ping. Sent from the browser beacon's endpoint once a visit
+ * has been proven human, so the pings themselves are no longer triggered by
+ * datacenter traffic — that was most of them.
+ */
+export async function notifyPersonVisit(
+  visit: Pick<VisitRecord, 'path' | 'device' | 'city' | 'countryRegion' | 'country' | 'flag' | 'referrer' | 'ip' | 'userAgent'>,
+  count: number,
+): Promise<void> {
+  const location = [visit.city, visit.countryRegion, visit.country].filter(Boolean).join(', ') || 'Unknown'
+  const page = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://allparx.com'}${visit.path}`
+  const lines = [
+    `<b>allparx.com</b> — visitor #${count}`,
+    `Page: ${escapeHtml(page)}`,
+    `Device: ${visit.device}`,
+    `Location: ${escapeHtml(location)}${visit.flag ? ` ${visit.flag}` : ''}`,
+    `Referrer: ${escapeHtml(visit.referrer ?? 'Direct / none')}`,
+    `IP: ${escapeHtml(visit.ip ?? 'Unknown')}`,
+    `User agent: ${escapeHtml(visit.userAgent ?? 'Unknown')}`,
+  ]
+  await sendTelegramMessage(lines.join('\n'))
 }
 
 function buildVisitRecord(request: NextRequest, context: VisitContext): VisitRecord {
@@ -261,53 +310,27 @@ function buildVisitRecord(request: NextRequest, context: VisitContext): VisitRec
     edgeRegion: geo.region ?? null,
     ip,
     userAgent: userAgent || null,
+    human: null,
+    humanReason: null,
+    client: null,
   }
 }
 
 /**
- * Stores the page view for the /analytics dashboard, increments the
- * site-wide visit counter and, every Nth visit, notifies Telegram. Runs from
- * Proxy on every real page view (see src/proxy.ts for the matcher that
- * filters out prefetches, assets, and API routes).
+ * Stores the page view for the /analytics dashboard. Runs from Proxy on every
+ * page hit (see src/proxy.ts for the matcher that filters out prefetches,
+ * assets, and API routes).
  *
- * Bots are stored too (crawl-budget/indexing visibility on the dashboard),
- * but skip the counter transaction, the settings read, and Telegram — they
- * were ~80% of hits, so routing them through the same read+write path as a
- * real visit doubled Firestore usage for a number nobody was watching.
+ * Nothing is counted or announced here any more. This write only records that
+ * a request happened; whether it was a person is decided later, when the
+ * browser beacon calls /api/pageview. That split is the whole point: a request
+ * alone (which is all a scraper makes) is no longer evidence of a visitor.
+ * Bots are stored too, for crawl-budget visibility.
  */
 export async function trackVisit(request: NextRequest, context: VisitContext): Promise<void> {
   const visit = buildVisitRecord(request, context)
-
-  if (visit.bot) {
-    await VISITS_COLLECTION.add(visit)
-    return
-  }
-
-  const [{ count, every }] = await Promise.all([
-    db.runTransaction(async (tx) => {
-      const [counter, settings] = await tx.getAll(COUNTER_REF, SETTINGS_REF)
-      const next = (counter.data()?.count ?? 0) + 1
-      tx.set(COUNTER_REF, { count: next, updatedAt: new Date().toISOString() })
-      return { count: next, every: parseNotifyEvery(settings.data()?.notifyEvery) ?? DEFAULT_NOTIFY_EVERY }
-    }),
-    VISITS_COLLECTION.add(visit),
-  ])
-
-  if (every === 0 || count % every !== 0) return
-
-  const location =
-    [visit.city, visit.countryRegion, visit.country].filter(Boolean).join(', ') || 'Unknown'
-  const page = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://allparx.com'}${visit.path}`
-
-  const lines = [
-    `<b>allparx.com</b> — visitor #${count}`,
-    `Page: ${escapeHtml(page)}`,
-    `Device: ${visit.device}`,
-    `Location: ${escapeHtml(location)}${visit.flag ? ` ${visit.flag}` : ''}`,
-    `Referrer: ${escapeHtml(visit.referrer ?? 'Direct / none')}`,
-    `IP: ${escapeHtml(visit.ip ?? 'Unknown')}`,
-    `User agent: ${escapeHtml(visit.userAgent ?? 'Unknown')}`,
-  ]
-
-  await sendTelegramMessage(lines.join('\n'))
+  await VISITS_COLLECTION.doc(context.hitId).set(visit)
 }
+
+/** Set by trackVisit's caller with the id of the document it wrote, so the browser beacon can stamp it. */
+export const HIT_COOKIE = 'ap_hit'

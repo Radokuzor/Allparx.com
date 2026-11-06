@@ -16,7 +16,8 @@
     "photos:flickr": "tsx scripts/fetch-photos.ts flickr",
     "photos:categories": "tsx scripts/fetch-photos.ts categories",
     "prebuild": "tsx scripts/snapshot-places.ts",
-    "ingest:landmarks": "tsx scripts/ingest-landmarks.ts"
+    "ingest:landmarks": "tsx scripts/ingest-landmarks.ts",
+    "hosting:build": "node scripts/build-hosting-ranges.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -34,7 +35,8 @@
     "react-dom": "19.2.8",
     "server-only": "^0.0.1",
     "shadcn": "^4.21.0",
-    "tw-animate-css": "^1.4.0"
+    "tw-animate-css": "^1.4.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -42,6 +44,7 @@
     "@types/nodemailer": "^8.0.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "tailwindcss": "^4",

@@ -1,8 +1,9 @@
 import 'server-only'
 import type { Timestamp } from 'firebase-admin/firestore'
-import { VISITS_COLLECTION, isAssetPath, isBot, type VisitRecord } from './analytics'
+import { PEOPLE_COUNTER_REF, VISITS_COLLECTION, isAssetPath, isBot, type VisitRecord } from './analytics'
 import { loadAccountsReport, type AccountsReport } from './analytics-accounts'
 import { loadClickReport, type ClickReport } from './analytics-clicks'
+import { isHostingIp } from './hosting'
 import { loadNearMeReport, type NearMeReport } from './analytics-near-me'
 import { db } from './firebase-admin'
 
@@ -26,7 +27,7 @@ const BOT_AGENT_SAMPLE = 3_000
 const VISIT_FIELDS = [
   'ts', 'path', 'query', 'searchQuery', 'referrer', 'referrerHost', 'utmSource', 'utmMedium', 'utmCampaign',
   'visitorId', 'sessionId', 'newVisitor', 'newSession', 'device', 'browser', 'os', 'bot', 'language',
-  'country', 'countryRegion', 'city', 'flag', 'edgeRegion', 'ip', 'userAgent', 'botName',
+  'country', 'countryRegion', 'city', 'flag', 'edgeRegion', 'ip', 'userAgent', 'botName', 'human',
 ] as const satisfies readonly (keyof VisitRecord)[]
 
 export type Visit = Pick<VisitRecord, Exclude<(typeof VISIT_FIELDS)[number], 'ts'>> & { id: string; ts: Date }
@@ -41,12 +42,15 @@ export interface Report {
   capped: boolean
   coveredFrom: Date | null
   /**
-   * Real (non-bot) page views since tracking began — not a visitor count,
-   * since one visitor can rack up many. Bots stopped advancing this counter
-   * on 2026-09-21 to cut their Firestore write/read cost in half; counts
-   * from before that date still had bot hits mixed in.
+   * Legacy raw figure: non-bot page views since tracking began, kept as a
+   * scale reference. It still contains datacenter traffic, so it is not the
+   * number to quote for visitors.
    */
   allTimeCount: number | null
+  /** Page views proven by the browser beacon since it shipped (2026-11). The honest all-time figure. */
+  allTimePeople: number | null
+  /** Devices that asked to be told when new places appear near them. */
+  pushSubscribers: number | null
   totals: {
     views: number
     visitors: number
@@ -54,6 +58,13 @@ export interface Report {
     newVisitors: number
     /** Visitors who viewed 2+ pages or pressed something: the closest thing to "a real person" we can measure. */
     engagedVisitors: number
+    /**
+     * Hits that were neither a known crawler nor proven by a browser: no
+     * JavaScript ran, or the IP belongs to a cloud/proxy network. Stored, not
+     * counted as people.
+     */
+    unverified: number
+    unverifiedVisitors: number
     searchEngineVisitors: number
     pagesPerSession: number
     bounceRate: number
@@ -158,7 +169,7 @@ export async function loadReport(range: RangeKey, includeBots: boolean): Promise
   const now = new Date()
   const since = new Date(now.getTime() - days * 86_400_000)
 
-  const [people, botSample, botCount, counter] = await Promise.all([
+  const [people, botSample, botCount, counter, peopleCounter, pushSubs] = await Promise.all([
     fetchVisits(false, since, MAX_VISITS, VISIT_FIELDS),
     fetchVisits(
       true,
@@ -168,16 +179,35 @@ export async function loadReport(range: RangeKey, includeBots: boolean): Promise
     ),
     countBots(since),
     db.collection('analytics').doc('visitCounter').get(),
+    PEOPLE_COUNTER_REF.get(),
+    db.collection('push_subscriptions').where('enabled', '==', true).count().get(),
   ]).catch(explainMissingIndex)
 
   // The stored `bot` flag reflects the rules in force when the hit arrived.
   // Re-applying today's rules, and dropping file requests recorded before the
   // proxy stopped counting them, corrects history without rewriting it.
+  //
+  // A visit is a person when the browser beacon proved a browser ran. Hits
+  // from before the beacon shipped (no `human` field at all) fall back to IP
+  // reputation, so history does not vanish from the dashboard on deploy day.
   const reclassified: Visit[] = []
   const counted: Visit[] = []
+  const unverified: Visit[] = []
   for (const v of people.visits) {
     if (isAssetPath(v.path)) continue
-    if (isBot(v.userAgent ?? '', v.ip)) reclassified.push({ ...v, bot: true })
+    if (isBot(v.userAgent ?? '', v.ip)) {
+      reclassified.push({ ...v, bot: true })
+      continue
+    }
+    if (v.human === true) {
+      counted.push(v)
+      continue
+    }
+    if (v.human === false) {
+      unverified.push(v)
+      continue
+    }
+    if (isHostingIp(v.ip)) unverified.push(v)
     else counted.push(v)
   }
 
@@ -279,12 +309,16 @@ export async function loadReport(range: RangeKey, includeBots: boolean): Promise
     capped,
     coveredFrom,
     allTimeCount: counter.data()?.count ?? null,
+    allTimePeople: peopleCounter.data()?.count ?? null,
+    pushSubscribers: pushSubs.data().count,
     totals: {
       views: total,
       visitors: visitorIds.size,
       sessions: sessions.size,
       newVisitors,
       engagedVisitors,
+      unverified: unverified.length,
+      unverifiedVisitors: new Set(unverified.map(visitorKey)).size,
       searchEngineVisitors,
       pagesPerSession: sessions.size ? total / sessions.size : 0,
       bounceRate: sessions.size ? bounces / sessions.size : 0,

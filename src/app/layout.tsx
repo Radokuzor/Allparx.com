@@ -9,6 +9,7 @@ import TidyUrl from '@/components/TidyUrl'
 import UserMenu from '@/components/auth/UserMenu'
 import FloatingNearMe from '@/components/FloatingNearMe'
 import MobileNav from '@/components/MobileNav'
+import PageViewBeacon from '@/components/PageViewBeacon'
 import { FEATURED_TYPES, typeLabelPlural } from '@/lib/place-types'
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, absoluteUrl } from '@/lib/site'
 import { cn } from '@/lib/utils'
@@ -187,6 +188,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </footer>
 
         <FloatingNearMe />
+        <PageViewBeacon />
         <ClickTracker />
         <TidyUrl />
         </AuthProvider>
