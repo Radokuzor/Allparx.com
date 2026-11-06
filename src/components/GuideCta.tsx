@@ -1,16 +1,15 @@
 'use client'
 
 import { useEffect, useId, useRef, useState } from 'react'
-import { Compass, Loader2, Check } from 'lucide-react'
+import { Check, Compass } from 'lucide-react'
 
 /**
- * "Send me a local guide for <place>", dropped into the middle of an article
- * rather than at the end, where the reader is still deciding whether the place
- * is worth the drive and has not yet scrolled away.
+ * "Send me a local guide for <place>", dropped into the middle of an article so
+ * the ask arrives while the reader is still deciding whether the place is worth
+ * the drive rather than after they have scrolled away.
  *
- * One field. Asking for a name or a zip here costs more sign-ups than it is
- * worth, and the place is already known from the page, so there is nothing else
- * to ask for. The hidden `company` input and `elapsedMs` are the bot gate: a
+ * Heading, one field, one button. No pitch, no fine print: the ask explains
+ * itself. The hidden `company` input and `elapsedMs` are the bot gate, since a
  * script that fills every field still has to look like it waited.
  */
 export default function GuideCta({
@@ -27,6 +26,7 @@ export default function GuideCta({
   useEffect(() => {
     startedAt.current = Date.now()
   }, [])
+
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle')
   const [error, setError] = useState<string | null>(null)
 
@@ -57,7 +57,7 @@ export default function GuideCta({
       }
       setState('sent')
     } catch {
-      setError('That did not go through. Check your connection and try again.')
+      setError('That did not go through. Try again.')
       setState('idle')
     }
   }
@@ -65,15 +65,9 @@ export default function GuideCta({
   if (state === 'sent') {
     return (
       <aside className="my-10 rounded-2xl border border-green-200 bg-green-50 p-6">
-        <div className="flex items-start gap-3">
-          <Check className="mt-0.5 h-5 w-5 shrink-0 text-green-700" aria-hidden />
-          <div>
-            <p className="font-semibold text-green-900">Your guide is on its way</p>
-            <p className="mt-1 text-sm leading-relaxed text-green-800">
-              Check your inbox for a welcome email. The local guide for {placeName} follows once it
-              is written.
-            </p>
-          </div>
+        <div className="flex items-center gap-3">
+          <Check className="h-5 w-5 shrink-0 text-green-700" aria-hidden />
+          <p className="font-semibold text-green-900">Your guide is on its way</p>
         </div>
       </aside>
     )
@@ -89,10 +83,6 @@ export default function GuideCta({
       <h2 className="mt-3 text-xl font-semibold text-gray-900">
         Send me a local guide for {placeName}
       </h2>
-      <p className="mt-2 text-sm leading-relaxed text-gray-600">
-        We will write one for this place: the best time to go, what to bring, where to park and what
-        catches people out. Enter your email and it comes to you when it is ready.
-      </p>
 
       <form onSubmit={onSubmit} className="mt-5">
         <label htmlFor={`${id}-email`} className="sr-only">
@@ -111,16 +101,9 @@ export default function GuideCta({
           <button
             type="submit"
             disabled={state === 'sending'}
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-green-800 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-900 disabled:opacity-70"
+            className="inline-flex shrink-0 items-center justify-center rounded-full bg-green-800 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-900 disabled:opacity-70"
           >
-            {state === 'sending' ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                Sending
-              </>
-            ) : (
-              'Send my guide'
-            )}
+            {state === 'sending' ? 'Sending' : 'Send'}
           </button>
         </div>
 
@@ -130,13 +113,7 @@ export default function GuideCta({
           <input id={`${id}-company`} name="company" type="text" tabIndex={-1} autoComplete="off" />
         </div>
 
-        {error ? (
-          <p className="mt-3 text-sm text-red-700">{error}</p>
-        ) : (
-          <p className="mt-3 text-xs text-gray-500">
-            One welcome email now, then your guide. No spam, unsubscribe in one click.
-          </p>
-        )}
+        {error && <p className="mt-3 text-sm text-red-700">{error}</p>}
       </form>
     </aside>
   )
